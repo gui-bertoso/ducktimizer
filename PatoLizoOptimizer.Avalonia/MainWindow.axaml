@@ -1,30 +1,57 @@
 <Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- xmlns:d="http://schemas.microsoft.com/expression/blend/2008" x:Class="PatoLizoOptimizer.MainWindow"
- Title="Ducktimizer" Width="800" Height="600" MinWidth="800" MinHeight="600"
- MaxWidth="800" MaxHeight="600" CanResize="False" Background="#191C20">
+ x:Class="PatoLizoOptimizer.MainWindow" Title="Ducktimizer Pro" Icon="/Assets/logo.ico"
+ Width="790" Height="535" MinWidth="790" MinHeight="535" MaxWidth="790" MaxHeight="535"
+ CanResize="False" Background="#0F1418" FontFamily="Segoe UI">
  <Window.Styles>
-  <Style Selector="Border.card"><Setter Property="Background" Value="#25292E"/><Setter Property="BorderBrush" Value="#343A40"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="14"/><Setter Property="Padding" Value="14"/></Style>
-  <Style Selector="Button.primary"><Setter Property="Background" Value="#EAF8FF"/><Setter Property="Foreground" Value="#182126"/><Setter Property="CornerRadius" Value="11"/><Setter Property="Padding" Value="18,11"/><Setter Property="FontWeight" Value="SemiBold"/></Style>
-  <Style Selector="Button.danger"><Setter Property="Background" Value="#30353A"/><Setter Property="Foreground" Value="#D8E6EC"/><Setter Property="CornerRadius" Value="11"/><Setter Property="Padding" Value="18,11"/></Style>
-  <Style Selector="ToggleSwitch"><Setter Property="OnContent" Value="ON"/><Setter Property="OffContent" Value="OFF"/></Style>
+  <Style Selector="TextBlock"><Setter Property="Foreground" Value="#F4FAFD"/></Style>
+  <Style Selector="Border.panel"><Setter Property="Background" Value="#151A1F"/><Setter Property="BorderBrush" Value="#30373D"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="28"/></Style>
+  <Style Selector="Border.card"><Setter Property="Background" Value="#1D2328"/><Setter Property="BorderBrush" Value="#343C42"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="15"/><Setter Property="Padding" Value="16,12"/></Style>
+  <Style Selector="Button"><Setter Property="CornerRadius" Value="12"/><Setter Property="Padding" Value="16,10"/><Setter Property="FontWeight" Value="SemiBold"/></Style>
+  <Style Selector="Button.primary"><Setter Property="Background" Value="#DDF5FF"/><Setter Property="Foreground" Value="#10191E"/></Style>
+  <Style Selector="Button.secondary"><Setter Property="Background" Value="#293137"/><Setter Property="Foreground" Value="#DCECF3"/></Style>
+  <Style Selector="ToggleSwitch"><Setter Property="OnContent" Value=""/><Setter Property="OffContent" Value=""/><Setter Property="MinWidth" Value="46"/><Setter Property="HorizontalAlignment" Value="Right"/><Setter Property="VerticalAlignment" Value="Center"/></Style>
+  <Style Selector="ComboBox.compact"><Setter Property="Background" Value="#1D2328"/><Setter Property="Foreground" Value="#DDF5FF"/><Setter Property="BorderBrush" Value="#39434A"/><Setter Property="CornerRadius" Value="10"/><Setter Property="MinHeight" Value="34"/></Style>
  </Window.Styles>
- <Grid RowDefinitions="68,*,72">
-  <Border Background="#202429" Padding="20,12"><Grid ColumnDefinitions="*,Auto">
-   <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Canvas Width="44" Height="40"><Path Data="M 5,31 A 17,17 0 0 1 39,31" Stroke="#EAF8FF" StrokeThickness="4" StrokeLineCap="Round"/><Path Data="M 22,31 L 32,19" Stroke="#EAF8FF" StrokeThickness="4" StrokeLineCap="Round"/><Ellipse Canvas.Left="19" Canvas.Top="28" Width="6" Height="6" Fill="#EAF8FF"/></Canvas><StackPanel Margin="10,0"><TextBlock Text="Ducktimizer" FontSize="18" FontWeight="Bold" Foreground="#F4FBFE"/><TextBlock Text="Windows rápido. Sem firula." Foreground="#9CAAB1" FontSize="11"/></StackPanel></StackPanel>
-   <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"><TextBlock Text="PRESET" Foreground="#8E9AB1" VerticalAlignment="Center" Margin="0,0,8,0"/><ComboBox x:Name="PresetBox" Width="130" SelectedIndex="1" SelectionChanged="Preset_Changed"><ComboBoxItem Content="Low"/><ComboBoxItem Content="Medium"/><ComboBoxItem Content="High"/><ComboBoxItem Content="Ultra"/><ComboBoxItem Content="Debloat"/></ComboBox></StackPanel>
-  </Grid></Border>
 
-  <Grid Grid.Row="1" Margin="18,14" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto,Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-   <Border Classes="card"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="Visual limpo" FontWeight="SemiBold"/><TextBlock Text="Transparência e animações" Foreground="#8E9AB1" FontSize="11"/></StackPanel><ToggleSwitch x:Name="VisualSwitch" Grid.Column="1" IsChecked="True"/></Grid></Border>
-   <Border Classes="card" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="Modo gamer" FontWeight="SemiBold"/><TextBlock Text="Game Mode e captura" Foreground="#8E9AB1" FontSize="11"/></StackPanel><ToggleSwitch x:Name="GamingSwitch" Grid.Column="1" IsChecked="True"/></Grid></Border>
-   <Border Classes="card" Grid.Row="1"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="Alto desempenho" FontWeight="SemiBold"/><TextBlock Text="Plano de energia" Foreground="#8E9AB1" FontSize="11"/></StackPanel><ToggleSwitch x:Name="PowerSwitch" Grid.Column="1" IsChecked="True"/></Grid></Border>
-   <Border Classes="card" Grid.Row="1" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="Privacidade" FontWeight="SemiBold"/><TextBlock Text="Telemetria e histórico" Foreground="#8E9AB1" FontSize="11"/></StackPanel><ToggleSwitch x:Name="PrivacySwitch" Grid.Column="1"/></Grid></Border>
-   <Border Classes="card" Grid.Row="2"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="Debloat extremo" FontWeight="SemiBold"/><TextBlock Text="Remove apps, IA, Widgets e anúncios" Foreground="#8E9AB1" FontSize="11"/></StackPanel><ToggleSwitch x:Name="DebloatSwitch" Grid.Column="1"/></Grid></Border>
-   <Border Classes="card" Grid.Row="2" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><StackPanel><TextBlock Text="Apps em segundo plano" FontWeight="SemiBold"/><TextBlock Text="Reduz processos residentes" Foreground="#8E9AB1" FontSize="11"/></StackPanel><ToggleSwitch x:Name="BackgroundSwitch" Grid.Column="1"/></Grid></Border>
+ <Border Classes="panel" Margin="8" Padding="21,18">
+  <Grid RowDefinitions="58,*,70,48" RowSpacing="10">
+   <Grid ColumnDefinitions="*,Auto,46">
+    <StackPanel VerticalAlignment="Center" Spacing="1">
+     <TextBlock Text="Ducktimizer Pro" FontSize="18" FontWeight="Bold"/>
+     <TextBlock Text="Poucas coisas. Muita diferença." Foreground="#6F9DC2" FontSize="11"/>
+    </StackPanel>
+    <ComboBox x:Name="PresetBox" Grid.Column="1" Classes="compact" Width="116" Margin="0,0,15,0" VerticalAlignment="Center" SelectedIndex="1" SelectionChanged="Preset_Changed">
+     <ComboBoxItem Content="Low"/><ComboBoxItem Content="Medium"/><ComboBoxItem Content="High"/><ComboBoxItem Content="Ultra"/><ComboBoxItem Content="Debloat"/>
+    </ComboBox>
+    <Canvas Grid.Column="2" Width="38" Height="36" VerticalAlignment="Center">
+     <Path Data="M 5,27 A 14,14 0 0 1 33,27" Stroke="#DDF5FF" StrokeThickness="3" StrokeLineCap="Round"/>
+     <Path Data="M 19,27 L 27,17" Stroke="#DDF5FF" StrokeThickness="3" StrokeLineCap="Round"/>
+     <Ellipse Canvas.Left="16.5" Canvas.Top="24.5" Width="5" Height="5" Fill="#DDF5FF"/>
+    </Canvas>
+   </Grid>
 
-   <Border Grid.Row="3" Grid.ColumnSpan="2" Background="#212A2E" BorderBrush="#A9CAD8" BorderThickness="1" CornerRadius="14" Padding="14" Margin="0,2,0,0"><Grid ColumnDefinitions="Auto,*,Auto"><TextBlock Text="●" Foreground="#DDF6FF" FontSize="18"/><StackPanel Grid.Column="1" Margin="10,0"><TextBlock x:Name="StateTitle" Text="Modo otimizado pronto" FontWeight="SemiBold"/><TextBlock x:Name="StateDetail" Text="Backup local criado antes das alterações" Foreground="#9CAAB1" FontSize="11"/></StackPanel><TextBlock Grid.Column="2" Text="BACKUP LOCAL" Foreground="#DDF6FF" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/></Grid></Border>
+   <Grid Grid.Row="1" ColumnDefinitions="*,*" RowDefinitions="*,*,*" ColumnSpacing="11" RowSpacing="11">
+    <Border Classes="card"><Grid ColumnDefinitions="*,Auto"><StackPanel VerticalAlignment="Center" Spacing="2"><TextBlock Text="Visual limpo" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="Transparência e animações" Foreground="#6F9DC2" FontSize="11"/></StackPanel><ToggleSwitch x:Name="VisualSwitch" Grid.Column="1" IsChecked="True"/></Grid></Border>
+    <Border Classes="card" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><StackPanel VerticalAlignment="Center" Spacing="2"><TextBlock Text="Modo gamer" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="Game Mode e captura" Foreground="#6F9DC2" FontSize="11"/></StackPanel><ToggleSwitch x:Name="GamingSwitch" Grid.Column="1" IsChecked="True"/></Grid></Border>
+    <Border Classes="card" Grid.Row="1"><Grid ColumnDefinitions="*,Auto"><StackPanel VerticalAlignment="Center" Spacing="2"><TextBlock Text="Alto desempenho" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="Plano de energia" Foreground="#6F9DC2" FontSize="11"/></StackPanel><ToggleSwitch x:Name="PowerSwitch" Grid.Column="1" IsChecked="True"/></Grid></Border>
+    <Border Classes="card" Grid.Row="1" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><StackPanel VerticalAlignment="Center" Spacing="2"><TextBlock Text="Privacidade" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="Telemetria e histórico" Foreground="#6F9DC2" FontSize="11"/></StackPanel><ToggleSwitch x:Name="PrivacySwitch" Grid.Column="1"/></Grid></Border>
+    <Border Classes="card" Grid.Row="2"><Grid ColumnDefinitions="*,Auto"><StackPanel VerticalAlignment="Center" Spacing="2"><TextBlock Text="Debloat extremo" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="Apps, IA, Widgets e anúncios" Foreground="#6F9DC2" FontSize="11"/></StackPanel><ToggleSwitch x:Name="DebloatSwitch" Grid.Column="1"/></Grid></Border>
+    <Border Classes="card" Grid.Row="2" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><StackPanel VerticalAlignment="Center" Spacing="2"><TextBlock Text="Apps em segundo plano" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="Reduz processos residentes" Foreground="#6F9DC2" FontSize="11"/></StackPanel><ToggleSwitch x:Name="BackgroundSwitch" Grid.Column="1"/></Grid></Border>
+   </Grid>
+
+   <Border Grid.Row="2" Background="#1D2429" BorderBrush="#343D43" BorderThickness="1" CornerRadius="15" Padding="16,11">
+    <Grid ColumnDefinitions="Auto,*,Auto">
+     <Ellipse Width="8" Height="8" Fill="#55E5A4" VerticalAlignment="Center"/>
+     <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center" Spacing="1"><TextBlock x:Name="StateTitle" Text="Pronto para acelerar" FontSize="14" FontWeight="SemiBold"/><TextBlock x:Name="StateDetail" Text="Backup local antes das alterações" Foreground="#668CB0" FontSize="11"/></StackPanel>
+     <TextBlock Grid.Column="2" Text="REVERSÍVEL" Foreground="#BFEAFF" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+    </Grid>
+   </Border>
+
+   <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="9">
+    <TextBlock Text="Ducktimizer Pro  •  v3.2" Foreground="#65737C" FontSize="11" VerticalAlignment="Center"/>
+    <Button x:Name="DeactivateButton" Grid.Column="1" Classes="secondary" Content="Restaurar" Click="Deactivate_Click"/>
+    <Button x:Name="ActivateButton" Grid.Column="2" Classes="primary" Content="Ativar selecionadas  →" Click="Activate_Click"/>
+   </Grid>
   </Grid>
-
-  <Border Grid.Row="2" Background="#202429" Padding="18,12"><Grid ColumnDefinitions="*,Auto,Auto"><TextBlock Text="Ducktimizer Pro v3.1 • by patoLizo" Foreground="#8E9CA3" VerticalAlignment="Center"/><Button x:Name="DeactivateButton" Grid.Column="1" Classes="danger" Content="Desativar otimizações" Click="Deactivate_Click" Margin="0,0,10,0"/><Button x:Name="ActivateButton" Grid.Column="2" Classes="primary" Content="Ativar selecionadas  →" Click="Activate_Click"/></Grid></Border>
- </Grid>
+ </Border>
 </Window>
