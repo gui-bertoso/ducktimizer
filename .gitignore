@@ -1,0 +1,16 @@
+# Build outputs
+**/bin/
+**/obj/
+outputs/
+work/
+
+# Local state and IDE files
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+*.log
+
+# Legacy prototype (kept locally, not part of the Avalonia product)
+windows-optimizer/
