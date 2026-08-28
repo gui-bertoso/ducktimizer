@@ -12,13 +12,18 @@ export default function Home() {
   async function submit(formData: FormData) {
     setState('sending');
     setMessage('');
-    const response = await fetch('/api/orders', {
+    const response = await fetch('/api/checkout', {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify(Object.fromEntries(formData)),
     });
-    const result = (await response.json()) as { message?: string };
-    setMessage(result.message ?? (response.ok ? 'Pedido recebido.' : 'Não foi possível enviar.'));
-    setState(response.ok ? 'done' : 'error');
+    const result = (await response.json()) as { message?: string; checkoutUrl?: string };
+    if (response.ok && result.checkoutUrl) {
+      setState('done');
+      window.location.assign(result.checkoutUrl);
+      return;
+    }
+    setMessage(result.message ?? 'Não foi possível iniciar o pagamento.');
+    setState('error');
   }
 
   return (
@@ -51,16 +56,16 @@ export default function Home() {
       <section id="comprar" className="mx-auto grid max-w-6xl gap-12 px-6 py-24 lg:grid-cols-[.8fr_1.2fr] lg:items-start">
         <div><p className="text-sm font-semibold uppercase tracking-[.2em] text-sky-200">Licença Pro</p><h2 className="mt-4 text-4xl font-semibold tracking-tight">Uma licença.<br />Um computador.</h2><p className="mt-5 text-slate-400">Oferta de lançamento: <span className="text-3xl font-semibold text-white">R$ 39,90</span> em pagamento único.</p><ul className="mt-8 space-y-3 text-sm text-slate-300">{['Ativação vinculada ao seu PC', 'Presets Low até Debloat Extremo', 'Atualizações da linha 3.x', 'Suporte para ativação'].map((item) => <li key={item} className="flex items-center gap-3"><Check className="size-4 text-emerald-300" />{item}</li>)}</ul></div>
         <form action={submit} className="rounded-[26px] border border-white/10 bg-[#171b20] p-6 sm:p-8">
-          <h3 className="text-xl font-semibold">Solicitar licença</h3><p className="mt-2 text-sm leading-6 text-slate-400">Envie seus dados. Você receberá as instruções de pagamento e a chave de ativação após a confirmação.</p>
+          <h3 className="text-xl font-semibold">Comprar licença</h3><p className="mt-2 text-sm leading-6 text-slate-400">Informe seus dados e siga para o checkout seguro do Asaas. Após a confirmação, seu pedido fica pronto para emissão.</p>
           <div className="mt-7 grid gap-4 sm:grid-cols-2">
-            <label className="space-y-2 text-sm"><span>Seu nome</span><Input name="name" required minLength={2} maxLength={80} placeholder="Como devemos chamar você?" className="h-11 border-white/10 bg-white/[.04]" /></label>
-            <label className="space-y-2 text-sm"><span>E-mail</span><Input name="email" type="email" required maxLength={120} placeholder="voce@email.com" className="h-11 border-white/10 bg-white/[.04]" /></label>
-            <label className="space-y-2 text-sm sm:col-span-2"><span>Device ID do Ducktimizer</span><Input name="deviceId" required pattern="[A-Fa-f0-9-]{24,40}" maxLength={40} placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" className="h-11 border-white/10 bg-white/[.04] font-mono" /></label>
+            <label htmlFor="customer-name" className="space-y-2 text-sm"><span>Seu nome</span><Input id="customer-name" name="name" required minLength={2} maxLength={80} placeholder="Como devemos chamar você?" className="h-11 border-white/10 bg-white/[.04]" /></label>
+            <label htmlFor="customer-email" className="space-y-2 text-sm"><span>E-mail</span><Input id="customer-email" name="email" type="email" required maxLength={120} placeholder="voce@email.com" className="h-11 border-white/10 bg-white/[.04]" /></label>
+            <label htmlFor="device-id" className="space-y-2 text-sm sm:col-span-2"><span>Device ID do Ducktimizer</span><Input id="device-id" name="deviceId" required pattern="[A-Fa-f0-9-]{24,40}" maxLength={40} placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" className="h-11 border-white/10 bg-white/[.04] font-mono" /></label>
             <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
           </div>
-          <Button type="submit" disabled={state === 'sending' || state === 'done'} className="mt-6 h-12 w-full rounded-xl bg-sky-100 text-slate-950 hover:bg-white">{state === 'sending' ? 'Enviando…' : state === 'done' ? 'Pedido enviado' : 'Continuar compra'} <ArrowRight /></Button>
-          {message && <p role="status" className={`mt-4 text-sm ${state === 'error' ? 'text-red-300' : 'text-emerald-300'}`}>{message}</p>}
-          <p className="mt-4 text-xs leading-5 text-slate-500">Seus dados são usados somente para processar o pedido, emitir sua licença e oferecer suporte.</p>
+          <Button type="submit" disabled={state === 'sending' || state === 'done'} className="mt-6 h-12 w-full rounded-xl bg-sky-100 text-slate-950 hover:bg-white">{state === 'sending' ? 'Abrindo pagamento…' : state === 'done' ? 'Redirecionando…' : 'Pagar com Pix ou cartão'} <ArrowRight /></Button>
+          {message && <output className={`mt-4 block text-sm ${state === 'error' ? 'text-red-300' : 'text-emerald-300'}`}>{message}</output>}
+          <p className="mt-4 text-xs leading-5 text-slate-500">Pagamento processado pelo Asaas. O Ducktimizer não recebe nem armazena os dados do seu cartão.</p>
         </form>
       </section>
       <footer className="border-t border-white/8 px-6 py-8 text-center text-xs text-slate-500">© 2026 patoLizo · Ducktimizer Pro · Windows 10 e 11</footer>
