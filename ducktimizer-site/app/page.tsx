@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight, Check, Cpu, Gauge, LockKeyhole, ShieldCheck, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 export default function Home() {
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [message, setMessage] = useState('');
+
+  useEffect(() => { void fetch('/api/analytics/view', { method: 'POST', keepalive: true }); }, []);
 
   async function submit(formData: FormData) {
     setState('sending');

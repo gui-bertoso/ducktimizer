@@ -21,6 +21,11 @@ export const webhookEvents = sqliteTable('webhook_events', {
   receivedAt: integer('received_at', { mode: 'timestamp' }).notNull(),
 }, (table) => [index('idx_webhook_checkout').on(table.checkoutId)]);
 
+export const dailyMetrics = sqliteTable('daily_metrics', {
+  day: text('day').primaryKey(),
+  pageViews: integer('page_views').notNull().default(0),
+});
+
 export const licenses = sqliteTable('licenses', {
   id: text('id').primaryKey(), orderId: text('order_id').notNull().references(() => orders.id),
   deviceId: text('device_id').notNull(), customer: text('customer').notNull(),
