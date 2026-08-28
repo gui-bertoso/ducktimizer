@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace PatoLizoOptimizer;
 
@@ -36,17 +37,23 @@ public static class OptimizerEngine
     {
         try
         {
+            if (args.Length == 0) return 2;
             if (!IsAdministrator())
                 throw new UnauthorizedAccessException("O processo não recebeu permissão de administrador. Feche o app, abra novamente e aceite o aviso do UAC.");
+            if (args[0] == "--apply" && !LicenseService.IsActivated(out _, out var licenseReason))
+                throw new UnauthorizedAccessException($"Ativação necessária: {licenseReason}");
+            AppLogger.Info($"Operação solicitada: {args[0]}");
             if (args[0] == "--apply") Apply(args.Length > 1 ? args[1].Split(',', StringSplitOptions.RemoveEmptyEntries) : []);
             else if (args[0] == "--undo-all") UndoAll();
             else return 2;
             MessageBoxW(IntPtr.Zero, "Operação concluída. Reinicie o Windows para consolidar todas as mudanças.", "Ducktimizer", 0x40);
+            AppLogger.Info("Operação concluída com sucesso");
             return 0;
         }
         catch (OperationCanceledException) { return 3; }
         catch (Exception ex)
         {
+            AppLogger.Error(ex, "Falha na operação administrativa");
             MessageBoxW(IntPtr.Zero, ex.Message, "Ducktimizer — erro", 0x10);
             return 1;
         }
@@ -102,7 +109,7 @@ public static class OptimizerEngine
             var backup = JsonSerializer.Deserialize<RunBackup>(File.ReadAllText(path)) ?? throw new InvalidDataException("Backup inválido.");
             if (backup.PowerScheme is not null) Run("powercfg.exe", $"/setactive {backup.PowerScheme}", true);
             foreach (var item in backup.Registry.AsEnumerable().Reverse()) Restore(item);
-            if (backup.RemovedApps.Count > 0) RestoreApps(backup.RemovedApps);
+            if (backup.RemovedApps?.Count > 0) RestoreApps(backup.RemovedApps);
             File.Move(path, Path.ChangeExtension(path, ".restored.json"), true);
         }
     }
@@ -273,7 +280,7 @@ public static class OptimizerEngine
         var list = string.Join(',', BloatwarePackages.Select(x => "'" + x.Replace("'", "''") + "'"));
         var script = "$ids=@(" + list + ");$removed=@();foreach($id in $ids){" +
             "$pkgs=Get-AppxPackage -AllUsers -Name $id -ErrorAction SilentlyContinue;" +
-            "foreach($p in $pkgs){$removed+=$p.Name;Remove-AppxPackage -Package $p.PackageFullName -AllUsers -ErrorAction SilentlyContinue};" +
+            "foreach($p in $pkgs){Remove-AppxPackage -Package $p.PackageFullName -AllUsers -ErrorAction SilentlyContinue;if(-not(Get-AppxPackage -AllUsers -Name $p.Name -ErrorAction SilentlyContinue)){$removed+=$p.Name}};" +
             "Get-AppxProvisionedPackage -Online|Where-Object DisplayName -eq $id|Remove-AppxProvisionedPackage -Online -AllUsers -ErrorAction SilentlyContinue|Out-Null};" +
             "$removed|Sort-Object -Unique";
         return RunPowerShell(script).Split(['\r','\n'], StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
@@ -302,8 +309,17 @@ public static class OptimizerEngine
     private static string Run(string file, string args, bool check)
     {
         using var process = Process.Start(new ProcessStartInfo(file, args) { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true })!;
-        var output = process.StandardOutput.ReadToEnd(); var error = process.StandardError.ReadToEnd(); process.WaitForExit();
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+        if (!process.WaitForExit(120_000))
+        {
+            try { process.Kill(true); } catch { }
+            throw new TimeoutException($"A operação {Path.GetFileName(file)} excedeu 2 minutos.");
+        }
+        Task.WaitAll(outputTask, errorTask);
+        var output = outputTask.Result; var error = errorTask.Result;
         if (check && process.ExitCode != 0) throw new InvalidOperationException(string.IsNullOrWhiteSpace(error) ? $"Falha ao executar {file}." : error.Trim());
+        if (!string.IsNullOrWhiteSpace(error)) AppLogger.Info($"{Path.GetFileName(file)} retornou aviso: {error.Trim()}");
         return output;
     }
 }

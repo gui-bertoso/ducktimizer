@@ -11,6 +11,7 @@ Otimizador compacto para Windows 10 e 11, criado por patoLizo em C# com Avalonia
 - Remoção de aplicativos pré-instalados pelo modo Debloat Extremo.
 - Backup local das configurações e comando para desativar otimizações.
 - Solicitação de administrador imediatamente na abertura.
+- Licença Pro assinada e vinculada ao dispositivo do cliente.
 
 ## Desenvolvimento
 
@@ -30,6 +31,12 @@ dotnet publish .\PatoLizoOptimizer.Avalonia\PatoLizoOptimizer.csproj -c Release 
 ## Aviso
 
 O software altera configurações administrativas do Windows. Leia os termos apresentados pelo aplicativo antes do uso. Não há garantia de aumento específico de desempenho.
+
+## Licenciamento comercial
+
+O aplicativo valida licenças offline assinadas digitalmente e vinculadas ao Device ID. O gerador está em `tools/Ducktimizer.LicenseGenerator`, mas exige a chave privada do vendedor, que nunca deve ser incluída no repositório ou enviada ao cliente.
+
+O código das versões comerciais é proprietário. Consulte `LICENSE`. Os componentes de terceiros continuam sob suas licenças originais.
 
 ## Créditos
 

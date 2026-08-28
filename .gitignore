@@ -11,6 +11,9 @@ work/
 *.user
 *.suo
 *.log
+*.pem
+*.pfx
+*.snk
 
 # Legacy prototype (kept locally, not part of the Avalonia product)
 windows-optimizer/
