@@ -46,7 +46,7 @@ public partial class MainWindow : Window
     private async void Deactivate_Click(object? sender, RoutedEventArgs e)
     {
         if (!OptimizerEngine.HasActiveBackups()) return;
-        if (!await Confirm("Desativar otimizações", "Restaurar todas as execuções do PatoLizo Optimizer e voltar ao estado anterior?")) return;
+        if (!await Confirm("Desativar otimizações", "Restaurar todas as execuções do Ducktimizer e voltar ao estado anterior?")) return;
         if (await RunElevated("--undo-all"))
         {
             VisualSwitch.IsChecked = GamingSwitch.IsChecked = PowerSwitch.IsChecked = false;
@@ -96,8 +96,8 @@ public partial class MainWindow : Window
 
     private async Task EnsureTerms()
     {
-        var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PatoLizoOptimizer");
-        var acceptedFile = Path.Combine(folder, "terms-v2.2.accepted");
+        var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ducktimizer");
+        var acceptedFile = Path.Combine(folder, "terms-v3.accepted");
         if (File.Exists(acceptedFile)) return;
         var accepted = false;
         var dialog = new Window { Title = "Termos de uso", Width = 620, Height = 470, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
@@ -108,8 +108,8 @@ public partial class MainWindow : Window
         accept.Click += (_, _) => { accepted = true; dialog.Close(); };
         exit.Click += (_, _) => dialog.Close();
         var heading = new TextBlock { Text = "Antes de otimizar", FontSize = 24, FontWeight = Avalonia.Media.FontWeight.Bold };
-        var termsText = "TERMOS DE USO E CIÊNCIA DE RISCO — v2.2\n\n" +
-            "1. FINALIDADE. O PatoLizo Optimizer modifica configurações do Windows com o objetivo de reduzir recursos em segundo plano, efeitos visuais, telemetria e aplicativos pré-instalados. Não existe garantia de aumento de FPS, redução de latência ou melhoria específica.\n\n" +
+        var termsText = "TERMOS DE USO E CIÊNCIA DE RISCO — v3.0\n\n" +
+            "1. FINALIDADE. O Ducktimizer modifica configurações do Windows com o objetivo de reduzir recursos em segundo plano, efeitos visuais, telemetria e aplicativos pré-instalados. Não existe garantia de aumento de FPS, redução de latência ou melhoria específica.\n\n" +
             "2. ADMINISTRADOR. O programa exige privilégios de administrador desde a abertura. Ao aceitar o aviso do Windows, você autoriza alterações no Registro, políticas locais, plano de energia e pacotes de aplicativos deste computador.\n\n" +
             "3. DEBLOAT EXTREMO. Esse modo desinstala aplicativos empacotados para usuários atuais e remove seu provisionamento para novos usuários. Isso pode incluir Copilot, componentes de IA, Clipchamp, Teams, apps Bing, publicidade e aplicativos patrocinados. Edge, Microsoft Store, Windows Update, Defender, Firewall e serviços críticos não são removidos.\n\n" +
             "4. BACKUP E RESTAURAÇÃO. O programa tenta criar um ponto de restauração e registra o estado anterior das configurações. A restauração de Registro e energia é automatizada. A reinstalação de aplicativos removidos não é garantida, pois depende de os arquivos ou pacotes continuarem disponíveis no Windows ou na Microsoft Store.\n\n" +
@@ -124,6 +124,6 @@ public partial class MainWindow : Window
         await dialog.ShowDialog(this);
         if (!accepted) { Close(); return; }
         Directory.CreateDirectory(folder);
-        File.WriteAllText(acceptedFile, "accepted-v2.2");
+        File.WriteAllText(acceptedFile, "accepted-v3");
     }
 }

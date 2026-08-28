@@ -5,8 +5,9 @@
     <Nullable>enable</Nullable>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
-    <Version>2.1.1</Version>
-    <Product>PatoLizo Optimizer</Product>
+    <AssemblyName>Ducktimizer</AssemblyName>
+    <Version>3.0.0</Version>
+    <Product>Ducktimizer</Product>
     <Company>patoLizo</Company>
   </PropertyGroup>
 

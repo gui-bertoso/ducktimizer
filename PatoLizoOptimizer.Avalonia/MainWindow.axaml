@@ -1,6 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" x:Class="PatoLizoOptimizer.MainWindow"
- Title="PatoLizo Optimizer" Width="800" Height="600" MinWidth="800" MinHeight="600"
+ Title="Ducktimizer" Width="800" Height="600" MinWidth="800" MinHeight="600"
  MaxWidth="800" MaxHeight="600" CanResize="False" Background="#191C20">
  <Window.Styles>
   <Style Selector="Border.card"><Setter Property="Background" Value="#25292E"/><Setter Property="BorderBrush" Value="#343A40"/><Setter Property="BorderThickness" Value="1"/><Setter Property="CornerRadius" Value="14"/><Setter Property="Padding" Value="14"/></Style>
@@ -10,7 +10,7 @@
  </Window.Styles>
  <Grid RowDefinitions="68,*,72">
   <Border Background="#202429" Padding="20,12"><Grid ColumnDefinitions="*,Auto">
-   <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Canvas Width="44" Height="40"><Path Data="M 5,31 A 17,17 0 0 1 39,31" Stroke="#EAF8FF" StrokeThickness="4" StrokeLineCap="Round"/><Path Data="M 22,31 L 32,19" Stroke="#EAF8FF" StrokeThickness="4" StrokeLineCap="Round"/><Ellipse Canvas.Left="19" Canvas.Top="28" Width="6" Height="6" Fill="#EAF8FF"/></Canvas><StackPanel Margin="10,0"><TextBlock Text="PatoLizo Optimizer" FontSize="18" FontWeight="Bold" Foreground="#F4FBFE"/><TextBlock Text="Poucas coisas. Muita diferença." Foreground="#9CAAB1" FontSize="11"/></StackPanel></StackPanel>
+   <StackPanel Orientation="Horizontal" VerticalAlignment="Center"><Canvas Width="44" Height="40"><Path Data="M 5,31 A 17,17 0 0 1 39,31" Stroke="#EAF8FF" StrokeThickness="4" StrokeLineCap="Round"/><Path Data="M 22,31 L 32,19" Stroke="#EAF8FF" StrokeThickness="4" StrokeLineCap="Round"/><Ellipse Canvas.Left="19" Canvas.Top="28" Width="6" Height="6" Fill="#EAF8FF"/></Canvas><StackPanel Margin="10,0"><TextBlock Text="Ducktimizer" FontSize="18" FontWeight="Bold" Foreground="#F4FBFE"/><TextBlock Text="Windows rápido. Sem firula." Foreground="#9CAAB1" FontSize="11"/></StackPanel></StackPanel>
    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center"><TextBlock Text="PRESET" Foreground="#8E9AB1" VerticalAlignment="Center" Margin="0,0,8,0"/><ComboBox x:Name="PresetBox" Width="130" SelectedIndex="1" SelectionChanged="Preset_Changed"><ComboBoxItem Content="Low"/><ComboBoxItem Content="Medium"/><ComboBoxItem Content="High"/><ComboBoxItem Content="Ultra"/><ComboBoxItem Content="Debloat"/></ComboBox></StackPanel>
   </Grid></Border>
 
@@ -25,6 +25,6 @@
    <Border Grid.Row="3" Grid.ColumnSpan="2" Background="#212A2E" BorderBrush="#A9CAD8" BorderThickness="1" CornerRadius="14" Padding="14" Margin="0,2,0,0"><Grid ColumnDefinitions="Auto,*,Auto"><TextBlock Text="●" Foreground="#DDF6FF" FontSize="18"/><StackPanel Grid.Column="1" Margin="10,0"><TextBlock x:Name="StateTitle" Text="Modo otimizado pronto" FontWeight="SemiBold"/><TextBlock x:Name="StateDetail" Text="Backup granular e restauração antes de aplicar" Foreground="#9CAAB1" FontSize="11"/></StackPanel><TextBlock Grid.Column="2" Text="REVERSÍVEL" Foreground="#DDF6FF" FontSize="11" FontWeight="Bold" VerticalAlignment="Center"/></Grid></Border>
   </Grid>
 
-  <Border Grid.Row="2" Background="#202429" Padding="18,12"><Grid ColumnDefinitions="*,Auto,Auto"><TextBlock Text="v2.1.1 • criado por patoLizo" Foreground="#8E9CA3" VerticalAlignment="Center"/><Button Grid.Column="1" Classes="danger" Content="Desativar otimizações" Click="Deactivate_Click" Margin="0,0,10,0"/><Button Grid.Column="2" Classes="primary" Content="Ativar selecionadas  →" Click="Activate_Click"/></Grid></Border>
+  <Border Grid.Row="2" Background="#202429" Padding="18,12"><Grid ColumnDefinitions="*,Auto,Auto"><TextBlock Text="Ducktimizer v3.0 • by patoLizo" Foreground="#8E9CA3" VerticalAlignment="Center"/><Button Grid.Column="1" Classes="danger" Content="Desativar otimizações" Click="Deactivate_Click" Margin="0,0,10,0"/><Button Grid.Column="2" Classes="primary" Content="Ativar selecionadas  →" Click="Activate_Click"/></Grid></Border>
  </Grid>
 </Window>

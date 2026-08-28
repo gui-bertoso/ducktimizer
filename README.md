@@ -1,6 +1,6 @@
-# PatoLizo Optimizer
+# Ducktimizer
 
-Otimizador compacto para Windows 10 e 11, criado em C# com Avalonia.
+Otimizador compacto para Windows 10 e 11, criado por patoLizo em C# com Avalonia.
 
 ## Recursos
 

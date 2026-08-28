@@ -25,7 +25,8 @@ public sealed class RunBackup
 
 public static class OptimizerEngine
 {
-    private static readonly string Root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PatoLizoOptimizer");
+    private static readonly string Root = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ducktimizer");
+    private static readonly string LegacyRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PatoLizoOptimizer");
     private static readonly string Backups = Path.Combine(Root, "backups");
     private const uint YesNoWarning = 0x34;
 
@@ -40,13 +41,13 @@ public static class OptimizerEngine
             if (args[0] == "--apply") Apply(args.Length > 1 ? args[1].Split(',', StringSplitOptions.RemoveEmptyEntries) : []);
             else if (args[0] == "--undo-all") UndoAll();
             else return 2;
-            MessageBoxW(IntPtr.Zero, "Operação concluída. Reinicie o Windows para consolidar todas as mudanças.", "PatoLizo Optimizer", 0x40);
+            MessageBoxW(IntPtr.Zero, "Operação concluída. Reinicie o Windows para consolidar todas as mudanças.", "Ducktimizer", 0x40);
             return 0;
         }
         catch (OperationCanceledException) { return 3; }
         catch (Exception ex)
         {
-            MessageBoxW(IntPtr.Zero, ex.Message, "PatoLizo Optimizer — erro", 0x10);
+            MessageBoxW(IntPtr.Zero, ex.Message, "Ducktimizer — erro", 0x10);
             return 1;
         }
     }
@@ -59,6 +60,7 @@ public static class OptimizerEngine
 
     public static void Apply(string[] groups)
     {
+        MigrateLegacyBackups();
         Directory.CreateDirectory(Backups);
         var backup = new RunBackup { Groups = groups };
         if (TryRestorePoint(out var reason)) backup.RestorePoint = "created";
@@ -93,6 +95,7 @@ public static class OptimizerEngine
 
     public static void UndoAll()
     {
+        MigrateLegacyBackups();
         if (!Directory.Exists(Backups)) return;
         foreach (var path in Directory.GetFiles(Backups, "backup-*.json").Where(p => !p.Contains(".restored.")).OrderByDescending(p => p))
         {
@@ -104,7 +107,23 @@ public static class OptimizerEngine
         }
     }
 
-    public static bool HasActiveBackups() => Directory.Exists(Backups) && Directory.GetFiles(Backups, "backup-*.json").Any(p => !p.Contains(".restored."));
+    public static bool HasActiveBackups()
+    {
+        MigrateLegacyBackups();
+        return Directory.Exists(Backups) && Directory.GetFiles(Backups, "backup-*.json").Any(p => !p.Contains(".restored."));
+    }
+
+    private static void MigrateLegacyBackups()
+    {
+        var legacy = Path.Combine(LegacyRoot, "backups");
+        if (!Directory.Exists(legacy)) return;
+        Directory.CreateDirectory(Backups);
+        foreach (var file in Directory.GetFiles(legacy, "backup-*.json"))
+        {
+            var target = Path.Combine(Backups, Path.GetFileName(file));
+            if (!File.Exists(target)) File.Copy(file, target);
+        }
+    }
 
     public static bool SelfTest()
     {
@@ -276,7 +295,7 @@ public static class OptimizerEngine
     }
     private static bool TryRestorePoint(out string reason)
     {
-        var script = "$ErrorActionPreference='Stop'; Enable-ComputerRestore -Drive ($env:SystemDrive+'\\'); Checkpoint-Computer -Description 'PatoLizo Optimizer' -RestorePointType MODIFY_SETTINGS";
+        var script = "$ErrorActionPreference='Stop'; Enable-ComputerRestore -Drive ($env:SystemDrive+'\\'); Checkpoint-Computer -Description 'Ducktimizer' -RestorePointType MODIFY_SETTINGS";
         try { Run("powershell.exe", $"-NoProfile -NonInteractive -Command \"{script}\"", true); reason = ""; return true; }
         catch (Exception ex) { reason = ex.Message; return false; }
     }
