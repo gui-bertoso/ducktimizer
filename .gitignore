@@ -17,3 +17,11 @@ work/
 
 # Legacy prototype (kept locally, not part of the Avalonia product)
 windows-optimizer/
+
+# Ducktimizer storefront
+ducktimizer-site/node_modules/
+ducktimizer-site/.next/
+ducktimizer-site/.vinext/
+ducktimizer-site/dist/
+ducktimizer-site/.wrangler/
+ducktimizer-site/.dev.vars
