@@ -17,8 +17,14 @@ if ($NotificationEmail -notmatch '^[^\s@]+@[^\s@]+\.[^\s@]+$') { throw 'Informe 
 $WebhookToken = ([Guid]::NewGuid().ToString('N') + [Guid]::NewGuid().ToString('N'))
 
 function Set-WorkerSecret([string]$Name, [string]$Value) {
-  $Value | npx wrangler secret put $Name --name $WorkerName
-  if ($LASTEXITCODE -ne 0) { throw "Falha ao salvar o segredo $Name no Cloudflare." }
+  $SecretFile = Join-Path ([IO.Path]::GetTempPath()) ("ducktimizer-secret-" + [Guid]::NewGuid().ToString('N') + '.json')
+  try {
+    [IO.File]::WriteAllText($SecretFile, (@{ $Name = $Value } | ConvertTo-Json -Compress), [Text.UTF8Encoding]::new($false))
+    npx wrangler secret bulk $SecretFile --name $WorkerName
+    if ($LASTEXITCODE -ne 0) { throw "Falha ao salvar o segredo $Name no Cloudflare." }
+  } finally {
+    if (Test-Path -LiteralPath $SecretFile) { Remove-Item -LiteralPath $SecretFile -Force }
+  }
 }
 
 Write-Host 'Salvando configurações seguras no Cloudflare...'
