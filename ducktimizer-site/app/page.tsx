@@ -1,9 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ArrowRight, Check, Cpu, Gauge, LockKeyhole, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowDown, ArrowRight, Check, Gauge, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+
+const adjustments = [
+  ['Visual limpo', 'Transparência, animações e efeitos que pesam na interface.'],
+  ['Modo gamer', 'Game Mode, capturas em segundo plano e ajustes voltados a jogos.'],
+  ['Alto desempenho', 'Plano de energia preparado para priorizar resposta.'],
+  ['Privacidade', 'Telemetria, histórico, anúncios e sugestões do Windows.'],
+  ['Debloat', 'Copilot, Widgets e aplicativos pré-instalados selecionados.'],
+  ['Segundo plano', 'Permissões e processos que continuam rodando sem necessidade.'],
+];
 
 export default function Home() {
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
@@ -12,65 +21,73 @@ export default function Home() {
   useEffect(() => { void fetch('/api/analytics/view', { method: 'POST', keepalive: true }); }, []);
 
   async function submit(formData: FormData) {
-    setState('sending');
-    setMessage('');
+    setState('sending'); setMessage('');
     const response = await fetch('/api/checkout', {
       method: 'POST', headers: { 'content-type': 'application/json' },
       body: JSON.stringify(Object.fromEntries(formData)),
     });
     const result = (await response.json()) as { message?: string; checkoutUrl?: string };
     if (response.ok && result.checkoutUrl) {
-      setState('done');
-      window.location.assign(result.checkoutUrl);
-      return;
+      setState('done'); window.location.assign(result.checkoutUrl); return;
     }
-    setMessage(result.message ?? 'Não foi possível iniciar o pagamento.');
-    setState('error');
+    setMessage(result.message ?? 'Não foi possível iniciar o pagamento.'); setState('error');
   }
 
-  return (
-    <main className="min-h-screen overflow-hidden bg-background text-foreground">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <a href="#top" className="flex items-center gap-3" aria-label="Ducktimizer, início"><Gauge className="size-7 text-sky-200" /><span className="text-lg font-semibold tracking-tight">Ducktimizer</span><span className="rounded-full border border-sky-200/20 bg-sky-200/10 px-2 py-0.5 text-[10px] font-bold tracking-widest text-sky-100">PRO</span></a>
-        <a href="#comprar" className="text-sm text-slate-300 transition hover:text-white">Comprar licença</a>
-      </nav>
-      <section id="top" className="relative mx-auto grid max-w-6xl gap-14 px-6 pb-24 pt-16 lg:grid-cols-[1.1fr_.9fr] lg:items-center lg:pt-24">
-        <div className="pointer-events-none absolute -left-52 -top-44 size-[500px] rounded-full bg-sky-300/10 blur-3xl" />
-        <div className="relative">
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-sky-200/15 bg-sky-200/5 px-3 py-1.5 text-xs text-sky-100"><Sparkles className="size-3.5" /> Windows rápido. Sem firula.</div>
-          <h1 className="max-w-3xl text-balance text-5xl font-semibold leading-[1.02] tracking-[-0.045em] sm:text-7xl">Menos peso no Windows. <span className="text-sky-200">Mais PC para você.</span></h1>
-          <p className="mt-7 max-w-xl text-lg leading-8 text-slate-300">Otimização em poucos cliques para jogos, privacidade e desempenho. Você escolhe o nível; o Ducktimizer cuida do resto.</p>
-          <div className="mt-9 flex flex-wrap gap-3"><Button className="h-12 rounded-xl bg-sky-100 px-6 text-slate-950 hover:bg-white" onClick={() => document.querySelector('#comprar')?.scrollIntoView({ behavior: 'smooth' })}>Quero otimizar meu PC <ArrowRight /></Button><div className="flex items-center gap-2 px-3 text-sm text-slate-400"><ShieldCheck className="size-4 text-emerald-300" /> Licença individual</div></div>
+  return <main className="min-h-screen bg-background text-foreground">
+    <header className="border-b border-white/10">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+        <a href="#inicio" className="flex items-center gap-2.5" aria-label="Ducktimizer, início"><Gauge className="size-6 text-sky-100"/><span className="font-semibold tracking-tight">Ducktimizer</span></a>
+        <div className="flex items-center gap-5 text-xs text-slate-400"><span className="hidden sm:inline">v3.2 · Windows 10/11</span><a href="#comprar" className="border-b border-sky-100/60 pb-0.5 text-sky-100">Comprar</a></div>
+      </div>
+    </header>
+
+    <section id="inicio" className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[.92fr_1.08fr] lg:items-center">
+      <div>
+        <p className="font-mono text-xs uppercase tracking-[.18em] text-sky-200">Otimizador para Windows</p>
+        <h1 className="mt-5 max-w-xl text-4xl font-semibold leading-[1.08] tracking-[-.035em] sm:text-6xl">Seu Windows.<br/>Só o necessário.</h1>
+        <p className="mt-6 max-w-lg text-base leading-7 text-slate-400 sm:text-lg">O Ducktimizer reúne ajustes de desempenho, jogos e privacidade em uma tela pequena. Você escolhe o que muda e pode restaurar depois.</p>
+        <div className="mt-8 flex flex-wrap items-center gap-4"><Button className="h-11 rounded-md bg-sky-100 px-5 text-slate-950 hover:bg-white" onClick={() => document.querySelector('#comprar')?.scrollIntoView({ behavior: 'smooth' })}>Comprar por R$ 39,90 <ArrowRight/></Button><a href="#ajustes" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white">Ver o que muda <ArrowDown className="size-4"/></a></div>
+        <p className="mt-7 text-xs leading-5 text-slate-600">Licença individual vinculada ao computador. Pagamento único.</p>
+      </div>
+
+      <div className="border border-white/15 bg-[#15191c] p-4 shadow-[0_20px_70px_rgba(0,0,0,.35)] sm:p-5">
+        <div className="mb-5 flex items-start justify-between border-b border-white/10 pb-4"><div><p className="font-semibold">Ducktimizer Pro</p><p className="mt-1 text-xs text-slate-500">Poucas coisas. Muita diferença.</p></div><Gauge className="size-7 text-sky-100"/></div>
+        <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2">
+          {['Visual limpo','Modo gamer','Alto desempenho','Privacidade','Debloat extremo','Apps em segundo plano'].map((item,index)=><div key={item} className="flex items-center justify-between bg-[#1a1f23] px-4 py-4"><span className="text-sm font-medium">{item}</span><span className={`h-5 w-9 rounded-full p-0.5 ${index<4?'bg-sky-400':'bg-slate-700'}`}><span className={`block size-4 rounded-full bg-white transition ${index<4?'translate-x-4':''}`}/></span></div>)}
         </div>
-        <div className="relative rounded-[28px] border border-white/10 bg-[#171b20] p-5 shadow-2xl shadow-sky-950/30">
-          <div className="mb-5 flex items-center justify-between"><div><p className="font-semibold">Ducktimizer Pro</p><p className="text-xs text-slate-500">Poucas coisas. Muita diferença.</p></div><Gauge className="size-8 text-sky-100" /></div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {['Visual limpo', 'Modo gamer', 'Alto desempenho', 'Privacidade', 'Debloat extremo', 'Apps em segundo plano'].map((item, index) => <div key={item} className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/[.035] px-4 py-4"><span className="text-sm font-medium">{item}</span><span className={`h-5 w-9 rounded-full p-0.5 ${index < 4 ? 'bg-sky-400' : 'bg-slate-700'}`}><span className={`block size-4 rounded-full bg-white ${index < 4 ? 'translate-x-4' : ''}`} /></span></div>)}
+        <div className="mt-4 flex items-center gap-3 border border-white/10 bg-[#1a1f23] px-4 py-3"><span className="size-2 rounded-full bg-emerald-300"/><div><p className="text-sm font-medium">Pronto para acelerar</p><p className="mt-0.5 text-xs text-slate-500">Backup local antes das alterações</p></div></div>
+      </div>
+    </section>
+
+    <section id="ajustes" className="border-y border-white/10 bg-[#13171a]">
+      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8 sm:py-20">
+        <div className="grid gap-8 lg:grid-cols-[.65fr_1.35fr]"><div><p className="font-mono text-xs uppercase tracking-[.18em] text-sky-200">O que ele faz</p><h2 className="mt-4 text-3xl font-semibold tracking-tight">Seis grupos.<br/>Sem menu infinito.</h2><p className="mt-4 max-w-sm leading-7 text-slate-500">Os presets marcam os grupos por você. Ainda assim, cada chave continua sob seu controle.</p></div><div className="border-t border-white/10">{adjustments.map(([title,description],index)=><div key={title} className="grid gap-2 border-b border-white/10 py-5 sm:grid-cols-[36px_190px_1fr]"><span className="font-mono text-xs text-slate-600">0{index+1}</span><h3 className="text-sm font-semibold">{title}</h3><p className="text-sm leading-6 text-slate-400">{description}</p></div>)}</div></div>
+      </div>
+    </section>
+
+    <section className="mx-auto grid max-w-6xl gap-10 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-2">
+      <div className="border-l-2 border-sky-200 pl-5"><RotateCcw className="size-6 text-sky-200"/><h2 className="mt-5 text-2xl font-semibold">Não gostou do Windows “no seco”?</h2><p className="mt-3 max-w-lg leading-7 text-slate-400">Use Restaurar para desfazer as configurações registradas pelo Ducktimizer. O app salva o estado local antes de aplicar os grupos selecionados.</p></div>
+      <div className="grid grid-cols-2 gap-px border border-white/10 bg-white/10 text-sm"><div className="bg-[#15191c] p-5"><p className="font-mono text-xs text-slate-600">01</p><p className="mt-7 font-medium">Escolha um preset</p></div><div className="bg-[#15191c] p-5"><p className="font-mono text-xs text-slate-600">02</p><p className="mt-7 font-medium">Revise os switches</p></div><div className="bg-[#15191c] p-5"><p className="font-mono text-xs text-slate-600">03</p><p className="mt-7 font-medium">Confirme o backup</p></div><div className="bg-[#15191c] p-5"><p className="font-mono text-xs text-slate-600">04</p><p className="mt-7 font-medium">Aplique e reinicie</p></div></div>
+    </section>
+
+    <section id="comprar" className="border-t border-white/10 bg-[#13171a]">
+      <div className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[.8fr_1.2fr]">
+        <div><p className="font-mono text-xs uppercase tracking-[.18em] text-sky-200">Ducktimizer Pro</p><p className="mt-5 text-5xl font-semibold tracking-tight">R$ 39,90</p><p className="mt-2 text-sm text-slate-500">pagamento único</p><ul className="mt-8 space-y-3 text-sm text-slate-300">{['Uma licença para um computador','Presets Low, Medium, High, Ultra e Debloat','Atualizações da linha 3.x','Suporte de ativação'].map(item=><li key={item} className="flex items-center gap-3"><Check className="size-4 text-sky-200"/>{item}</li>)}</ul></div>
+        <form action={submit} className="border border-white/15 bg-[#171b1f] p-6 sm:p-8">
+          <div className="flex items-start justify-between gap-4"><div><h2 className="text-xl font-semibold">Comprar licença</h2><p className="mt-2 max-w-lg text-sm leading-6 text-slate-400">Preencha os dados usados na ativação. O pagamento abre no checkout seguro do Asaas.</p></div><span className="font-mono text-[10px] uppercase tracking-wider text-slate-600">Etapa 1/2</span></div>
+          <div className="mt-7 grid gap-5 sm:grid-cols-2">
+            <label htmlFor="customer-name" className="space-y-2 text-sm"><span>Nome</span><Input id="customer-name" name="name" required minLength={2} maxLength={80} autoComplete="name" className="h-11 rounded-md border-white/15 bg-transparent"/></label>
+            <label htmlFor="customer-email" className="space-y-2 text-sm"><span>E-mail</span><Input id="customer-email" name="email" type="email" required maxLength={120} autoComplete="email" className="h-11 rounded-md border-white/15 bg-transparent"/></label>
+            <label htmlFor="device-id" className="space-y-2 text-sm sm:col-span-2"><span>Device ID</span><Input id="device-id" name="deviceId" required pattern="[A-Fa-f0-9-]{24,40}" maxLength={40} placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" className="h-11 rounded-md border-white/15 bg-transparent font-mono"/><small className="block text-xs leading-5 text-slate-600">Copie o código exibido na tela de ativação do aplicativo.</small></label>
+            <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true"/>
           </div>
-          <div className="mt-4 flex items-center gap-3 rounded-2xl border border-sky-200/20 bg-sky-200/[.04] p-4"><span className="size-2 rounded-full bg-emerald-300" /><div><p className="text-sm font-semibold">Pronto para acelerar</p><p className="text-xs text-slate-500">Backup local antes das alterações</p></div></div>
-        </div>
-      </section>
-      <section className="border-y border-white/8 bg-white/[.02]"><div className="mx-auto grid max-w-6xl gap-8 px-6 py-16 md:grid-cols-3">
-        <article><Cpu className="mb-5 size-7 text-sky-200" /><h2 className="text-lg font-semibold">Performance prática</h2><p className="mt-2 leading-7 text-slate-400">Presets diretos para reduzir efeitos, processos e recursos que você não usa.</p></article>
-        <article><LockKeyhole className="mb-5 size-7 text-sky-200" /><h2 className="text-lg font-semibold">Privacidade reforçada</h2><p className="mt-2 leading-7 text-slate-400">Reduz telemetria, anúncios, sugestões, Copilot, Recall e recursos de IA.</p></article>
-        <article><ShieldCheck className="mb-5 size-7 text-sky-200" /><h2 className="text-lg font-semibold">Controle para voltar</h2><p className="mt-2 leading-7 text-slate-400">Histórico local, backup de configurações e opção para desativar as otimizações.</p></article>
-      </div></section>
-      <section id="comprar" className="mx-auto grid max-w-6xl gap-12 px-6 py-24 lg:grid-cols-[.8fr_1.2fr] lg:items-start">
-        <div><p className="text-sm font-semibold uppercase tracking-[.2em] text-sky-200">Licença Pro</p><h2 className="mt-4 text-4xl font-semibold tracking-tight">Uma licença.<br />Um computador.</h2><p className="mt-5 text-slate-400">Oferta de lançamento: <span className="text-3xl font-semibold text-white">R$ 39,90</span> em pagamento único.</p><ul className="mt-8 space-y-3 text-sm text-slate-300">{['Ativação vinculada ao seu PC', 'Presets Low até Debloat Extremo', 'Atualizações da linha 3.x', 'Suporte para ativação'].map((item) => <li key={item} className="flex items-center gap-3"><Check className="size-4 text-emerald-300" />{item}</li>)}</ul></div>
-        <form action={submit} className="rounded-[26px] border border-white/10 bg-[#171b20] p-6 sm:p-8">
-          <h3 className="text-xl font-semibold">Comprar licença</h3><p className="mt-2 text-sm leading-6 text-slate-400">Informe seus dados e siga para o checkout seguro do Asaas. Após a confirmação, seu pedido fica pronto para emissão.</p>
-          <div className="mt-7 grid gap-4 sm:grid-cols-2">
-            <label htmlFor="customer-name" className="space-y-2 text-sm"><span>Seu nome</span><Input id="customer-name" name="name" required minLength={2} maxLength={80} placeholder="Como devemos chamar você?" className="h-11 border-white/10 bg-white/[.04]" /></label>
-            <label htmlFor="customer-email" className="space-y-2 text-sm"><span>E-mail</span><Input id="customer-email" name="email" type="email" required maxLength={120} placeholder="voce@email.com" className="h-11 border-white/10 bg-white/[.04]" /></label>
-            <label htmlFor="device-id" className="space-y-2 text-sm sm:col-span-2"><span>Device ID do Ducktimizer</span><Input id="device-id" name="deviceId" required pattern="[A-Fa-f0-9-]{24,40}" maxLength={40} placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX" className="h-11 border-white/10 bg-white/[.04] font-mono" /></label>
-            <input name="website" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
-          </div>
-          <Button type="submit" disabled={state === 'sending' || state === 'done'} className="mt-6 h-12 w-full rounded-xl bg-sky-100 text-slate-950 hover:bg-white">{state === 'sending' ? 'Abrindo pagamento…' : state === 'done' ? 'Redirecionando…' : 'Pagar com Pix ou cartão'} <ArrowRight /></Button>
-          {message && <output className={`mt-4 block text-sm ${state === 'error' ? 'text-red-300' : 'text-emerald-300'}`}>{message}</output>}
-          <p className="mt-4 text-xs leading-5 text-slate-500">Pagamento processado pelo Asaas. O Ducktimizer não recebe nem armazena os dados do seu cartão.</p>
+          <Button type="submit" disabled={state==='sending'||state==='done'} className="mt-6 h-12 w-full rounded-md bg-sky-100 text-slate-950 hover:bg-white">{state==='sending'?'Abrindo pagamento…':state==='done'?'Redirecionando…':'Ir para o pagamento'} <ArrowRight/></Button>
+          {message&&<output className={`mt-4 block text-sm ${state==='error'?'text-red-300':'text-emerald-300'}`}>{message}</output>}
+          <p className="mt-4 text-xs leading-5 text-slate-600">Pix e cartão são processados pelo Asaas. Não armazenamos dados do seu cartão.</p>
         </form>
-      </section>
-      <footer className="border-t border-white/8 px-6 py-8 text-center text-xs text-slate-500">© 2026 patoLizo · Ducktimizer Pro · Windows 10 e 11</footer>
-    </main>
-  );
+      </div>
+    </section>
+
+    <footer className="border-t border-white/10"><div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-7 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between sm:px-8"><span>© 2026 patoLizo</span><span>Ducktimizer Pro · Windows 10 e 11</span></div></footer>
+  </main>;
 }
