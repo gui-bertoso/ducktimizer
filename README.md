@@ -14,6 +14,9 @@ Otimizador compacto para Windows 10 e 11, criado por patoLizo em C# com Avalonia
 - Licença Pro assinada e vinculada ao dispositivo do cliente.
 - Modo Windows seco para remover suavização de fontes, sombras e efeitos.
 - Pesquisa enxuta sem Bing, destaques e sugestões online.
+- Mais de 100 ajustes de Registro com backup do valor anterior.
+- Modo gamer com movimento 1:1 do mouse e atalhos de acessibilidade desativados.
+- Sistema leve sem P2P de atualizações, atraso artificial de inicialização ou descoberta automática de pastas.
 
 ## Desenvolvimento
 

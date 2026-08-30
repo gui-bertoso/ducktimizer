@@ -169,7 +169,7 @@ public static class OptimizerEngine
         var changes = Changes(groups).ToList();
         var sample = new RunBackup { Groups = groups, Registry = [new RegBackup("HKCU", "Test", "Value", false, null, RegistryValueKind.DWord)] };
         var roundTrip = JsonSerializer.Deserialize<RunBackup>(JsonSerializer.Serialize(sample));
-        return changes.Count >= 70 && BloatwarePackages.Length >= 35 && changes.Select(x => (x.Hive, x.Path, x.Name)).Distinct().Count() == changes.Count
+        return changes.Count >= 105 && BloatwarePackages.Length >= 35 && changes.Select(x => (x.Hive, x.Path, x.Name)).Distinct().Count() == changes.Count
             && roundTrip?.Groups.Length == groups.Length;
     }
 
@@ -197,6 +197,12 @@ public static class OptimizerEngine
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "HistoricalCaptureEnabled", 0);
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "CursorCaptureEnabled", 0);
             yield return D("HKLM", @"Software\Policies\Microsoft\Windows\GameDVR", "AllowGameDVR", 0);
+            yield return S("HKCU", @"Control Panel\Mouse", "MouseSpeed", "0");
+            yield return S("HKCU", @"Control Panel\Mouse", "MouseThreshold1", "0");
+            yield return S("HKCU", @"Control Panel\Mouse", "MouseThreshold2", "0");
+            yield return S("HKCU", @"Control Panel\Accessibility\StickyKeys", "Flags", "0");
+            yield return S("HKCU", @"Control Panel\Accessibility\Keyboard Response", "Flags", "0");
+            yield return S("HKCU", @"Control Panel\Accessibility\ToggleKeys", "Flags", "0");
         }
         if (groups.Contains("privacy"))
         {
@@ -219,6 +225,14 @@ public static class OptimizerEngine
             yield return D("HKLM", @"Software\Policies\Microsoft\Windows\DataCollection", "DoNotShowFeedbackNotifications", 1);
             yield return D("HKLM", @"Software\Policies\Microsoft\Windows\AdvertisingInfo", "DisabledByGroupPolicy", 1);
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack", "ShowedToastAtLevel", 1);
+            yield return D("HKCU", @"Software\Policies\Microsoft\Windows\Windows Error Reporting", "Disabled", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\Windows Error Reporting", "Disabled", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\Windows Error Reporting", "DontSendAdditionalData", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\PCHealth\ErrorReporting", "DoReport", 0);
+            yield return D("HKLM", @"Software\Microsoft\PolicyManager\default\System\AllowExperimentation", "Value", 0);
+            yield return S("HKCU", @"Environment", "DOTNET_CLI_TELEMETRY_OPTOUT", "1");
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement", "ScoobeSystemSettingEnabled", 0);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\DeliveryOptimization", "DODownloadMode", 0);
         }
         if (groups.Contains("dry"))
         {
@@ -235,6 +249,11 @@ public static class OptimizerEngine
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\MenuAnimation", "DefaultApplied", 0);
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\SelectionFade", "DefaultApplied", 0);
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\TooltipAnimation", "DefaultApplied", 0);
+            yield return S("HKCU", @"Software\Classes\Local Settings\Software\Microsoft\Windows\Shell\Bags\AllFolders\Shell", "FolderType", "NotSpecified");
+            yield return D("HKCU", @"Software\Microsoft\Lighting", "AmbientLightingEnabled", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize", "StartupDelayInMSec", 0);
+            yield return D("HKLM", @"System\CurrentControlSet\Control\FileSystem", "LongPathsEnabled", 1);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced\TaskbarDeveloperSettings", "TaskbarEndTask", 1);
         }
         if (groups.Contains("search"))
         {
@@ -283,7 +302,11 @@ public static class OptimizerEngine
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "TaskbarMn", 0);
         }
         if (groups.Contains("background"))
+        {
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications", "GlobalUserDisabled", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\AppPrivacy", "LetAppsRunInBackground", 2);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Search", "BackgroundAppGlobalToggle", 0);
+        }
     }
 
     private static RegChange D(string h, string p, string n, int v) => new(h, p, n, v.ToString(), RegistryValueKind.DWord);

@@ -14,7 +14,7 @@ const adjustments = [
   ['Windows seco', 'Suavização de fontes, sombras e efeitos visuais reduzidos ao mínimo.'],
   ['Pesquisa enxuta', 'Bing, destaques, histórico e sugestões online desativados.'],
   ['Debloat', 'Copilot, Widgets e aplicativos pré-instalados selecionados.'],
-  ['Segundo plano', 'Permissões e processos que continuam rodando sem necessidade.'],
+  ['Sistema leve', 'Apps em segundo plano, P2P de updates e atrasos desnecessários.'],
 ];
 
 export default function Home() {
@@ -56,7 +56,7 @@ export default function Home() {
       <div className="border border-white/15 bg-[#15191c] p-4 shadow-[0_20px_70px_rgba(0,0,0,.35)] sm:p-5">
         <div className="mb-5 flex items-start justify-between border-b border-white/10 pb-4"><div><p className="font-semibold">Ducktimizer Pro</p><p className="mt-1 text-xs text-slate-500">Poucas coisas. Muita diferença.</p></div><Gauge className="size-7 text-sky-100"/></div>
         <div className="grid gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2">
-          {['Visual limpo','Modo gamer','Alto desempenho','Privacidade','Windows seco','Pesquisa enxuta','Debloat extremo','Apps em segundo plano'].map((item,index)=><div key={item} className="flex items-center justify-between bg-[#1a1f23] px-4 py-4"><span className="text-sm font-medium">{item}</span><span className={`h-5 w-9 rounded-full p-0.5 ${index<6?'bg-sky-400':'bg-slate-700'}`}><span className={`block size-4 rounded-full bg-white transition ${index<6?'translate-x-4':''}`}/></span></div>)}
+          {['Visual limpo','Modo gamer','Alto desempenho','Privacidade','Windows seco','Pesquisa enxuta','Debloat extremo','Sistema leve'].map((item,index)=><div key={item} className="flex items-center justify-between bg-[#1a1f23] px-4 py-4"><span className="text-sm font-medium">{item}</span><span className={`h-5 w-9 rounded-full p-0.5 ${index<6?'bg-sky-400':'bg-slate-700'}`}><span className={`block size-4 rounded-full bg-white transition ${index<6?'translate-x-4':''}`}/></span></div>)}
         </div>
         <div className="mt-4 flex items-center gap-3 border border-white/10 bg-[#1a1f23] px-4 py-3"><span className="size-2 rounded-full bg-emerald-300"/><div><p className="text-sm font-medium">Pronto para acelerar</p><p className="mt-0.5 text-xs text-slate-500">Backup local antes das alterações</p></div></div>
       </div>
