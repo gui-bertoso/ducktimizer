@@ -12,7 +12,7 @@ O instalador fica em um bucket R2 privado. O e-mail leva um link assinado; ele n
 
 1. Na Resend, verifique o domínio que será usado no remetente.
 2. Crie uma API Key com permissão de envio.
-3. Abra o PowerShell nesta pasta e execute `./setup-delivery.ps1`.
+3. Abra o PowerShell nesta pasta e execute `./setup-ducktimizer.ps1`.
 4. Cole a chave e informe o remetente, por exemplo `Ducktimizer <vendas@seudominio.com>`.
 5. Faça o deploy e conclua uma compra no Sandbox do Asaas.
 

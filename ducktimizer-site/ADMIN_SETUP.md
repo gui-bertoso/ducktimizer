@@ -5,9 +5,8 @@ O painel fica em `/admin` e mostra pedidos, pagamentos, licenças e acessos dos 
 ## Ativação
 
 1. Abra o PowerShell na pasta `ducktimizer-site`.
-2. Execute `./setup-admin.ps1`.
-3. Crie uma senha com pelo menos 12 caracteres.
-4. Confirme o caminho da chave privada do kit do vendedor.
+2. Execute `./setup-ducktimizer.ps1`.
+3. Preencha o assistente único; ele configura painel, Asaas e entrega.
 
 O script salva no Cloudflare, como segredos criptografados do Worker:
 

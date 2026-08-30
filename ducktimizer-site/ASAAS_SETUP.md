@@ -6,8 +6,8 @@ O site já contém checkout por Pix/cartão, webhook autenticado e conciliação
 
 1. Gere uma API Key na conta Sandbox ou Produção do Asaas.
 2. Abra o PowerShell nesta pasta.
-3. Execute `./setup-asaas.ps1`.
-4. Cole a API Key, escolha o ambiente e informe seu e-mail de alertas.
+3. Execute `./setup-ducktimizer.ps1`.
+4. Cole as credenciais solicitadas pelo assistente único.
 
 O configurador cria automaticamente um token de webhook forte, salva os segredos no Worker `fluffy-octo-palm-tree` e cadastra estes eventos no Asaas:
 
