@@ -1,0 +1,15 @@
+DUCKTIMIZER PRO — AVISO DE INSTALAÇÃO E LICENÇA
+
+Leia antes de instalar.
+
+1. Esta instalação coloca o Ducktimizer Pro em Arquivos de Programas e cria um desinstalador do Windows. Use o desinstalador em Configurações > Aplicativos para remover o produto corretamente.
+
+2. A licença é individual, intransferível e vinculada ao Device ID do computador informado na compra. A chave não funcionará em outro dispositivo.
+
+3. Formatação, troca relevante de hardware ou substituição do computador pode alterar o Device ID. Uma eventual reativação depende de análise pelo suporte e não é automática.
+
+4. O aplicativo solicita privilégios de administrador e altera configurações do Windows. O usuário deve ler os Termos de Uso exibidos no aplicativo antes de continuar.
+
+5. Não compartilhe a licença, o instalador recebido ou cópias ativadas do programa. Não tente contornar o mecanismo de ativação.
+
+Ao prosseguir com a instalação, você confirma que compreendeu o vínculo da licença ao dispositivo e concorda com os Termos de Uso disponíveis no site do Ducktimizer.

@@ -15,6 +15,9 @@ export async function POST(request: Request) {
     const name = body.name?.trim();
     const email = body.email?.trim().toLowerCase();
     const deviceId = body.deviceId?.trim().toUpperCase();
+    if (body.legalAccepted !== 'yes') {
+      return Response.json({ message: 'Aceite os Termos de Uso e a Política de Privacidade para continuar.' }, { status: 400 });
+    }
     if (!name || name.length < 2 || name.length > 80 || !emailPattern.test(email) || email.length > 120 || !devicePattern.test(deviceId)) {
       return Response.json({ message: 'Revise o nome, e-mail e Device ID.' }, { status: 400 });
     }

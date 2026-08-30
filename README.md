@@ -4,7 +4,7 @@ Otimizador compacto para Windows 10 e 11, criado por patoLizo em C# com Avalonia
 
 ## Recursos
 
-- Presets Low, Medium, High, Ultra e Debloat.
+- Presets Low, Medium, High, Ultra e Debloat, com oito grupos revisáveis.
 - Ajustes visuais, modo gamer e plano de alto desempenho.
 - Redução de telemetria, anúncios e sugestões do Windows.
 - Bloqueio de Copilot, Recall, Click-to-Do, Widgets e Bing na pesquisa.
@@ -12,6 +12,8 @@ Otimizador compacto para Windows 10 e 11, criado por patoLizo em C# com Avalonia
 - Backup local das configurações e comando para desativar otimizações.
 - Solicitação de administrador imediatamente na abertura.
 - Licença Pro assinada e vinculada ao dispositivo do cliente.
+- Modo Windows seco para remover suavização de fontes, sombras e efeitos.
+- Pesquisa enxuta sem Bing, destaques e sugestões online.
 
 ## Desenvolvimento
 
@@ -27,6 +29,14 @@ Para gerar um executável único de 64 bits:
 ```powershell
 dotnet publish .\PatoLizoOptimizer.Avalonia\PatoLizoOptimizer.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
 ```
+
+Para gerar o executável e o instalador comercial (requer .NET 10 SDK e Inno Setup 6):
+
+```powershell
+.\build-release.ps1
+```
+
+O instalador é criado em `outputs\installer`, instala em Arquivos de Programas, cria o desinstalador do Windows e exibe o aviso de que a licença fica vinculada ao Device ID.
 
 ## Aviso
 

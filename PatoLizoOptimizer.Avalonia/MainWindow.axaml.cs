@@ -29,7 +29,9 @@ public partial class MainWindow : Window
         VisualSwitch.IsChecked = !debloatOnly;
         GamingSwitch.IsChecked = !debloatOnly && level >= 1;
         PowerSwitch.IsChecked = !debloatOnly && level >= 1;
-        PrivacySwitch.IsChecked = !debloatOnly && level >= 2;
+        PrivacySwitch.IsChecked = level >= 2;
+        DrySwitch.IsChecked = !debloatOnly && level >= 3;
+        SearchSwitch.IsChecked = level >= 2;
         DebloatSwitch.IsChecked = debloatOnly || level == 3;
         BackgroundSwitch.IsChecked = debloatOnly || level == 3;
     }
@@ -59,7 +61,8 @@ public partial class MainWindow : Window
             if (await RunElevated("--undo-all"))
             {
                 VisualSwitch.IsChecked = GamingSwitch.IsChecked = PowerSwitch.IsChecked = false;
-                PrivacySwitch.IsChecked = DebloatSwitch.IsChecked = BackgroundSwitch.IsChecked = false;
+                PrivacySwitch.IsChecked = DrySwitch.IsChecked = SearchSwitch.IsChecked = false;
+                DebloatSwitch.IsChecked = BackgroundSwitch.IsChecked = false;
                 UpdateState();
             }
         }
@@ -73,6 +76,8 @@ public partial class MainWindow : Window
         if (GamingSwitch.IsChecked == true) result.Add("gaming");
         if (PowerSwitch.IsChecked == true) result.Add("power");
         if (PrivacySwitch.IsChecked == true) result.Add("privacy");
+        if (DrySwitch.IsChecked == true) result.Add("dry");
+        if (SearchSwitch.IsChecked == true) result.Add("search");
         if (DebloatSwitch.IsChecked == true) result.Add("debloat");
         if (BackgroundSwitch.IsChecked == true) result.Add("background");
         return result;
@@ -157,7 +162,7 @@ public partial class MainWindow : Window
     private async Task EnsureTerms()
     {
         var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ducktimizer");
-        var acceptedFile = Path.Combine(folder, "terms-v3.1.accepted");
+        var acceptedFile = Path.Combine(folder, "terms-v3.3.accepted");
         if (File.Exists(acceptedFile)) return;
         var accepted = false;
         var dialog = new Window { Title = "Termos de uso", Width = 620, Height = 470, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
@@ -168,10 +173,10 @@ public partial class MainWindow : Window
         accept.Click += (_, _) => { accepted = true; dialog.Close(); };
         exit.Click += (_, _) => dialog.Close();
         var heading = new TextBlock { Text = "Antes de otimizar", FontSize = 24, FontWeight = Avalonia.Media.FontWeight.Bold };
-        var termsText = "TERMOS DE USO E CIÊNCIA DE RISCO — v3.0\n\n" +
+        var termsText = "TERMOS DE USO E CIÊNCIA DE RISCO — v3.3\n\n" +
             "1. FINALIDADE. O Ducktimizer modifica configurações do Windows com o objetivo de reduzir recursos em segundo plano, efeitos visuais, telemetria e aplicativos pré-instalados. Não existe garantia de aumento de FPS, redução de latência ou melhoria específica.\n\n" +
             "2. ADMINISTRADOR. O programa exige privilégios de administrador desde a abertura. Ao aceitar o aviso do Windows, você autoriza alterações no Registro, políticas locais, plano de energia e pacotes de aplicativos deste computador.\n\n" +
-            "3. DEBLOAT EXTREMO. Esse modo desinstala aplicativos empacotados para usuários atuais e remove seu provisionamento para novos usuários. Isso pode incluir Copilot, componentes de IA, Clipchamp, Teams, apps Bing, publicidade e aplicativos patrocinados. Edge, Microsoft Store, Windows Update, Defender, Firewall e serviços críticos não são removidos.\n\n" +
+            "3. MODOS AGRESSIVOS. Windows seco desativa suavização de fontes, sombras, transparência e efeitos para priorizar uma interface mínima. Pesquisa enxuta remove Bing, destaques e sugestões. Debloat Extremo desinstala aplicativos empacotados e remove seu provisionamento. Edge, Microsoft Store, Windows Update, Defender, Firewall e serviços críticos não são removidos.\n\n" +
             "4. BACKUP E RESTAURAÇÃO. O programa tenta criar um ponto de restauração e registra o estado anterior das configurações. A restauração de Registro e energia é automatizada. A reinstalação de aplicativos removidos não é garantida, pois depende de os arquivos ou pacotes continuarem disponíveis no Windows ou na Microsoft Store.\n\n" +
             "5. EFEITOS POSSÍVEIS. As mudanças podem alterar aparência, notificações, pesquisa, recursos de IA, sincronização, consumo de energia, compatibilidade de aplicativos e comportamento após atualizações do Windows. Algumas alterações exigem reinicialização.\n\n" +
             "6. RESPONSABILIDADE DO USUÁRIO. Use somente em computadores próprios ou autorizados, salve arquivos importantes e revise os grupos selecionados antes de confirmar. O usuário assume a responsabilidade pela escolha dos presets e pelas consequências das mudanças.\n\n" +
@@ -185,6 +190,6 @@ public partial class MainWindow : Window
         await dialog.ShowDialog(this);
         if (!accepted) { Close(); return; }
         Directory.CreateDirectory(folder);
-        File.WriteAllText(acceptedFile, "accepted-v3.1");
+        File.WriteAllText(acceptedFile, "accepted-v3.3");
     }
 }

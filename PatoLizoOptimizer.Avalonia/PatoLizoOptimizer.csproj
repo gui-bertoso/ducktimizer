@@ -6,7 +6,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
     <AssemblyName>Ducktimizer</AssemblyName>
-    <Version>3.2.0</Version>
+    <Version>3.3.0</Version>
     <Product>Ducktimizer</Product>
     <Company>patoLizo</Company>
   </PropertyGroup>

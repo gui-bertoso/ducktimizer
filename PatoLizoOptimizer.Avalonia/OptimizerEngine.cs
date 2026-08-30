@@ -134,11 +134,11 @@ public static class OptimizerEngine
 
     public static bool SelfTest()
     {
-        var groups = new[] { "visual", "gaming", "power", "privacy", "debloat", "background" };
+        var groups = new[] { "visual", "gaming", "power", "privacy", "dry", "search", "debloat", "background" };
         var changes = Changes(groups).ToList();
         var sample = new RunBackup { Groups = groups, Registry = [new RegBackup("HKCU", "Test", "Value", false, null, RegistryValueKind.DWord)] };
         var roundTrip = JsonSerializer.Deserialize<RunBackup>(JsonSerializer.Serialize(sample));
-        return changes.Count >= 45 && BloatwarePackages.Length >= 25 && changes.Select(x => (x.Hive, x.Path, x.Name)).Distinct().Count() == changes.Count
+        return changes.Count >= 70 && BloatwarePackages.Length >= 35 && changes.Select(x => (x.Hive, x.Path, x.Name)).Distinct().Count() == changes.Count
             && roundTrip?.Groups.Length == groups.Length;
     }
 
@@ -152,6 +152,9 @@ public static class OptimizerEngine
             yield return S("HKCU", @"Control Panel\Desktop\WindowMetrics", "MinAnimate", "0");
             yield return S("HKCU", @"Control Panel\Desktop", "MenuShowDelay", "0");
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "TaskbarAnimations", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\DWM", "EnableAeroPeek", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\DWM", "AlwaysHibernateThumbnails", 0);
+            yield return S("HKCU", @"Control Panel\Desktop", "DragFullWindows", "0");
         }
         if (groups.Contains("gaming"))
         {
@@ -159,6 +162,10 @@ public static class OptimizerEngine
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "AppCaptureEnabled", 0);
             yield return D("HKCU", @"Software\Microsoft\GameBar", "AutoGameModeEnabled", 1);
             yield return D("HKCU", @"Software\Microsoft\GameBar", "AllowAutoGameMode", 1);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "AudioCaptureEnabled", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "HistoricalCaptureEnabled", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "CursorCaptureEnabled", 0);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\GameDVR", "AllowGameDVR", 0);
         }
         if (groups.Contains("privacy"))
         {
@@ -177,6 +184,36 @@ public static class OptimizerEngine
             yield return D("HKLM", @"Software\Policies\Microsoft\Windows\System", "UploadUserActivities", 0);
             yield return D("HKLM", @"Software\Policies\Microsoft\Edge", "PersonalizationReportingEnabled", 0);
             yield return D("HKLM", @"Software\Policies\Microsoft\Edge", "DiagnosticData", 0);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\CloudContent", "DisableTailoredExperiencesWithDiagnosticData", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\DataCollection", "DoNotShowFeedbackNotifications", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\AdvertisingInfo", "DisabledByGroupPolicy", 1);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack", "ShowedToastAtLevel", 1);
+        }
+        if (groups.Contains("dry"))
+        {
+            yield return S("HKCU", @"Control Panel\Desktop", "FontSmoothing", "0");
+            yield return S("HKCU", @"Control Panel\Desktop", "FontSmoothingType", "1");
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ListviewAlphaSelect", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "ListviewShadow", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "DisablePreviewDesktop", 1);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\AnimateMinMax", "DefaultApplied", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\ComboBoxAnimation", "DefaultApplied", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\CursorShadow", "DefaultApplied", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\DropShadow", "DefaultApplied", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\ListBoxSmoothScrolling", "DefaultApplied", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\MenuAnimation", "DefaultApplied", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\SelectionFade", "DefaultApplied", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects\TooltipAnimation", "DefaultApplied", 0);
+        }
+        if (groups.Contains("search"))
+        {
+            yield return D("HKCU", @"Software\Policies\Microsoft\Windows\Explorer", "DisableSearchBoxSuggestions", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\Windows Search", "AllowCortana", 0);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\Windows Search", "DisableWebSearch", 1);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Search", "BingSearchEnabled", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\SearchSettings", "IsDynamicSearchBoxEnabled", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\SearchSettings", "IsDeviceSearchHistoryEnabled", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\SearchSettings", "SafeSearchMode", 0);
         }
         if (groups.Contains("debloat"))
         {
@@ -200,8 +237,6 @@ public static class OptimizerEngine
             yield return D("HKLM", @"Software\Policies\Microsoft\Windows\WindowsAI", "TurnOffSavingSnapshots", 1);
             yield return D("HKCU", @"Software\Policies\Microsoft\Windows\WindowsAI", "DisableClickToDo", 1);
             yield return D("HKLM", @"Software\Policies\Microsoft\Windows\WindowsAI", "DisableClickToDo", 1);
-            yield return D("HKCU", @"Software\Policies\Microsoft\Windows\Explorer", "DisableSearchBoxSuggestions", 1);
-            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\Windows Search", "AllowCortana", 0);
             yield return D("HKLM", @"Software\Policies\Microsoft\Edge", "StartupBoostEnabled", 0);
             yield return D("HKLM", @"Software\Policies\Microsoft\Edge", "BackgroundModeEnabled", 0);
             yield return D("HKLM", @"Software\Policies\Microsoft\Edge", "HubsSidebarEnabled", 0);
@@ -209,6 +244,12 @@ public static class OptimizerEngine
             yield return D("HKLM", @"Software\Policies\Microsoft\Edge", "NewTabPageContentEnabled", 0);
             yield return D("HKLM", @"Software\Policies\Microsoft\Edge", "EdgeShoppingAssistantEnabled", 0);
             yield return D("HKLM", @"Software\Policies\Microsoft\Edge", "ShowRecommendationsEnabled", 0);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\CloudContent", "DisableWindowsConsumerFeatures", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\CloudContent", "DisableConsumerAccountStateContent", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Windows\CloudContent", "DisableCloudOptimizedContent", 1);
+            yield return D("HKLM", @"Software\Policies\Microsoft\Dsh", "AllowWidgets", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "TaskbarDa", 0);
+            yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", "TaskbarMn", 0);
         }
         if (groups.Contains("background"))
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\BackgroundAccessApplications", "GlobalUserDisabled", 1);
@@ -264,13 +305,13 @@ public static class OptimizerEngine
         "Clipchamp.Clipchamp", "Microsoft.3DBuilder", "Microsoft.549981C3F5F10",
         "Microsoft.BingFinance", "Microsoft.BingFoodAndDrink", "Microsoft.BingHealthAndFitness",
         "Microsoft.BingNews", "Microsoft.BingSports", "Microsoft.BingTranslator", "Microsoft.BingTravel",
-        "Microsoft.BingWeather", "Microsoft.Windows.AIHub", "Microsoft.Getstarted", "Microsoft.Messaging",
+        "Microsoft.BingWeather", "Microsoft.Windows.AIHub", "Microsoft.Copilot", "Microsoft.GetHelp", "Microsoft.Getstarted", "Microsoft.Messaging",
         "Microsoft.Microsoft3DViewer", "Microsoft.MicrosoftJournal", "Microsoft.MicrosoftOfficeHub",
         "Microsoft.MicrosoftPowerBIForWindows", "Microsoft.MicrosoftSolitaireCollection", "Microsoft.MixedReality.Portal",
         "Microsoft.NetworkSpeedTest", "Microsoft.News", "Microsoft.Office.Sway", "Microsoft.OneConnect",
         "Microsoft.Print3D", "Microsoft.PowerAutomateDesktop", "Microsoft.SkypeApp", "Microsoft.Todos",
         "Microsoft.Windows.DevHome", "Microsoft.WindowsFeedbackHub", "Microsoft.WindowsMaps", "Microsoft.XboxApp",
-        "Microsoft.ZuneVideo", "MicrosoftCorporationII.MicrosoftFamily", "MicrosoftTeams", "MSTeams",
+        "Microsoft.ZuneMusic", "Microsoft.ZuneVideo", "MicrosoftCorporationII.MicrosoftFamily", "MicrosoftTeams", "MSTeams",
         "king.com.CandyCrushSaga", "king.com.CandyCrushSodaSaga", "SpotifyAB.SpotifyMusic",
         "BytedancePte.Ltd.TikTok", "Facebook.Instagram"
     ];
