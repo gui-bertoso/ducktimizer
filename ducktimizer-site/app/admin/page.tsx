@@ -24,6 +24,10 @@ type Order = {
   checkoutId?: string;
   createdAt: number;
   paidAt?: number;
+  deliveredAt?: number;
+  deliveryError?: string;
+  downloadCount?: number;
+  maxDownloads?: number;
 };
 type Overview = {
   totals: {
@@ -233,6 +237,7 @@ export default function AdminPage() {
                     <th className="px-5 py-3">Cliente</th>
                     <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3">Device ID</th>
+                    <th className="px-4 py-3">Entrega</th>
                     <th className="px-5 py-3">
                       <span className="sr-only">Ações</span>
                     </th>
@@ -252,6 +257,25 @@ export default function AdminPage() {
                       </td>
                       <td className="px-4 py-4 font-mono text-xs text-slate-400">
                         {order.deviceId}
+                      </td>
+                      <td className="px-4 py-4 text-xs">
+                        {order.deliveredAt ? (
+                          <span className="text-emerald-300">
+                            E-mail enviado · {order.downloadCount ?? 0}/
+                            {order.maxDownloads ?? 5}
+                          </span>
+                        ) : order.deliveryError ? (
+                          <span
+                            className="text-red-300"
+                            title={order.deliveryError}
+                          >
+                            Falha no envio
+                          </span>
+                        ) : order.status === 'paid' ? (
+                          <span className="text-amber-300">Processando</span>
+                        ) : (
+                          <span className="text-slate-600">—</span>
+                        )}
                       </td>
                       <td className="px-5 py-4 text-right">
                         <Button

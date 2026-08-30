@@ -13,13 +13,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://fluffy-octo-palm-tree.guilhermedasilvabertoso.workers.dev'),
+  metadataBase: new URL(
+    'https://fluffy-octo-palm-tree.guilhermedasilvabertoso.workers.dev',
+  ),
   title: 'Ducktimizer Pro — Windows rápido. Sem firula.',
-  description: 'Otimize desempenho, jogos e privacidade do Windows em poucos cliques.',
+  description:
+    'Otimize desempenho, jogos e privacidade do Windows em poucos cliques.',
   applicationName: 'Ducktimizer Pro',
   robots: { index: true, follow: true },
   alternates: { canonical: '/' },
-  openGraph: { title: 'Ducktimizer Pro', description: 'Seu Windows. Só o necessário.', type: 'website', locale: 'pt_BR' },
+  openGraph: {
+    title: 'Ducktimizer Pro',
+    description: 'Seu Windows. Só o necessário.',
+    type: 'website',
+    locale: 'pt_BR',
+  },
 };
 
 export default function RootLayout({

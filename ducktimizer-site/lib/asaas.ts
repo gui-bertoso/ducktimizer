@@ -47,20 +47,27 @@ export async function createAsaasCheckout(input: {
         cancelUrl: `${input.siteUrl}/pagamento/cancelado`,
         expiredUrl: `${input.siteUrl}/pagamento/expirado`,
       },
-      items: [{
-        externalReference: 'ducktimizer-pro',
-        name: 'Ducktimizer Pro',
-        description: 'Licença permanente individual vinculada a um computador',
-        quantity: 1,
-        value: Number(env.DUCKTIMIZER_PRICE || '17.50'),
-      }],
+      items: [
+        {
+          externalReference: 'ducktimizer-pro',
+          name: 'Ducktimizer Pro',
+          description:
+            'Licença permanente individual vinculada a um computador',
+          quantity: 1,
+          value: Number(env.DUCKTIMIZER_PRICE || '17.50'),
+        },
+      ],
       customerData: { name: input.name, email: input.email },
     }),
   });
 
-  const result = await response.json() as CheckoutResponse;
+  const result = (await response.json()) as CheckoutResponse;
   if (!response.ok || !result.id) {
-    const detail = result.errors?.map((error) => error.description).filter(Boolean).join(' ') || 'Falha ao criar checkout.';
+    const detail =
+      result.errors
+        ?.map((error) => error.description)
+        .filter(Boolean)
+        .join(' ') || 'Falha ao criar checkout.';
     throw new Error(detail);
   }
 
@@ -79,6 +86,7 @@ export async function matchesWebhookToken(received: string | null) {
   const expected = new Uint8Array(expectedHash);
   const actual = new Uint8Array(receivedHash);
   let difference = expected.length ^ actual.length;
-  for (let index = 0; index < Math.min(expected.length, actual.length); index++) difference |= expected[index] ^ actual[index];
+  for (let index = 0; index < Math.min(expected.length, actual.length); index++)
+    difference |= expected[index] ^ actual[index];
   return difference === 0;
 }

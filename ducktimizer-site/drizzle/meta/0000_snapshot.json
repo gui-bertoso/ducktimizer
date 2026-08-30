@@ -60,16 +60,12 @@
       "indexes": {
         "idx_licenses_order": {
           "name": "idx_licenses_order",
-          "columns": [
-            "order_id"
-          ],
+          "columns": ["order_id"],
           "isUnique": true
         },
         "idx_licenses_token": {
           "name": "idx_licenses_token",
-          "columns": [
-            "license_token"
-          ],
+          "columns": ["license_token"],
           "isUnique": true
         }
       },
@@ -78,12 +74,8 @@
           "name": "licenses_order_id_orders_id_fk",
           "tableFrom": "licenses",
           "tableTo": "orders",
-          "columnsFrom": [
-            "order_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["order_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -149,10 +141,7 @@
       "indexes": {
         "idx_orders_device_email": {
           "name": "idx_orders_device_email",
-          "columns": [
-            "device_id",
-            "email"
-          ],
+          "columns": ["device_id", "email"],
           "isUnique": true
         }
       },
