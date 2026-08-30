@@ -2,7 +2,7 @@ import { sites } from '@openai/sites-vite-plugin';
 import tailwindcss from '@tailwindcss/postcss';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
-import hostingConfig from './.openai/hosting.json';
+import hostingConfig from './.openai/hosting.json' with { type: 'json' };
 
 const DUCKTIMIZER_DATABASE_ID = '2137b2fb-07f7-4462-acf6-74487c814dfb';
 

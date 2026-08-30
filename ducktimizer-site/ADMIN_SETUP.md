@@ -21,5 +21,5 @@ A chave privada nunca é enviada ao navegador e não entra no Git. Guarde també
 
 - Use **Gerar** em um pedido pago para vinculá-lo automaticamente.
 - Use o formulário vazio para criar licenças manuais de teste.
-- Escolha uma validade entre 1 e 3650 dias ou marque **Licença vitalícia**.
+- Compras confirmadas geram licença permanente. Para testes manuais, escolha uma validade ou marque **Licença permanente**.
 - A chave gerada aparece uma vez no resultado para ser copiada.

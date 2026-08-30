@@ -3,11 +3,15 @@ import { getDb } from '@/db';
 import { licenses, orders } from '@/db/schema';
 import { isAdmin, unauthorized } from '@/lib/admin-auth';
 import { issueLicense } from '@/lib/license-signing';
+import { hasSameOrigin, rateLimited, rateLimitResponse, requestTooLarge } from '@/lib/security';
 
 const devicePattern = /^(?:[A-F0-9]{4}-){5}[A-F0-9]{4}$/;
 
 export async function POST(request: Request) {
+  if (!hasSameOrigin(request)) return Response.json({ message: 'Origem inválida.' }, { status: 403 });
   if (!await isAdmin(request)) return unauthorized();
+  if (requestTooLarge(request, 8_192)) return Response.json({ message: 'Solicitação muito grande.' }, { status: 413 });
+  if (await rateLimited(request, 'admin-license', 30, 300)) return rateLimitResponse();
   try {
     const body = await request.json() as { orderId?: string; customer?: string; deviceId?: string; days?: number | null };
     let customer = body.customer?.trim();
@@ -18,6 +22,7 @@ export async function POST(request: Request) {
     if (orderId) {
       const order = await db.select().from(orders).where(eq(orders.id, orderId)).limit(1);
       if (!order.length) return Response.json({ message: 'Pedido não encontrado.' }, { status: 404 });
+      if (order[0].status !== 'paid') return Response.json({ message: 'A licença automática exige um pedido confirmado como pago.' }, { status: 409 });
       customer = order[0].name;
       deviceId = order[0].deviceId;
     }
@@ -47,7 +52,7 @@ export async function POST(request: Request) {
       licenseToken: issued.token, expiresAt: issued.expires, createdAt: new Date(),
     });
     await db.update(orders).set({ status: 'licensed', updatedAt: new Date() }).where(eq(orders.id, orderId));
-    return Response.json({ token: issued.token, expiresAt: issued.expires.toISOString(), orderId });
+    return Response.json({ token: issued.token, expiresAt: issued.expires.toISOString(), orderId }, { headers: { 'cache-control': 'no-store' } });
   } catch (error) {
     console.error('license_issue_failed', error instanceof Error ? error.message : 'unknown');
     return Response.json({ message: 'Não foi possível gerar a licença. Verifique a chave privada configurada.' }, { status: 500 });

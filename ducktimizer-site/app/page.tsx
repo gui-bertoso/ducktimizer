@@ -49,8 +49,8 @@ export default function Home() {
         <p className="font-mono text-xs uppercase tracking-[.18em] text-sky-200">Otimizador para Windows</p>
         <h1 className="mt-5 max-w-xl text-4xl font-semibold leading-[1.08] tracking-[-.035em] sm:text-6xl">Seu Windows.<br/>Só o necessário.</h1>
         <p className="mt-6 max-w-lg text-base leading-7 text-slate-400 sm:text-lg">O Ducktimizer reúne ajustes de desempenho, jogos e privacidade em uma tela pequena. Você escolhe o que muda e pode restaurar depois.</p>
-        <div className="mt-8 flex flex-wrap items-center gap-4"><Button className="h-11 rounded-md bg-sky-100 px-5 text-slate-950 hover:bg-white" onClick={() => document.querySelector('#comprar')?.scrollIntoView({ behavior: 'smooth' })}>Comprar por R$ 39,90 <ArrowRight/></Button><a href="#ajustes" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white">Ver o que muda <ArrowDown className="size-4"/></a></div>
-        <p className="mt-7 text-xs leading-5 text-slate-600">Licença individual vinculada ao computador. Pagamento único.</p>
+        <div className="mt-8 flex flex-wrap items-center gap-4"><Button className="h-11 rounded-md bg-sky-100 px-5 text-slate-950 hover:bg-white" onClick={() => document.querySelector('#comprar')?.scrollIntoView({ behavior: 'smooth' })}>Comprar por R$ 17,50 <ArrowRight/></Button><a href="#ajustes" className="flex items-center gap-2 text-sm text-slate-400 hover:text-white">Ver o que muda <ArrowDown className="size-4"/></a></div>
+        <p className="mt-7 text-xs leading-5 text-slate-600">Licença permanente individual vinculada ao computador. Pagamento único.</p>
       </div>
 
       <div className="border border-white/15 bg-[#15191c] p-4 shadow-[0_20px_70px_rgba(0,0,0,.35)] sm:p-5">
@@ -75,7 +75,7 @@ export default function Home() {
 
     <section id="comprar" className="border-t border-white/10 bg-[#13171a]">
       <div className="mx-auto grid max-w-6xl gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:grid-cols-[.8fr_1.2fr]">
-        <div><p className="font-mono text-xs uppercase tracking-[.18em] text-sky-200">Ducktimizer Pro</p><p className="mt-5 text-5xl font-semibold tracking-tight">R$ 39,90</p><p className="mt-2 text-sm text-slate-500">pagamento único</p><ul className="mt-8 space-y-3 text-sm text-slate-300">{['Uma licença para um computador','Oito grupos e cinco presets','Instalador e atualizações da linha 3.x','Suporte de ativação'].map(item=><li key={item} className="flex items-center gap-3"><Check className="size-4 text-sky-200"/>{item}</li>)}</ul></div>
+        <div><p className="font-mono text-xs uppercase tracking-[.18em] text-sky-200">Ducktimizer Pro</p><p className="mt-5 text-5xl font-semibold tracking-tight">R$ 17,50</p><p className="mt-2 text-sm text-slate-500">pagamento único · licença permanente</p><ul className="mt-8 space-y-3 text-sm text-slate-300">{['Uma licença permanente para um computador','Oito grupos e cinco presets','Instalador e atualizações da linha 3.x','Suporte de ativação'].map(item=><li key={item} className="flex items-center gap-3"><Check className="size-4 text-sky-200"/>{item}</li>)}</ul></div>
         <form action={submit} className="border border-white/15 bg-[#171b1f] p-6 sm:p-8">
           <div className="flex items-start justify-between gap-4"><div><h2 className="text-xl font-semibold">Comprar licença</h2><p className="mt-2 max-w-lg text-sm leading-6 text-slate-400">Preencha os dados usados na ativação. O pagamento abre no checkout seguro do Asaas.</p></div><span className="font-mono text-[10px] uppercase tracking-wider text-slate-600">Etapa 1/2</span></div>
           <div className="mt-7 grid gap-5 sm:grid-cols-2">

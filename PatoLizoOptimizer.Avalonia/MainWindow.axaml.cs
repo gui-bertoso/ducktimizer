@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Layout;
+using Avalonia.Threading;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -46,7 +47,7 @@ public partial class MainWindow : Window
             : "";
         if (!await Confirm("Ativar otimizações", $"Aplicar {groups.Count} grupos selecionados?\n\nO app tentará criar um ponto de restauração e salvará o estado das configurações.{warning}")) return;
         SetBusy(true);
-        try { if (await RunElevated("--apply", string.Join(',', groups))) UpdateState(); }
+        try { if (await RunOperation("--apply", string.Join(',', groups))) UpdateState(); }
         finally { SetBusy(false); }
     }
 
@@ -58,7 +59,7 @@ public partial class MainWindow : Window
         SetBusy(true);
         try
         {
-            if (await RunElevated("--undo-all"))
+            if (await RunOperation("--undo-all"))
             {
                 VisualSwitch.IsChecked = GamingSwitch.IsChecked = PowerSwitch.IsChecked = false;
                 PrivacySwitch.IsChecked = DrySwitch.IsChecked = SearchSwitch.IsChecked = false;
@@ -83,13 +84,29 @@ public partial class MainWindow : Window
         return result;
     }
 
-    private async Task<bool> RunElevated(params string[] args)
-        => await Task.Run(() => OptimizerEngine.RunElevated(args) == 0);
+    private async Task<bool> RunOperation(params string[] args)
+    {
+        var progress = new Progress<OperationProgress>(value =>
+        {
+            ApplyProgress.Value = value.Percent;
+            StateTitle.Text = value.Message;
+            StateDetail.Text = $"{value.Percent}% concluído — não feche o aplicativo";
+        });
+        var ok = await Task.Run(() => OptimizerEngine.RunElevated(args, progress) == 0);
+        if (!ok && !string.IsNullOrWhiteSpace(OptimizerEngine.LastError))
+        {
+            StateTitle.Text = "Não foi possível concluir";
+            StateDetail.Text = OptimizerEngine.LastError;
+        }
+        return ok;
+    }
 
     private void SetBusy(bool busy)
     {
         _busy = busy;
         ActivateButton.IsEnabled = DeactivateButton.IsEnabled = !busy;
+        ApplyProgress.IsVisible = busy;
+        if (busy) ApplyProgress.Value = 0;
         if (busy)
         {
             StateTitle.Text = "Aplicando alterações…";

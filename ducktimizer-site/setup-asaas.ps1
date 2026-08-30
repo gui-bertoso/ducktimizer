@@ -26,7 +26,7 @@ Set-WorkerSecret 'ASAAS_API_KEY' $ApiKey
 Set-WorkerSecret 'ASAAS_WEBHOOK_TOKEN' $WebhookToken
 Set-WorkerSecret 'ASAAS_ENVIRONMENT' $Environment
 Set-WorkerSecret 'PUBLIC_SITE_URL' $SiteUrl
-Set-WorkerSecret 'DUCKTIMIZER_PRICE' '39.90'
+Set-WorkerSecret 'DUCKTIMIZER_PRICE' '17.50'
 
 $WebhookBody = @{
   name = 'Ducktimizer Checkout'

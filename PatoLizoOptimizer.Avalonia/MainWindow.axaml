@@ -41,11 +41,12 @@
     <Border Classes="card" Grid.Row="3" Grid.Column="1"><Grid ColumnDefinitions="*,Auto"><StackPanel VerticalAlignment="Center" Spacing="2"><TextBlock Text="Apps em segundo plano" FontSize="14" FontWeight="SemiBold"/><TextBlock Text="Reduz processos residentes" Foreground="#6F9DC2" FontSize="11"/></StackPanel><ToggleSwitch x:Name="BackgroundSwitch" Grid.Column="1"/></Grid></Border>
    </Grid>
 
-   <Border Grid.Row="2" Background="#1D2429" BorderBrush="#343D43" BorderThickness="1" CornerRadius="15" Padding="16,11">
-    <Grid ColumnDefinitions="Auto,*,Auto">
+   <Border Grid.Row="2" Background="#1D2429" BorderBrush="#343D43" BorderThickness="1" CornerRadius="15" Padding="16,9">
+    <Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
      <Ellipse Width="8" Height="8" Fill="#55E5A4" VerticalAlignment="Center"/>
      <StackPanel Grid.Column="1" Margin="12,0" VerticalAlignment="Center" Spacing="1"><TextBlock x:Name="StateTitle" Text="Pronto para acelerar" FontSize="14" FontWeight="SemiBold"/><TextBlock x:Name="StateDetail" Text="Backup local antes das alterações" Foreground="#668CB0" FontSize="11"/></StackPanel>
      <TextBlock Grid.Column="2" Text="REVERSÍVEL" Foreground="#BFEAFF" FontSize="10" FontWeight="Bold" VerticalAlignment="Center"/>
+     <ProgressBar x:Name="ApplyProgress" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="12,6,0,0" Height="4" Minimum="0" Maximum="100" Value="0" IsVisible="False"/>
     </Grid>
    </Border>
 

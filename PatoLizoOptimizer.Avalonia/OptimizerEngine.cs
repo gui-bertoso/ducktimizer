@@ -13,6 +13,7 @@ namespace PatoLizoOptimizer;
 
 public record RegChange(string Hive, string Path, string Name, string Value, RegistryValueKind Kind);
 public record RegBackup(string Hive, string Path, string Name, bool Exists, string? Value, RegistryValueKind Kind);
+public record OperationProgress(int Percent, string Message);
 public sealed class RunBackup
 {
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -33,18 +34,21 @@ public static class OptimizerEngine
 
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int MessageBoxW(IntPtr h, string text, string title, uint type);
 
-    public static int RunElevated(string[] args)
+    public static string? LastError { get; private set; }
+
+    public static int RunElevated(string[] args, IProgress<OperationProgress>? progress = null)
     {
         try
         {
+            LastError = null;
             if (args.Length == 0) return 2;
             if (!IsAdministrator())
                 throw new UnauthorizedAccessException("O processo não recebeu permissão de administrador. Feche o app, abra novamente e aceite o aviso do UAC.");
             if (args[0] == "--apply" && !LicenseService.IsActivated(out _, out var licenseReason))
                 throw new UnauthorizedAccessException($"Ativação necessária: {licenseReason}");
             AppLogger.Info($"Operação solicitada: {args[0]}");
-            if (args[0] == "--apply") Apply(args.Length > 1 ? args[1].Split(',', StringSplitOptions.RemoveEmptyEntries) : []);
-            else if (args[0] == "--undo-all") UndoAll();
+            if (args[0] == "--apply") Apply(args.Length > 1 ? args[1].Split(',', StringSplitOptions.RemoveEmptyEntries) : [], progress);
+            else if (args[0] == "--undo-all") UndoAll(progress);
             else return 2;
             MessageBoxW(IntPtr.Zero, "Operação concluída. Reinicie o Windows para consolidar todas as mudanças.", "Ducktimizer", 0x40);
             AppLogger.Info("Operação concluída com sucesso");
@@ -53,11 +57,22 @@ public static class OptimizerEngine
         catch (OperationCanceledException) { return 3; }
         catch (Exception ex)
         {
+            LastError = FriendlyError(ex);
             AppLogger.Error(ex, "Falha na operação administrativa");
-            MessageBoxW(IntPtr.Zero, ex.Message, "Ducktimizer — erro", 0x10);
+            MessageBoxW(IntPtr.Zero, LastError, "Ducktimizer — erro", 0x10);
             return 1;
         }
     }
+
+    private static string FriendlyError(Exception ex) => ex switch
+    {
+        UnauthorizedAccessException => "O Windows negou uma alteração. Confirme que o UAC foi aceito e que nenhuma política de segurança bloqueia o Ducktimizer.",
+        TimeoutException => "Uma etapa demorou mais que o limite de segurança e foi interrompida. Reinicie o computador e tente novamente com menos grupos.",
+        IOException => "Não foi possível salvar ou ler o backup local. Verifique espaço em disco e permissões da pasta do Ducktimizer.",
+        JsonException => "Um backup local está corrompido. Consulte o log antes de aplicar novas alterações.",
+        OperationCanceledException => "Operação cancelada. Nenhuma nova etapa foi iniciada.",
+        _ => $"A operação não pôde ser concluída. Detalhe: {ex.Message}\n\nO backup das etapas iniciadas foi preservado; use Restaurar se necessário."
+    };
 
     private static bool IsAdministrator()
     {
@@ -65,11 +80,13 @@ public static class OptimizerEngine
         return new WindowsPrincipal(identity).IsInRole(WindowsBuiltInRole.Administrator);
     }
 
-    public static void Apply(string[] groups)
+    public static void Apply(string[] groups, IProgress<OperationProgress>? progress = null)
     {
+        progress?.Report(new(2, "Preparando backup local…"));
         MigrateLegacyBackups();
         Directory.CreateDirectory(Backups);
         var backup = new RunBackup { Groups = groups };
+        progress?.Report(new(6, "Criando ponto de restauração…"));
         if (TryRestorePoint(out var reason)) backup.RestorePoint = "created";
         else
         {
@@ -83,35 +100,49 @@ public static class OptimizerEngine
         var path = Path.Combine(Backups, $"backup-{DateTime.Now:yyyyMMdd-HHmmss-ffff}.json");
         try
         {
-            foreach (var change in Changes(groups).DistinctBy(x => (x.Hive, x.Path, x.Name)))
+            var changes = Changes(groups).DistinctBy(x => (x.Hive, x.Path, x.Name)).ToList();
+            for (var index = 0; index < changes.Count; index++)
             {
+                var change = changes[index];
+                progress?.Report(new(10 + (int)(60d * index / Math.Max(1, changes.Count)), $"Aplicando configuração {index + 1} de {changes.Count}…"));
                 backup.Registry.Add(Read(change));
                 Write(change);
             }
             if (groups.Contains("power"))
             {
+                progress?.Report(new(74, "Ativando plano de alto desempenho…"));
                 backup.PowerScheme = ActivePowerScheme();
                 Run("powercfg.exe", "/setactive SCHEME_MIN", true);
             }
             if (groups.Contains("debloat"))
+            {
+                progress?.Report(new(82, "Removendo aplicativos selecionados…"));
                 backup.RemovedApps = RemoveBloatware();
+            }
+            progress?.Report(new(96, "Gravando estado de restauração…"));
             backup.Complete = true;
         }
         finally { File.WriteAllText(path, JsonSerializer.Serialize(backup, new JsonSerializerOptions { WriteIndented = true })); }
+        progress?.Report(new(100, "Otimizações aplicadas."));
     }
 
-    public static void UndoAll()
+    public static void UndoAll(IProgress<OperationProgress>? progress = null)
     {
+        progress?.Report(new(3, "Localizando backups…"));
         MigrateLegacyBackups();
         if (!Directory.Exists(Backups)) return;
-        foreach (var path in Directory.GetFiles(Backups, "backup-*.json").Where(p => !p.Contains(".restored.")).OrderByDescending(p => p))
+        var paths = Directory.GetFiles(Backups, "backup-*.json").Where(p => !p.Contains(".restored.")).OrderByDescending(p => p).ToList();
+        for (var pathIndex = 0; pathIndex < paths.Count; pathIndex++)
         {
+            var path = paths[pathIndex];
+            progress?.Report(new(8 + (int)(84d * pathIndex / Math.Max(1, paths.Count)), $"Restaurando backup {pathIndex + 1} de {paths.Count}…"));
             var backup = JsonSerializer.Deserialize<RunBackup>(File.ReadAllText(path)) ?? throw new InvalidDataException("Backup inválido.");
             if (backup.PowerScheme is not null) Run("powercfg.exe", $"/setactive {backup.PowerScheme}", true);
             foreach (var item in backup.Registry.AsEnumerable().Reverse()) Restore(item);
             if (backup.RemovedApps?.Count > 0) RestoreApps(backup.RemovedApps);
             File.Move(path, Path.ChangeExtension(path, ".restored.json"), true);
         }
+        progress?.Report(new(100, "Sistema restaurado."));
     }
 
     public static bool HasActiveBackups()

@@ -14,5 +14,5 @@ export async function GET(request: Request) {
       created_at AS createdAt, paid_at AS paidAt FROM orders ORDER BY created_at DESC LIMIT 50`).all(),
     env.DB.prepare(`SELECT day, page_views AS pageViews FROM daily_metrics ORDER BY day DESC LIMIT 30`).all(),
   ]);
-  return Response.json({ totals, orders: orders.results, views: views.results });
+  return Response.json({ totals, orders: orders.results, views: views.results }, { headers: { 'cache-control': 'no-store' } });
 }

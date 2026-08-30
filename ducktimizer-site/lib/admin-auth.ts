@@ -1,6 +1,6 @@
 import { env } from 'cloudflare:workers';
 
-const cookieName = 'ducktimizer_admin';
+const cookieName = '__Host-ducktimizer_admin';
 const encoder = new TextEncoder();
 
 function base64Url(bytes: Uint8Array) {
@@ -26,7 +26,7 @@ async function safeEqual(left: string, right: string) {
 }
 
 export async function passwordIsValid(password: string) {
-  return Boolean(env.ADMIN_PASSWORD && await safeEqual(password, env.ADMIN_PASSWORD));
+  return Boolean(env.ADMIN_PASSWORD?.length >= 12 && password.length <= 256 && await safeEqual(password, env.ADMIN_PASSWORD));
 }
 
 export async function createAdminCookie() {
@@ -52,5 +52,5 @@ export async function isAdmin(request: Request) {
 }
 
 export function unauthorized() {
-  return Response.json({ message: 'Sessão administrativa necessária.' }, { status: 401 });
+  return Response.json({ message: 'Sessão administrativa necessária.' }, { status: 401, headers: { 'cache-control': 'no-store' } });
 }

@@ -35,7 +35,7 @@ export async function createAsaasCheckout(input: {
       accept: 'application/json',
       access_token: env.ASAAS_API_KEY,
       'content-type': 'application/json',
-      'user-agent': 'Ducktimizer/3.2 checkout',
+      'user-agent': 'Ducktimizer/3.3 checkout',
     },
     body: JSON.stringify({
       billingTypes: ['PIX', 'CREDIT_CARD'],
@@ -50,9 +50,9 @@ export async function createAsaasCheckout(input: {
       items: [{
         externalReference: 'ducktimizer-pro',
         name: 'Ducktimizer Pro',
-        description: 'Licença individual vinculada a um computador',
+        description: 'Licença permanente individual vinculada a um computador',
         quantity: 1,
-        value: Number(env.DUCKTIMIZER_PRICE || '39.90'),
+        value: Number(env.DUCKTIMIZER_PRICE || '17.50'),
       }],
       customerData: { name: input.name, email: input.email },
     }),

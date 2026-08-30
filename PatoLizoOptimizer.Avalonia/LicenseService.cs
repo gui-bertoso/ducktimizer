@@ -26,7 +26,14 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
     {
         get
         {
-            var machineGuid = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography", "MachineGuid", "")?.ToString() ?? "unknown";
+            var machineGuid = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography", "MachineGuid", "")?.ToString();
+            if (string.IsNullOrWhiteSpace(machineGuid))
+            {
+                var fallbackPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ducktimizer", "device.id");
+                Directory.CreateDirectory(Path.GetDirectoryName(fallbackPath)!);
+                machineGuid = File.Exists(fallbackPath) ? File.ReadAllText(fallbackPath).Trim() : Convert.ToHexString(RandomNumberGenerator.GetBytes(32));
+                if (!File.Exists(fallbackPath)) File.WriteAllText(fallbackPath, machineGuid);
+            }
             var material = $"DUCKTIMIZER|{machineGuid}";
             var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(material)))[..24];
             return string.Join('-', hash.Chunk(4).Select(x => new string(x)));
@@ -37,7 +44,8 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
     {
         license = null;
         if (!File.Exists(LicensePath)) { reason = "Licença não encontrada."; return false; }
-        return Validate(File.ReadAllText(LicensePath).Trim(), out license, out reason);
+        try { return Validate(File.ReadAllText(LicensePath).Trim(), out license, out reason); }
+        catch (Exception) { reason = "Não foi possível ler a licença instalada."; return false; }
     }
 
     public static bool Activate(string token, out LicensePayload? license, out string reason)
@@ -53,6 +61,7 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
         license = null;
         try
         {
+            if (token.Length is < 32 or > 4096) throw new FormatException();
             var parts = token.Split('.');
             if (parts.Length != 2) throw new FormatException();
             var payloadBytes = Decode(parts[0]);
@@ -61,6 +70,7 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
             if (!verifier.VerifyData(payloadBytes, Decode(parts[1]), HashAlgorithmName.SHA256))
             { reason = "Assinatura da licença inválida."; return false; }
             license = JsonSerializer.Deserialize<LicensePayload>(payloadBytes) ?? throw new FormatException();
+            if (license.Customer.Length is < 2 or > 80 || license.Edition != "Pro" || license.DeviceId.Length != 29) throw new FormatException();
             if (!string.Equals(license.DeviceId, DeviceId, StringComparison.OrdinalIgnoreCase))
             { reason = "Esta licença pertence a outro computador."; return false; }
             if (license.ExpiresUtc != DateTime.MaxValue && license.ExpiresUtc.ToUniversalTime() < DateTime.UtcNow)

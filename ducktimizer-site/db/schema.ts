@@ -6,6 +6,7 @@ export const orders = sqliteTable('orders', {
   status: text('status', { enum: ['pending', 'paid', 'licensed', 'cancelled'] }).notNull().default('pending'),
   asaasCheckoutId: text('asaas_checkout_id'),
   checkoutUrl: text('checkout_url'),
+  legalAcceptedAt: integer('legal_accepted_at', { mode: 'timestamp' }),
   paidAt: integer('paid_at', { mode: 'timestamp' }),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
@@ -32,3 +33,11 @@ export const licenses = sqliteTable('licenses', {
   licenseToken: text('license_token').notNull(), expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 }, (table) => [uniqueIndex('idx_licenses_order').on(table.orderId), uniqueIndex('idx_licenses_token').on(table.licenseToken)]);
+
+export const rateLimits = sqliteTable('rate_limits', {
+  bucket: text('bucket').notNull(), keyHash: text('key_hash').notNull(),
+  windowStart: integer('window_start').notNull(), requestCount: integer('request_count').notNull().default(1),
+}, (table) => [
+  uniqueIndex('idx_rate_limits_bucket_key').on(table.bucket, table.keyHash),
+  index('idx_rate_limits_window').on(table.windowStart),
+]);
