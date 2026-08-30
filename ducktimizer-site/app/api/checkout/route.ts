@@ -3,6 +3,7 @@ import { env } from 'cloudflare:workers';
 import { getDb } from '@/db';
 import { orders } from '@/db/schema';
 import { createAsaasCheckout } from '@/lib/asaas';
+import { createOrderClaim, hashOrderClaim, orderClaimCookie } from '@/lib/order-claim';
 import {
   rateLimited,
   rateLimitResponse,
@@ -61,18 +62,24 @@ export async function POST(request: Request) {
       .where(and(eq(orders.email, email), eq(orders.deviceId, deviceId)))
       .limit(1);
 
+    const claimToken = createOrderClaim();
+    const claimTokenHash = await hashOrderClaim(claimToken);
     if (existing[0]?.status === 'paid' || existing[0]?.status === 'licensed') {
+      await db.update(orders).set({ claimTokenHash, updatedAt: new Date() }).where(eq(orders.id, existing[0].id));
       return Response.json(
-        { message: 'Este pedido já foi pago. Verifique seu e-mail.' },
-        { status: 409 },
+        { deliveryUrl: '/pagamento/sucesso' },
+        { headers: { 'set-cookie': orderClaimCookie(existing[0].id, claimToken), 'cache-control': 'no-store' } },
       );
     }
     if (existing[0]?.status === 'pending' && existing[0]?.checkoutUrl) {
       await db
         .update(orders)
-        .set({ legalAcceptedAt: new Date(), updatedAt: new Date() })
+        .set({ legalAcceptedAt: new Date(), claimTokenHash, updatedAt: new Date() })
         .where(eq(orders.id, existing[0].id));
-      return Response.json({ checkoutUrl: existing[0].checkoutUrl });
+      return Response.json(
+        { checkoutUrl: existing[0].checkoutUrl },
+        { headers: { 'set-cookie': orderClaimCookie(existing[0].id, claimToken), 'cache-control': 'no-store' } },
+      );
     }
 
     const now = new Date();
@@ -87,6 +94,7 @@ export async function POST(request: Request) {
           deviceId,
           status: 'pending',
           legalAcceptedAt: now,
+          claimTokenHash,
           createdAt: now,
           updatedAt: now,
         });
@@ -103,12 +111,16 @@ export async function POST(request: Request) {
     await db
       .update(orders)
       .set({
+        status: 'pending',
         asaasCheckoutId: checkout.id,
         checkoutUrl: checkout.link,
         updatedAt: now,
       })
       .where(eq(orders.id, orderId));
-    return Response.json({ checkoutUrl: checkout.link }, { status: 201 });
+    return Response.json(
+      { checkoutUrl: checkout.link },
+      { status: 201, headers: { 'set-cookie': orderClaimCookie(orderId, claimToken), 'cache-control': 'no-store' } },
+    );
   } catch (error) {
     console.error(
       'checkout_create_failed',

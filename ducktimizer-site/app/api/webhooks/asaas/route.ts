@@ -2,11 +2,7 @@ import { and, eq } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { deliveries, licenses, orders, webhookEvents } from '@/db/schema';
 import { matchesWebhookToken } from '@/lib/asaas';
-import {
-  createDeliveryToken,
-  hashDeliveryToken,
-  sendDeliveryEmail,
-} from '@/lib/delivery';
+import { createDeliveryToken, hashDeliveryToken } from '@/lib/delivery';
 import { issueLicense } from '@/lib/license-signing';
 import { requestTooLarge } from '@/lib/security';
 
@@ -135,23 +131,6 @@ export async function POST(request: Request) {
         )[0];
       }
 
-      if (!delivery.deliveredAt) {
-        const messageId = await sendDeliveryEmail({
-          orderId: order.id,
-          eventId: payload.id,
-          name: order.name,
-          email: order.email,
-          deviceId: order.deviceId,
-          checkoutId,
-          paidAt: order.paidAt ?? now,
-          licenseToken: license.licenseToken,
-          downloadToken,
-        });
-        await db
-          .update(deliveries)
-          .set({ emailMessageId: messageId, deliveredAt: now, lastError: null })
-          .where(eq(deliveries.id, delivery.id));
-      }
       await db
         .update(orders)
         .set({ status: 'licensed', updatedAt: now })
@@ -171,7 +150,7 @@ export async function POST(request: Request) {
           .update(deliveries)
           .set({ lastError: message })
           .where(eq(deliveries.id, existingDelivery[0].id));
-      console.error('automatic_delivery_failed', message);
+      console.error('site_delivery_failed', message);
       return Response.json(
         { received: false, retry: true },
         { status: 503, headers: { 'retry-after': '60' } },

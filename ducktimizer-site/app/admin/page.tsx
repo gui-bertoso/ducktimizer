@@ -261,7 +261,7 @@ export default function AdminPage() {
                       <td className="px-4 py-4 text-xs">
                         {order.deliveredAt ? (
                           <span className="text-emerald-300">
-                            E-mail enviado · {order.downloadCount ?? 0}/
+                            Entrega acessada · {order.downloadCount ?? 0}/
                             {order.maxDownloads ?? 5}
                           </span>
                         ) : order.deliveryError ? (
@@ -269,7 +269,7 @@ export default function AdminPage() {
                             className="text-red-300"
                             title={order.deliveryError}
                           >
-                            Falha no envio
+                            Falha na entrega
                           </span>
                         ) : order.status === 'paid' ? (
                           <span className="text-amber-300">Processando</span>

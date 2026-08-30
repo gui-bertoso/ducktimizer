@@ -20,6 +20,7 @@ export const orders = sqliteTable(
       .default('pending'),
     asaasCheckoutId: text('asaas_checkout_id'),
     checkoutUrl: text('checkout_url'),
+    claimTokenHash: text('claim_token_hash'),
     legalAcceptedAt: integer('legal_accepted_at', { mode: 'timestamp' }),
     paidAt: integer('paid_at', { mode: 'timestamp' }),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),

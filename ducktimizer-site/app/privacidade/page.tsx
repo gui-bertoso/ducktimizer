@@ -35,7 +35,7 @@ export default function PrivacyPage() {
         {
           title: 'Pagamento, entrega e operadores',
           paragraphs: [
-            'O pagamento é processado pelo Asaas, que recebe os dados necessários ao checkout sob seus próprios termos e política de privacidade. O site, banco de dados e download protegido utilizam infraestrutura Cloudflare. A entrega transacional por e-mail utiliza a Resend. Esses fornecedores recebem apenas os dados necessários às respectivas funções e atuam como operadores ou controladores independentes conforme a atividade realizada.',
+            'O pagamento é processado pelo Asaas, que recebe os dados necessários ao checkout sob seus próprios termos e política de privacidade. O site, banco de dados e download protegido utilizam infraestrutura Cloudflare. Esses fornecedores recebem apenas os dados necessários às respectivas funções e atuam como operadores ou controladores independentes conforme a atividade realizada.',
           ],
         },
         {
@@ -59,7 +59,7 @@ export default function PrivacyPage() {
         {
           title: 'Cookies e métricas',
           paragraphs: [
-            'O site registra uma visualização técnica para métricas administrativas e pode usar cookies estritamente necessários à sessão do painel e ao fluxo de pagamento. Não usamos o aplicativo para criar perfil publicitário comportamental.',
+            'O site registra uma visualização técnica para métricas administrativas e usa um cookie seguro e temporário para devolver o comprador à sua licença após o pagamento. Também pode usar cookies necessários à sessão do painel. Não usamos o aplicativo para criar perfil publicitário comportamental.',
           ],
         },
         {

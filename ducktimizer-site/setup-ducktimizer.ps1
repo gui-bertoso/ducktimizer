@@ -26,7 +26,7 @@ Write-Host ''
 Write-Host '╔══════════════════════════════════════╗' -ForegroundColor Cyan
 Write-Host '║   CONFIGURADOR ÚNICO DUCKTIMIZER    ║' -ForegroundColor Cyan
 Write-Host '╚══════════════════════════════════════╝' -ForegroundColor Cyan
-Write-Host 'Admin + Asaas + e-mail + instalador. Uma vez só, sem novela.' -ForegroundColor DarkGray
+Write-Host 'Admin + Asaas + entrega no site. Uma vez só, sem novela.' -ForegroundColor DarkGray
 Write-Host ''
 
 Write-Host '[1/4] Painel administrativo' -ForegroundColor Yellow
@@ -45,11 +45,7 @@ $AsaasBase = if ($AsaasEnvironment -eq 'production') { 'https://api.asaas.com/v3
 $NotificationEmail = Read-Required 'E-mail que receberá alertas do pagamento'
 if ($NotificationEmail -notmatch '^[^\s@]+@[^\s@]+\.[^\s@]+$') { throw 'Informe um e-mail válido.' }
 
-Write-Host '[3/4] Entrega por e-mail' -ForegroundColor Yellow
-$ResendKey = Read-Required 'Cole a API Key da Resend'
-if ($ResendKey -notmatch '^re_') { throw 'A API Key da Resend parece inválida.' }
-$FromEmail = Read-Required 'Remetente verificado (ex.: Ducktimizer <vendas@seudominio.com>)'
-if ($FromEmail -notmatch '@') { throw 'O remetente da Resend parece inválido.' }
+Write-Host '[3/4] Entrega pelo site' -ForegroundColor Yellow
 $InstallerPath = Read-Host "Caminho do instalador [$DefaultInstaller]"
 if ([string]::IsNullOrWhiteSpace($InstallerPath)) { $InstallerPath = $DefaultInstaller }
 $ResolvedInstaller = Resolve-Path -LiteralPath $InstallerPath
@@ -64,8 +60,6 @@ $Secrets = @{
   ASAAS_ENVIRONMENT = $AsaasEnvironment
   PUBLIC_SITE_URL = $SiteUrl
   DUCKTIMIZER_PRICE = '17.50'
-  RESEND_API_KEY = $ResendKey
-  DELIVERY_FROM_EMAIL = $FromEmail
   DELIVERY_TOKEN_SECRET = New-RandomSecret
   INSTALLER_OBJECT_KEY = $InstallerKey
   INSTALLER_SHA256 = $InstallerHash
@@ -118,6 +112,5 @@ try {
   $AdminPassword = $null
   $PrivateKey = $null
   $AsaasKey = $null
-  $ResendKey = $null
   $Secrets = $null
 }

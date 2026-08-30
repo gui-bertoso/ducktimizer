@@ -53,7 +53,7 @@ export default function TermsPage() {
         {
           title: 'Entrega digital',
           paragraphs: [
-            'Após a confirmação do pagamento, o instalador, a licença permanente e a confirmação da compra são enviados ao e-mail informado. O link do instalador é individual, expira em 7 dias e permite até 5 downloads. O comprador deve informar um e-mail válido, verificar a caixa de spam e guardar a licença recebida. A confirmação de entrega digital não substitui documento fiscal quando ele for legalmente exigível.',
+            'Após a confirmação do pagamento, o site libera o instalador, a licença permanente e a confirmação da compra no mesmo navegador usado para iniciar o checkout. O link do instalador é individual, expira em 7 dias e permite até 5 downloads. Se fechar a página, o comprador pode informar novamente o mesmo e-mail e Device ID para recuperar a compra. A confirmação de entrega digital não substitui documento fiscal quando ele for legalmente exigível.',
           ],
         },
         {

@@ -53,10 +53,15 @@ export default function Home() {
     const result = (await response.json()) as {
       message?: string;
       checkoutUrl?: string;
+      deliveryUrl?: string;
     };
     if (response.ok && result.checkoutUrl) {
       setState('done');
       window.location.assign(result.checkoutUrl);
+      return;
+    }
+    if (response.ok && result.deliveryUrl) {
+      window.location.assign(result.deliveryUrl);
       return;
     }
     setMessage(result.message ?? 'Não foi possível iniciar o pagamento.');
