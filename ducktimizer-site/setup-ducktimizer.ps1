@@ -39,7 +39,8 @@ $AdminPassword = Read-Required 'Crie a senha do painel (mínimo 12 caracteres)'
 if ($AdminPassword.Length -lt 12) { throw 'Use uma senha com pelo menos 12 caracteres.' }
 $PrivateKeyPath = Read-Host "Chave privada PEM [$DefaultPrivateKey]"
 if ([string]::IsNullOrWhiteSpace($PrivateKeyPath)) { $PrivateKeyPath = $DefaultPrivateKey }
-$PrivateKey = Get-Content -LiteralPath (Resolve-Path -LiteralPath $PrivateKeyPath) -Raw
+$ResolvedPrivateKey = Resolve-Path -LiteralPath $PrivateKeyPath
+$PrivateKey = [IO.File]::ReadAllText([string]$ResolvedPrivateKey.Path)
 if ($PrivateKey -notmatch 'BEGIN PRIVATE KEY') { throw 'A chave privada PKCS#8 é inválida.' }
 
 Write-Host '[2/4] Pagamentos Asaas' -ForegroundColor Yellow
@@ -59,7 +60,7 @@ $InstallerHash = (Get-FileHash -LiteralPath $ResolvedInstaller -Algorithm SHA256
 $Secrets = @{
   ADMIN_PASSWORD = $AdminPassword
   ADMIN_SESSION_SECRET = New-RandomSecret
-  LICENSE_PRIVATE_KEY_PEM = $PrivateKey
+  LICENSE_PRIVATE_KEY_PEM = [string]$PrivateKey
   ASAAS_API_KEY = $AsaasKey
   ASAAS_WEBHOOK_TOKEN = New-RandomSecret
   ASAAS_ENVIRONMENT = $AsaasEnvironment
