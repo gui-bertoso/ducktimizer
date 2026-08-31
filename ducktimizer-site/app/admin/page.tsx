@@ -67,6 +67,7 @@ export default function AdminPage() {
   const [token, setToken] = useState('');
   const [settings, setSettings] = useState<CommercialSettings | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsSaved, setSettingsSaved] = useState(false);
 
   const load = useCallback(async () => {
     const response = await fetch('/api/admin/overview', { cache: 'no-store' });
@@ -107,11 +108,11 @@ export default function AdminPage() {
   }
 
   async function saveSettings(event: SubmitEvent) {
-    event.preventDefault(); setSavingSettings(true); setError('');
+    event.preventDefault(); setSavingSettings(true); setSettingsSaved(false); setError('');
     const payload = Object.fromEntries(new FormData(event.currentTarget));
     const response = await fetch('/api/admin/settings', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
     const result = await response.json() as { message?: string };
-    if (!response.ok) setError(result.message ?? 'Não foi possível salvar as configurações.'); else await load();
+    if (!response.ok) setError(result.message ?? 'Não foi possível salvar as configurações.'); else { await load(); setSettingsSaved(true); }
     setSavingSettings(false);
   }
 
@@ -443,6 +444,7 @@ export default function AdminPage() {
           </div>
           <label className="mt-4 block text-xs text-slate-400">Notas da atualização<textarea name="releaseNotes" defaultValue={settings.releaseNotes} className="mt-2 min-h-20 w-full rounded-xl border border-white/10 bg-white/[.04] p-3 text-sm" /></label>
           <Button type="submit" disabled={savingSettings} className="mt-4 bg-sky-100 text-slate-950 hover:bg-white">{savingSettings ? 'Salvando…' : 'Salvar configurações'}</Button>
+          {settingsSaved && <output className="ml-3 text-xs text-emerald-300">Configurações salvas.</output>}
           {(!settings.businessName || !settings.taxId || !settings.businessAddress || !settings.supportEmail) && <p className="mt-3 text-xs text-amber-300">Lançamento jurídico incompleto: preencha identificação, documento, endereço e suporte.</p>}
         </form>}
         {token && (
