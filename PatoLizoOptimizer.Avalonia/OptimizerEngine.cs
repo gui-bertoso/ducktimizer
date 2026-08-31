@@ -196,6 +196,16 @@ public static class OptimizerEngine
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "AudioCaptureEnabled", 0);
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "HistoricalCaptureEnabled", 0);
             yield return D("HKCU", @"Software\Microsoft\Windows\CurrentVersion\GameDVR", "CursorCaptureEnabled", 0);
+            // Perfil multimídia para jogos: valores documentados e sempre incluídos no backup granular.
+            yield return D("HKLM", @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile", "SystemResponsiveness", 0);
+            yield return D("HKLM", @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile", "NetworkThrottlingIndex", -1);
+            yield return D("HKLM", @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games", "GPU Priority", 8);
+            yield return D("HKLM", @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games", "Priority", 6);
+            yield return S("HKLM", @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games", "Scheduling Category", "High");
+            yield return S("HKLM", @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games", "SFIO Priority", "High");
+            yield return D("HKCU", @"System\GameConfigStore", "GameDVR_FSEBehaviorMode", 2);
+            yield return D("HKCU", @"System\GameConfigStore", "GameDVR_HonorUserFSEBehaviorMode", 1);
+            yield return D("HKCU", @"System\GameConfigStore", "GameDVR_DXGIHonorFSEWindowsCompatible", 1);
             yield return D("HKLM", @"Software\Policies\Microsoft\Windows\GameDVR", "AllowGameDVR", 0);
             yield return S("HKCU", @"Control Panel\Mouse", "MouseSpeed", "0");
             yield return S("HKCU", @"Control Panel\Mouse", "MouseThreshold1", "0");
