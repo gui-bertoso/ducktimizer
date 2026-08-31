@@ -83,7 +83,7 @@ export default function Home() {
             <span className="font-semibold tracking-tight">Ducktimizer</span>
           </a>
           <div className="flex items-center gap-5 text-xs text-slate-400">
-            <span className="hidden sm:inline">v3.4.1 · Windows 10/11</span>
+            <span className="hidden sm:inline">v3.4.2 · Windows 10/11</span>
             <a
               href="#comprar"
               className="border-b border-sky-100/60 pb-0.5 text-sky-100"

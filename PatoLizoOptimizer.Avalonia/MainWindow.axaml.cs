@@ -217,7 +217,7 @@ public partial class MainWindow : Window
     private async Task EnsureTerms()
     {
         var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ducktimizer");
-        var acceptedFile = Path.Combine(folder, "terms-v3.4.1.accepted");
+        var acceptedFile = Path.Combine(folder, "terms-v3.4.2.accepted");
         if (File.Exists(acceptedFile)) return;
         var accepted = false;
         var dialog = new Window { Title = "Termos de uso", Width = 620, Height = 470, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
@@ -228,7 +228,7 @@ public partial class MainWindow : Window
         accept.Click += (_, _) => { accepted = true; dialog.Close(); };
         exit.Click += (_, _) => dialog.Close();
         var heading = new TextBlock { Text = "Antes de otimizar", FontSize = 24, FontWeight = Avalonia.Media.FontWeight.Bold };
-        var termsText = "TERMOS DE USO E CIÊNCIA DE RISCO — v3.4.1\n\n" +
+        var termsText = "TERMOS DE USO E CIÊNCIA DE RISCO — v3.4.2\n\n" +
             "1. FINALIDADE. O Ducktimizer modifica configurações do Windows com o objetivo de reduzir recursos em segundo plano, efeitos visuais, telemetria e aplicativos pré-instalados. Não existe garantia de aumento de FPS, redução de latência ou melhoria específica.\n\n" +
             "2. ADMINISTRADOR. O programa exige privilégios de administrador desde a abertura. Ao aceitar o aviso do Windows, você autoriza alterações no Registro, políticas locais, plano de energia e pacotes de aplicativos deste computador.\n\n" +
             "3. MODOS AGRESSIVOS. Windows seco desativa suavização de fontes, sombras, transparência e efeitos para priorizar uma interface mínima. Pesquisa enxuta remove Bing, destaques e sugestões. Debloat Extremo desinstala aplicativos empacotados e remove seu provisionamento. Edge, Microsoft Store, Windows Update, Defender, Firewall e serviços críticos não são removidos.\n\n" +
@@ -245,6 +245,6 @@ public partial class MainWindow : Window
         await dialog.ShowDialog(this);
         if (!accepted) { Close(); return; }
         Directory.CreateDirectory(folder);
-        File.WriteAllText(acceptedFile, "accepted-v3.4.1");
+        File.WriteAllText(acceptedFile, "accepted-v3.4.2");
     }
 }

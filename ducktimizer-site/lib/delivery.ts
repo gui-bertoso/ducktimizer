@@ -1,7 +1,7 @@
 import { env } from 'cloudflare:workers';
 
 const encoder = new TextEncoder();
-const DEFAULT_INSTALLER_KEY = 'Ducktimizer-Setup-3.4.1-win-x64.exe';
+const DEFAULT_INSTALLER_KEY = 'Ducktimizer-Setup-3.4.2-win-x64.exe';
 
 function base64Url(bytes: Uint8Array) {
   let binary = '';

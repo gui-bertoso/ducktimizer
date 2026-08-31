@@ -1,5 +1,5 @@
 #define MyAppName "Ducktimizer Pro"
-#define MyAppVersion "3.4.1"
+#define MyAppVersion "3.4.2"
 #define MyAppPublisher "patoLizo"
 #define MyAppExeName "Ducktimizer.exe"
 

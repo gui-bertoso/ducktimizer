@@ -6,7 +6,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
     <AssemblyName>Ducktimizer</AssemblyName>
-    <Version>3.4.1</Version>
+    <Version>3.4.2</Version>
     <Product>Ducktimizer</Product>
     <Company>patoLizo</Company>
   </PropertyGroup>
@@ -22,6 +22,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
     <EmbeddedResource Include="DEPENDENCY-LICENSE" />
   </ItemGroup>
 </Project>
