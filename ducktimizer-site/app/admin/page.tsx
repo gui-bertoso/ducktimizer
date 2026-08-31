@@ -79,6 +79,8 @@ export default function AdminPage() {
   const [settings, setSettings] = useState<CommercialSettings | null>(null);
   const [savingSettings, setSavingSettings] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
+  const [orderQuery, setOrderQuery] = useState('');
+  const [orderFilter, setOrderFilter] = useState('all');
 
   const load = useCallback(async () => {
     const response = await fetch('/api/admin/overview', { cache: 'no-store' });
@@ -197,6 +199,13 @@ export default function AdminPage() {
       ),
     [overview],
   );
+  const filteredOrders = useMemo(() => {
+    const query = orderQuery.trim().toLowerCase();
+    return (overview?.orders ?? []).filter((order) => {
+      const status = orderStatus(order).label;
+      return (orderFilter === 'all' || status === orderFilter) && (!query || `${order.name} ${order.email} ${order.id} ${order.deviceId}`.toLowerCase().includes(query));
+    });
+  }, [overview, orderFilter, orderQuery]);
   const cards: Array<[string, number, LucideIcon]> = [
     ['Pedidos', Number(overview?.totals.totalOrders ?? 0), ShoppingCart],
     ['Pendentes', Number(overview?.totals.pending ?? 0), RefreshCw],
@@ -287,7 +296,15 @@ export default function AdminPage() {
         <section className="mt-5 grid gap-5 lg:grid-cols-[1.35fr_.65fr]">
           <div className="overflow-hidden rounded-[22px] border border-white/10 bg-[#171b20]">
             <div className="border-b border-white/10 px-5 py-4">
-              <h2 className="font-semibold">Pedidos recentes</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-semibold">Pedidos recentes</h2>
+                <div className="flex flex-wrap gap-2">
+                  <Input aria-label="Buscar pedidos" placeholder="Buscar cliente, pedido ou Device ID" value={orderQuery} onChange={(event) => setOrderQuery(event.target.value)} className="h-9 w-64 border-white/10 bg-white/[.04] text-xs" />
+                  <select aria-label="Filtrar pedidos" value={orderFilter} onChange={(event) => setOrderFilter(event.target.value)} className="h-9 rounded-xl border border-white/10 bg-[#171b20] px-3 text-xs text-slate-300">
+                    <option value="all">Todos os estados</option><option value="Ativa">Ativas</option><option value="Não ativada">Não ativadas</option><option value="Revogada">Revogadas</option><option value="Pago">Pagas</option><option value="Pendente">Pendentes</option>
+                  </select>
+                </div>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full table-fixed text-left text-sm">
@@ -303,7 +320,7 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {overview?.orders.map((order) => (
+                  {filteredOrders.map((order) => (
                     <tr key={order.id} className="border-t border-white/[.06]">
                       <td className="px-5 py-4">
                         <p className="font-medium">{order.name}</p>
