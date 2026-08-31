@@ -290,14 +290,14 @@ export default function AdminPage() {
               <h2 className="font-semibold">Pedidos recentes</h2>
             </div>
             <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
+              <table className="w-full table-fixed text-left text-sm">
                 <thead className="text-xs text-slate-500">
                   <tr>
-                    <th className="px-5 py-3">Cliente</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Ativação</th>
-                    <th className="px-4 py-3">Entrega</th>
-                    <th className="px-5 py-3">
+                    <th className="w-[28%] px-5 py-3">Cliente</th>
+                    <th className="w-[15%] px-4 py-3">Status</th>
+                    <th className="w-[18%] px-4 py-3">Ativação</th>
+                    <th className="w-[17%] px-4 py-3">Entrega</th>
+                    <th className="w-[22%] px-3 py-3">
                       <span className="sr-only">Ações</span>
                     </th>
                   </tr>
@@ -314,7 +314,7 @@ export default function AdminPage() {
                           {orderStatus(order).label}
                         </span>
                       </td>
-                      <td className="px-4 py-4 font-mono text-xs text-slate-400">
+                      <td className="break-all px-4 py-4 font-mono text-xs text-slate-400">
                         {order.deviceId === 'UNBOUND' ? 'Não ativada' : order.deviceId}
                       </td>
                       <td className="px-4 py-4 text-xs">
@@ -336,8 +336,8 @@ export default function AdminPage() {
                           <span className="text-slate-600">—</span>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex justify-end gap-1">
+                      <td className="px-3 py-4 text-right">
+                        <div className="flex flex-wrap justify-end gap-1">
                           <Button size="sm" variant="outline" disabled={order.status !== 'paid'} onClick={() => { setSelectedOrder(order); setToken(''); }}>Gerar</Button>
                           {order.status === 'licensed' && <Button size="sm" variant="outline" onClick={() => void manageLicense(order.id, 'reset-device')}>Desvincular</Button>}
                           {order.status === 'licensed' && <Button size="sm" variant="outline" onClick={() => void manageLicense(order.id, order.licenseEnabled === 0 ? 'reactivate' : 'suspend')}>{order.licenseEnabled === 0 ? 'Reativar' : 'Suspender'}</Button>}
