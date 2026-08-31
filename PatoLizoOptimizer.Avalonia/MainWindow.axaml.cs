@@ -37,6 +37,7 @@ public partial class MainWindow : Window
             StateTitle.Text = $"Baixando Ducktimizer {_availableUpdate.Version}…";
             var progress = new Progress<int>(percent => { ApplyProgress.Value = percent; StateDetail.Text = $"{percent}% baixado — verificando integridade"; });
             var installer = await UpdateService.DownloadAsync(_availableUpdate, progress);
+            await ShowUpdateNotes(_availableUpdate);
             UpdateService.LaunchInstaller(installer);
             Close();
         }
@@ -166,6 +167,20 @@ public partial class MainWindow : Window
         }};
         await dialog.ShowDialog(this);
         return result;
+    }
+
+    private async Task ShowUpdateNotes(UpdateManifest manifest)
+    {
+        var dialog = new Window { Title = $"Ducktimizer {manifest.Version}", Width = 500, Height = 330, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
+        var ok = new Button { Content = "Continuar atualização", Classes = { "primary" }, MinWidth = 150 };
+        ok.Click += (_, _) => dialog.Close();
+        dialog.Content = new StackPanel { Margin = new Avalonia.Thickness(24), Spacing = 16, Children = {
+            new TextBlock { Text = "O que mudou", FontSize = 21, FontWeight = Avalonia.Media.FontWeight.Bold },
+            new TextBlock { Text = $"Nova versão {manifest.Version} pronta para instalar.", Foreground = Avalonia.Media.Brush.Parse("#B7C4CA") },
+            new ScrollViewer { Height = 150, Content = new TextBlock { Text = string.IsNullOrWhiteSpace(manifest.Notes) ? "Correções de estabilidade e melhorias de desempenho." : manifest.Notes, TextWrapping = Avalonia.Media.TextWrapping.Wrap, Foreground = Avalonia.Media.Brush.Parse("#E6EEF2") } },
+            new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Children = { ok } }
+        }};
+        await dialog.ShowDialog(this);
     }
 
     private async Task<bool> EnsureLicense()
