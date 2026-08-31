@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Clipboard,
   Gauge,
+  FlaskConical,
   KeyRound,
   LogOut,
   RefreshCw,
@@ -53,6 +54,7 @@ export default function AdminPage() {
   const [overview, setOverview] = useState<Overview | null>(null);
   const [error, setError] = useState('');
   const [issuing, setIssuing] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [token, setToken] = useState('');
 
@@ -96,6 +98,19 @@ export default function AdminPage() {
     await fetch('/api/admin/logout', { method: 'POST' });
     setAuthenticated(false);
     setOverview(null);
+  }
+
+  async function simulatePurchase() {
+    setTesting(true);
+    setError('');
+    const response = await fetch('/api/admin/test-purchase', { method: 'POST' });
+    const result = (await response.json()) as { deliveryUrl?: string; message?: string };
+    if (response.ok && result.deliveryUrl) {
+      window.location.assign(result.deliveryUrl);
+      return;
+    }
+    setError(result.message ?? 'Falha ao simular a compra.');
+    setTesting(false);
   }
 
   async function generate(event: SubmitEvent) {
@@ -203,6 +218,9 @@ export default function AdminPage() {
             </div>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" disabled={testing} onClick={() => void simulatePurchase()}>
+              <FlaskConical /> {testing ? 'Simulando…' : 'Simular compra'}
+            </Button>
             <Button variant="outline" onClick={() => void load()}>
               <RefreshCw /> Atualizar
             </Button>
