@@ -409,6 +409,9 @@ export default function Home() {
             <Link className="hover:text-white" href="/privacidade">
               Privacidade
             </Link>
+            <Link className="hover:text-white" href="/recuperar">
+              Recuperar compra
+            </Link>
             <span>Ducktimizer Pro · Windows 10 e 11</span>
           </nav>
         </div>

@@ -55,7 +55,7 @@ export function PurchaseDelivery() {
 
   if (failed) return <Shell icon={<RotateCcw className="size-9 text-amber-200" />} title="Vamos recuperar sua compra">
     <p className="mt-3 text-sm leading-6 text-slate-400">Volte à compra e informe o mesmo e-mail e Device ID. O site reconhecerá o pedido pago e abrirá esta entrega novamente.</p>
-    <Link className="mt-6 inline-flex h-10 w-full items-center justify-center rounded-lg bg-sky-100 px-4 text-sm font-medium text-slate-950 hover:bg-white" href="/#comprar">Recuperar compra</Link>
+    <Link className="mt-6 inline-flex h-10 w-full items-center justify-center rounded-lg bg-sky-100 px-4 text-sm font-medium text-slate-950 hover:bg-white" href="/recuperar">Recuperar compra</Link>
   </Shell>;
 
   if (delivery.status === 'cancelled') return <Shell icon={<RotateCcw className="size-9 text-amber-200" />} title="Pagamento não concluído">
