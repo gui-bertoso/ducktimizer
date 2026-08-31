@@ -23,8 +23,17 @@ export async function PUT(request: Request) {
     const value = String(raw).trim().slice(0, key === 'releaseNotes' ? 1000 : 300);
     updates.push([key, value]);
   }
-  const price = typeof body.price === 'string' || typeof body.price === 'number' ? Number(body.price) : Number.NaN;
-  const promoPrice = typeof body.promoPrice === 'string' || typeof body.promoPrice === 'number' ? (body.promoPrice === '' ? null : Number(body.promoPrice)) : null;
+  // Accept both Brazilian form input (17,50) and HTML number input (17.50).
+  // This keeps the whole settings form atomic: a localized price must not
+  // prevent the legal identity fields from being saved.
+  const parseMoney = (value: unknown) => {
+    if (value === '' || value === null || value === undefined) return null;
+    if (typeof value !== 'string' && typeof value !== 'number') return Number.NaN;
+    const normalized = String(value).trim().replace(',', '.');
+    return normalized === '' ? null : Number(normalized);
+  };
+  const price = parseMoney(body.price) ?? Number.NaN;
+  const promoPrice = parseMoney(body.promoPrice);
   if (!Number.isFinite(price) || price < 1 || price > 10_000 || (promoPrice !== null && (!Number.isFinite(promoPrice) || promoPrice < 1 || promoPrice >= price))) {
     return Response.json({ message: 'Revise os preços. A promoção deve ser menor que o preço normal.' }, { status: 400 });
   }
