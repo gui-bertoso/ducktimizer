@@ -60,7 +60,7 @@ public static class UpdateService
 
     public static void LaunchInstaller(string path) => Process.Start(new ProcessStartInfo(path, "/SILENT /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /NORESTART") { UseShellExecute = true });
 
-    private static bool VerifyManifest(UpdateManifest manifest)
+    public static bool VerifyManifest(UpdateManifest manifest)
     {
         try
         {
@@ -71,6 +71,13 @@ public static class UpdateService
             return verifier.VerifyData(message, signature, HashAlgorithmName.SHA256);
         }
         catch { return false; }
+    }
+
+    public static async Task<bool> SelfTestAsync()
+    {
+        using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+        var manifest = await client.GetFromJsonAsync<UpdateManifest>(ManifestUrl);
+        return manifest is not null && VerifyManifest(manifest) && manifest.Sha256.Length == 64;
     }
 
     private static byte[] Decode(string text)

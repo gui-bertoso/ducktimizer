@@ -17,6 +17,11 @@ class Program
             Environment.ExitCode = OptimizerEngine.SelfTest() ? 0 : 1;
             return;
         }
+        if (args.Length > 0 && args[0] == "--verify-update")
+        {
+            Environment.ExitCode = UpdateService.SelfTestAsync().GetAwaiter().GetResult() ? 0 : 1;
+            return;
+        }
         if (args.Length > 0 && args[0] == "--device-id")
         {
             Console.WriteLine(LicenseService.DeviceId);
