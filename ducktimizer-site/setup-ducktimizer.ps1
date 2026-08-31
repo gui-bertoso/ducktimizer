@@ -11,9 +11,14 @@ $SecretFile = $null
 
 function New-RandomSecret {
   $Bytes = [byte[]]::new(48)
-  [Security.Cryptography.RandomNumberGenerator]::Fill($Bytes)
-  try { return [Convert]::ToBase64String($Bytes).Replace('+', '-').Replace('/', '_').TrimEnd('=') }
-  finally { [Array]::Clear($Bytes, 0, $Bytes.Length) }
+  $Generator = [Security.Cryptography.RandomNumberGenerator]::Create()
+  try {
+    $Generator.GetBytes($Bytes)
+    return [Convert]::ToBase64String($Bytes).Replace('+', '-').Replace('/', '_').TrimEnd('=')
+  } finally {
+    $Generator.Dispose()
+    [Array]::Clear($Bytes, 0, $Bytes.Length)
+  }
 }
 
 function Read-Required([string]$Prompt) {
