@@ -126,3 +126,12 @@ export const adminAudit = sqliteTable(
   },
   table => [index('idx_admin_audit_created').on(table.createdAt)],
 );
+
+export const telemetryErrors = sqliteTable('telemetry_errors', {
+  id: text('id').primaryKey(),
+  kind: text('kind').notNull(),
+  context: text('context').notNull(),
+  message: text('message').notNull(),
+  appVersion: text('app_version'),
+  createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+}, table => [index('idx_telemetry_errors_created').on(table.createdAt)]);

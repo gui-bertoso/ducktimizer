@@ -3,7 +3,7 @@ import { isAdmin, unauthorized } from '@/lib/admin-auth';
 
 export async function GET(request: Request) {
   if (!(await isAdmin(request))) return unauthorized();
-  const [totals, orders, views] = await Promise.all([
+  const [totals, orders, views, errors] = await Promise.all([
     env.DB.prepare(`SELECT
       COUNT(*) AS totalOrders,
       SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) AS paid,
@@ -21,12 +21,13 @@ export async function GET(request: Request) {
     env.DB.prepare(
       `SELECT day, page_views AS pageViews FROM daily_metrics ORDER BY day DESC LIMIT 30`,
     ).all(),
+    env.DB.prepare(`SELECT id, kind, context, message, app_version AS appVersion, created_at AS createdAt FROM telemetry_errors ORDER BY created_at DESC LIMIT 30`).all(),
   ]);
   const operations = await env.DB.prepare(`SELECT
     SUM(CASE WHEN activated_at IS NOT NULL THEN 1 ELSE 0 END) AS activated,
     SUM(CASE WHEN enabled = 0 THEN 1 ELSE 0 END) AS suspended FROM licenses`).first();
   return Response.json(
-    { totals: { ...totals, ...operations }, orders: orders.results, views: views.results },
+    { totals: { ...totals, ...operations }, orders: orders.results, views: views.results, errors: errors.results },
     { headers: { 'cache-control': 'no-store' } },
   );
 }

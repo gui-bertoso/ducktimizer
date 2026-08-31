@@ -122,6 +122,7 @@ public partial class MainWindow : Window
         var ok = await Task.Run(() => OptimizerEngine.RunElevated(args, progress) == 0);
         if (!ok && !string.IsNullOrWhiteSpace(OptimizerEngine.LastError))
         {
+            Telemetry.Report(new InvalidOperationException(OptimizerEngine.LastError), "optimizer-operation");
             StateTitle.Text = "Não foi possível concluir";
             StateDetail.Text = OptimizerEngine.LastError;
         }

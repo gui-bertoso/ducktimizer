@@ -39,7 +39,7 @@ class Program
         }
         using var mutex = new Mutex(true, @"Local\Ducktimizer.SingleInstance", out var firstInstance);
         if (!firstInstance) return;
-        AppDomain.CurrentDomain.UnhandledException += (_, e) => AppLogger.Error((Exception)e.ExceptionObject, "Falha não tratada");
+        AppDomain.CurrentDomain.UnhandledException += (_, e) => { var exception = (Exception)e.ExceptionObject; AppLogger.Error(exception, "Falha não tratada"); Telemetry.Report(exception, "unhandled-crash", "crash"); };
         AppLogger.Info("Ducktimizer iniciado");
         BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
     }
