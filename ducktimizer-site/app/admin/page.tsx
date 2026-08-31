@@ -9,6 +9,7 @@ import {
   FlaskConical,
   KeyRound,
   DollarSign,
+  Download,
   Settings,
   LogOut,
   RefreshCw,
@@ -468,6 +469,19 @@ export default function AdminPage() {
               value={token}
               className="mt-4 h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 font-mono text-xs text-slate-300 outline-none"
             />
+            <div className="mt-4 flex flex-col gap-3 rounded-xl border border-sky-200/10 bg-sky-200/[.04] p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-semibold text-sky-100">Pacote do tester</p>
+                <p className="mt-1 text-xs text-slate-400">Envie a chave acima junto com o instalador oficial. O vínculo ao Device ID acontece na primeira ativação.</p>
+              </div>
+              <a
+                href="/api/update/download"
+                download
+                className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-sky-100 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-white"
+              >
+                <Download className="size-4" /> Baixar instalador
+              </a>
+            </div>
           </section>
         )}
         {error && (
