@@ -47,6 +47,7 @@ type Overview = {
   };
   orders: Order[];
   views: Array<{ day: string; pageViews: number }>;
+  errors: Array<{ id: string; kind: string; context: string; message: string; appVersion?: string; createdAt: number }>;
 };
 type CommercialSettings = { price: string; promoPrice: string; promoEndsAt: string; latestVersion: string; releaseNotes: string; businessName: string; taxId: string; businessAddress: string; supportEmail: string };
 type SubmitEvent = { preventDefault(): void; currentTarget: HTMLFormElement };
@@ -292,6 +293,10 @@ export default function AdminPage() {
               <p className="mt-1 text-xs text-slate-500">{label}</p>
             </article>
           ))}
+        </section>
+        <section className="mt-5 rounded-[22px] border border-white/10 bg-[#171b20] p-5">
+          <div className="flex items-center justify-between gap-3"><div><h2 className="font-semibold">Erros e crashes recentes</h2><p className="mt-1 text-xs text-slate-500">Relatos técnicos enviados pelo aplicativo, sem arquivos pessoais.</p></div><span className="rounded-full bg-red-300/10 px-2.5 py-1 text-xs text-red-300">{overview?.errors?.length ?? 0} registrados</span></div>
+          <div className="mt-4 space-y-2">{(overview?.errors ?? []).slice(0, 8).map((item) => <article key={item.id} className="rounded-xl border border-white/[.06] bg-black/10 p-3"><div className="flex flex-wrap items-center gap-2 text-xs"><span className="rounded-full bg-red-300/10 px-2 py-0.5 text-red-300">{item.kind}</span><span className="text-slate-500">{item.context}</span><span className="ml-auto text-slate-600">{new Date(item.createdAt).toLocaleString('pt-BR')}</span></div><p className="mt-1 break-words text-sm text-slate-300">{item.message}</p></article>)}{!overview?.errors?.length && <p className="text-sm text-slate-500">Nenhum erro reportado.</p>}</div>
         </section>
 
         <section className="mt-5 grid gap-5 lg:grid-cols-[1.35fr_.65fr]">
