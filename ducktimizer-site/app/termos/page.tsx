@@ -79,6 +79,12 @@ export default async function TermsPage() {
           ],
         },
         {
+          title: 'Diagnóstico técnico',
+          paragraphs: [
+            'Para melhorar estabilidade e corrigir falhas, o aplicativo pode enviar relatórios técnicos resumidos de erros e encerramentos inesperados. Esses relatórios podem conter o tipo do erro, contexto, mensagem técnica e versão do aplicativo, mas não incluem arquivos pessoais ou o conteúdo dos seus documentos. O tratamento segue a Política de Privacidade e é limitado a segurança, suporte e evolução do produto.',
+          ],
+        },
+        {
           title: 'Cancelamento e legislação',
           paragraphs: [
             `O consumidor pode exercer o direito de arrependimento em até 7 dias contados da contratação ou do recebimento do produto digital, conforme aplicável, pelo e-mail ${seller.supportEmail || 'de suporte informado no site'}. Os valores pagos serão devolvidos na forma e nos prazos legalmente exigidos. A ativação ou o download não eliminam direitos assegurados por lei.`,

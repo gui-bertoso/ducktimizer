@@ -132,6 +132,7 @@ export const telemetryErrors = sqliteTable('telemetry_errors', {
   kind: text('kind').notNull(),
   context: text('context').notNull(),
   message: text('message').notNull(),
+  status: text('status').notNull().default('new'),
   appVersion: text('app_version'),
   createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 }, table => [index('idx_telemetry_errors_created').on(table.createdAt)]);

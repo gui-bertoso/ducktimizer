@@ -26,10 +26,12 @@ export default async function PrivacyPage() {
           paragraphs: [
             'No checkout podemos tratar nome, e-mail, identificadores técnicos da requisição, data, status e referência do pedido. O Device ID é recebido somente na primeira ativação. O painel administrativo registra informações necessárias para emissão, validação e suporte da licença. O aplicativo guarda localmente licença, logs operacionais, aceite dos termos e backups das configurações.',
             'Ao iniciar, o aplicativo pode consultar versão disponível e situação da licença. A validação envia identificador da licença e Device ID, sem arquivos pessoais, lista de programas ou conteúdo de documentos. Uma autorização assinada de curta duração permite tolerância temporária sem conexão.',
+            'Para segurança, estabilidade e suporte, o aplicativo pode enviar um relatório técnico de erro ou encerramento inesperado contendo tipo do evento, contexto, mensagem técnica e versão do aplicativo. Não enviamos arquivos pessoais, conteúdo de documentos, lista de processos ou o texto completo dos logs locais. Esses relatos são usados para corrigir falhas e ficam retidos pelo tempo necessário à investigação e prevenção de reincidência, com acesso restrito.',
           ],
           items: [
             'Não armazenamos número completo de cartão ou código de segurança.',
             'O aplicativo não envia arquivos pessoais nem o conteúdo dos seus documentos.',
+            'Relatórios técnicos de erro/crash são limitados ao diagnóstico e não são vendidos nem usados para publicidade comportamental.',
             'O Device ID é um identificador derivado do computador e usado para impedir ativação em outro dispositivo.',
           ],
         },

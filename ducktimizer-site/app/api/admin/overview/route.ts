@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     env.DB.prepare(
       `SELECT day, page_views AS pageViews FROM daily_metrics ORDER BY day DESC LIMIT 30`,
     ).all(),
-    env.DB.prepare(`SELECT id, kind, context, message, app_version AS appVersion, created_at AS createdAt FROM telemetry_errors ORDER BY created_at DESC LIMIT 30`).all(),
+    env.DB.prepare(`SELECT id, kind, context, message, status, app_version AS appVersion, created_at AS createdAt FROM telemetry_errors ORDER BY created_at DESC LIMIT 30`).all(),
   ]);
   const operations = await env.DB.prepare(`SELECT
     SUM(CASE WHEN activated_at IS NOT NULL THEN 1 ELSE 0 END) AS activated,
