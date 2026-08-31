@@ -28,7 +28,7 @@ export default function RecoverPage() {
       <form action={recover} className="mt-6">
         <label htmlFor="recover-email" className="text-sm">E-mail da compra</label><Input id="recover-email" name="email" type="email" required autoComplete="email" className="mt-2 h-11 border-white/10 bg-white/[.04]" />
         <label htmlFor="recover-order" className="mt-4 block text-sm">Código do pedido</label><Input id="recover-order" name="orderCode" required placeholder="A1B2C3D4" pattern="[A-Fa-f0-9]{8}" maxLength={8} className="mt-2 h-11 border-white/10 bg-white/[.04] font-mono uppercase" />
-        <Button disabled={loading} className="mt-6 h-11 w-full bg-sky-100 text-slate-950 hover:bg-white">{loading ? 'Procurando…' : 'Recuperar compra'}</Button>
+        <Button type="submit" disabled={loading} className="mt-6 h-11 w-full bg-sky-100 text-slate-950 hover:bg-white">{loading ? 'Procurando…' : 'Recuperar compra'}</Button>
         {message && <output className="mt-4 block text-sm text-red-300">{message}</output>}
       </form>
       <Link href="/" className="mt-6 flex items-center justify-center gap-2 text-xs text-slate-500 hover:text-slate-300"><Gauge className="size-4" />Voltar ao Ducktimizer</Link>

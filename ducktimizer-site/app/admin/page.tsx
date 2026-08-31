@@ -223,7 +223,7 @@ export default function AdminPage() {
             required
             className="mt-2 h-11 border-white/10 bg-white/[.04]"
           />
-          <Button className="mt-4 h-11 w-full rounded-xl bg-sky-100 text-slate-950 hover:bg-white">
+          <Button type="submit" className="mt-4 h-11 w-full rounded-xl bg-sky-100 text-slate-950 hover:bg-white">
             Entrar
           </Button>
           {error && (
@@ -401,6 +401,7 @@ export default function AdminPage() {
                   </Button>
                 )}
                 <Button
+                  type="submit"
                   disabled={issuing}
                   className="flex-1 bg-sky-100 text-slate-950 hover:bg-white"
                 >
@@ -441,7 +442,7 @@ export default function AdminPage() {
             <Field label="Endereço físico" name="businessAddress" value={settings.businessAddress} />
           </div>
           <label className="mt-4 block text-xs text-slate-400">Notas da atualização<textarea name="releaseNotes" defaultValue={settings.releaseNotes} className="mt-2 min-h-20 w-full rounded-xl border border-white/10 bg-white/[.04] p-3 text-sm" /></label>
-          <Button disabled={savingSettings} className="mt-4 bg-sky-100 text-slate-950 hover:bg-white">{savingSettings ? 'Salvando…' : 'Salvar configurações'}</Button>
+          <Button type="submit" disabled={savingSettings} className="mt-4 bg-sky-100 text-slate-950 hover:bg-white">{savingSettings ? 'Salvando…' : 'Salvar configurações'}</Button>
           {(!settings.businessName || !settings.taxId || !settings.businessAddress || !settings.supportEmail) && <p className="mt-3 text-xs text-amber-300">Lançamento jurídico incompleto: preencha identificação, documento, endereço e suporte.</p>}
         </form>}
         {token && (
