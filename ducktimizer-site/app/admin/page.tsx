@@ -58,6 +58,16 @@ const statusLabels: Record<string, string> = {
   cancelled: 'Cancelado',
 };
 
+function orderStatus(order: Order) {
+  if (order.status === 'licensed' && order.licenseEnabled === 0)
+    return { label: 'Revogada', className: 'bg-red-300/10 text-red-300' };
+  if (order.status === 'licensed' && order.deviceId === 'UNBOUND')
+    return { label: 'Não ativada', className: 'bg-amber-300/10 text-amber-200' };
+  if (order.status === 'licensed')
+    return { label: 'Ativa', className: 'bg-emerald-300/10 text-emerald-300' };
+  return { label: statusLabels[order.status] ?? order.status, className: 'bg-white/[.06] text-slate-200' };
+}
+
 export default function AdminPage() {
   const [authenticated, setAuthenticated] = useState<boolean | null>(null);
   const [overview, setOverview] = useState<Overview | null>(null);
@@ -300,8 +310,8 @@ export default function AdminPage() {
                         <p className="text-xs text-slate-500">{order.email}</p>
                       </td>
                       <td className="px-4 py-4">
-                        <span className="rounded-full bg-white/[.06] px-2.5 py-1 text-xs">
-                          {statusLabels[order.status] ?? order.status}
+                        <span className={`rounded-full px-2.5 py-1 text-xs ${orderStatus(order).className}`}>
+                          {orderStatus(order).label}
                         </span>
                       </td>
                       <td className="px-4 py-4 font-mono text-xs text-slate-400">
