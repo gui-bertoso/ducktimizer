@@ -9,7 +9,7 @@ export async function GET(request: Request) {
       SUM(CASE WHEN status = 'paid' THEN 1 ELSE 0 END) AS paid,
       SUM(CASE WHEN status = 'licensed' THEN 1 ELSE 0 END) AS licensed,
       SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) AS pending
-      ,SUM(CASE WHEN status IN ('paid','licensed') THEN amount_cents ELSE 0 END) AS revenueCents
+      ,SUM(CASE WHEN status IN ('paid','licensed') AND asaas_checkout_id IS NOT NULL THEN amount_cents ELSE 0 END) AS revenueCents
       FROM orders`).first(),
     env.DB.prepare(`SELECT o.id, o.name, o.email, o.device_id AS deviceId, o.status,
       o.asaas_checkout_id AS checkoutId, o.created_at AS createdAt, o.paid_at AS paidAt,
