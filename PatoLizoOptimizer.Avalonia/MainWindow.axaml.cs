@@ -3,6 +3,7 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Threading;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -208,6 +209,8 @@ public partial class MainWindow : Window
             if (result.Success)
             {
                 activated = true;
+                var setup = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Ducktimizer", "Ducktimizer-Setup.exe");
+                if (File.Exists(setup)) Process.Start(new ProcessStartInfo(setup, "--create-shortcuts") { UseShellExecute = true });
                 dialog.Close();
             }
             else
