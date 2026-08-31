@@ -8,12 +8,15 @@ import {
   rateLimited,
   rateLimitResponse,
   requestTooLarge,
+  hasSameOrigin,
 } from '@/lib/security';
+import { activePrice, getSettings } from '@/lib/settings';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(request: Request) {
   try {
+    if (!hasSameOrigin(request)) return Response.json({ message: 'Origem inválida.' }, { status: 403 });
     if (requestTooLarge(request, 8_192))
       return Response.json(
         { message: 'Solicitação muito grande.' },
@@ -53,6 +56,11 @@ export async function POST(request: Request) {
     }
 
     const db = getDb();
+    const commercialSettings = await getSettings();
+    if (!commercialSettings.businessName || !commercialSettings.taxId || !commercialSettings.businessAddress || !commercialSettings.supportEmail) {
+      return Response.json({ message: 'Vendas temporariamente indisponíveis enquanto o fornecedor conclui a identificação legal.' }, { status: 503 });
+    }
+    const price = activePrice(commercialSettings);
     const existing = await db
       .select()
       .from(orders)
@@ -88,6 +96,7 @@ export async function POST(request: Request) {
           id: orderId,
           name,
           email,
+          amountCents: Math.round(price * 100),
           deviceId: 'UNBOUND',
           status: 'pending',
           legalAcceptedAt: now,
@@ -104,6 +113,7 @@ export async function POST(request: Request) {
       name,
       email,
       siteUrl,
+      price,
     });
     await db
       .update(orders)

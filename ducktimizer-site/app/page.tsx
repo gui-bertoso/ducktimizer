@@ -33,6 +33,7 @@ const adjustments = [
 ];
 
 export default function Home() {
+  const [commerce, setCommerce] = useState({ price: '17,50', regularPrice: '17,50', promotion: false, promoEndsAt: null as string | null, salesReady: false });
   const [state, setState] = useState<'idle' | 'sending' | 'done' | 'error'>(
     'idle',
   );
@@ -40,6 +41,7 @@ export default function Home() {
 
   useEffect(() => {
     void fetch('/api/analytics/view', { method: 'POST', keepalive: true });
+    void fetch('/api/public-config').then(response => response.json()).then(value => setCommerce(value as typeof commerce)).catch(() => {});
   }, []);
 
   async function submit(formData: FormData) {
@@ -81,7 +83,7 @@ export default function Home() {
             <span className="font-semibold tracking-tight">Ducktimizer</span>
           </a>
           <div className="flex items-center gap-5 text-xs text-slate-400">
-            <span className="hidden sm:inline">v3.3 · Windows 10/11</span>
+            <span className="hidden sm:inline">v3.4.1 · Windows 10/11</span>
             <a
               href="#comprar"
               className="border-b border-sky-100/60 pb-0.5 text-sky-100"
@@ -111,6 +113,7 @@ export default function Home() {
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <Button
+              disabled={!commerce.salesReady}
               className="h-11 rounded-md bg-sky-100 px-5 text-slate-950 hover:bg-white"
               onClick={() =>
                 document
@@ -118,7 +121,7 @@ export default function Home() {
                   ?.scrollIntoView({ behavior: 'smooth' })
               }
             >
-              Comprar por R$ 17,50 <ArrowRight />
+              {commerce.salesReady ? `Comprar por R$ ${commerce.price}` : 'Vendas em configuração'} <ArrowRight />
             </Button>
             <a
               href="#ajustes"
@@ -257,7 +260,8 @@ export default function Home() {
               Ducktimizer Pro
             </p>
             <p className="mt-5 text-5xl font-semibold tracking-tight">
-              R$ 17,50
+              {commerce.promotion && <span className="mr-3 text-lg text-slate-600 line-through">R$ {commerce.regularPrice}</span>}
+              R$ {commerce.price}
             </p>
             <p className="mt-2 text-sm text-slate-500">
               pagamento único · licença permanente
@@ -356,7 +360,7 @@ export default function Home() {
             </div>
             <Button
               type="submit"
-              disabled={state === 'sending' || state === 'done'}
+              disabled={!commerce.salesReady || state === 'sending' || state === 'done'}
               className="mt-6 h-12 w-full rounded-md bg-sky-100 text-slate-950 hover:bg-white"
             >
               {state === 'sending'
@@ -366,6 +370,7 @@ export default function Home() {
                   : 'Ir para o pagamento'}{' '}
               <ArrowRight />
             </Button>
+            {!commerce.salesReady && <p className="mt-3 text-center text-xs text-amber-300">A identificação legal do fornecedor está sendo concluída. As vendas serão liberadas em seguida.</p>}
             {message && (
               <output
                 className={`mt-4 block text-sm ${state === 'error' ? 'text-red-300' : 'text-emerald-300'}`}

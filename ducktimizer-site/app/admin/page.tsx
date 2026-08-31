@@ -8,6 +8,8 @@ import {
   Gauge,
   FlaskConical,
   KeyRound,
+  DollarSign,
+  Settings,
   LogOut,
   RefreshCw,
   ShoppingCart,
@@ -29,6 +31,8 @@ type Order = {
   deliveryError?: string;
   downloadCount?: number;
   maxDownloads?: number;
+  licenseEnabled?: number;
+  activatedAt?: number;
 };
 type Overview = {
   totals: {
@@ -36,10 +40,14 @@ type Overview = {
     paid?: number;
     licensed?: number;
     pending?: number;
+    revenueCents?: number;
+    activated?: number;
+    suspended?: number;
   };
   orders: Order[];
   views: Array<{ day: string; pageViews: number }>;
 };
+type CommercialSettings = { price: string; promoPrice: string; promoEndsAt: string; latestVersion: string; releaseNotes: string; businessName: string; taxId: string; businessAddress: string; supportEmail: string };
 type SubmitEvent = { preventDefault(): void; currentTarget: HTMLFormElement };
 
 const statusLabels: Record<string, string> = {
@@ -57,6 +65,8 @@ export default function AdminPage() {
   const [testing, setTesting] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [token, setToken] = useState('');
+  const [settings, setSettings] = useState<CommercialSettings | null>(null);
+  const [savingSettings, setSavingSettings] = useState(false);
 
   const load = useCallback(async () => {
     const response = await fetch('/api/admin/overview', { cache: 'no-store' });
@@ -70,6 +80,8 @@ export default function AdminPage() {
       return;
     }
     setOverview((await response.json()) as Overview);
+    const settingsResponse = await fetch('/api/admin/settings', { cache: 'no-store' });
+    if (settingsResponse.ok) setSettings(await settingsResponse.json() as CommercialSettings);
     setAuthenticated(true);
     setError('');
   }, []);
@@ -92,6 +104,22 @@ export default function AdminPage() {
       return;
     }
     await load();
+  }
+
+  async function saveSettings(event: SubmitEvent) {
+    event.preventDefault(); setSavingSettings(true); setError('');
+    const payload = Object.fromEntries(new FormData(event.currentTarget));
+    const response = await fetch('/api/admin/settings', { method: 'PUT', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
+    const result = await response.json() as { message?: string };
+    if (!response.ok) setError(result.message ?? 'Não foi possível salvar as configurações.'); else await load();
+    setSavingSettings(false);
+  }
+
+  async function manageLicense(orderId: string, action: string) {
+    if (!window.confirm('Confirmar esta ação administrativa?')) return;
+    const response = await fetch('/api/admin/licenses', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ orderId, action }) });
+    const result = await response.json() as { message?: string };
+    if (!response.ok) setError(result.message ?? 'Ação não concluída.'); else await load();
   }
 
   async function logout() {
@@ -163,6 +191,8 @@ export default function AdminPage() {
     ['Pagos', Number(overview?.totals.paid ?? 0), CheckCircle2],
     ['Licenciados', Number(overview?.totals.licensed ?? 0), KeyRound],
     ['Acessos (30d)', totalViews, BarChart3],
+    ['Ativações', Number(overview?.totals.activated ?? 0), KeyRound],
+    ['Receita', Number(overview?.totals.revenueCents ?? 0) / 100, DollarSign],
   ];
 
   if (authenticated === null)
@@ -229,14 +259,14 @@ export default function AdminPage() {
           </div>
         </header>
 
-        <section className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <section className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
           {cards.map(([label, value, Icon]) => (
             <article
               key={label}
               className="rounded-2xl border border-white/10 bg-[#171b20] p-5"
             >
               <Icon className="size-5 text-sky-200" />
-              <p className="mt-5 text-3xl font-semibold">{value}</p>
+              <p className="mt-5 text-3xl font-semibold">{label === 'Receita' ? `R$ ${value.toFixed(2).replace('.', ',')}` : value}</p>
               <p className="mt-1 text-xs text-slate-500">{label}</p>
             </article>
           ))}
@@ -295,17 +325,12 @@ export default function AdminPage() {
                         )}
                       </td>
                       <td className="px-5 py-4 text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={order.status !== 'paid'}
-                          onClick={() => {
-                            setSelectedOrder(order);
-                            setToken('');
-                          }}
-                        >
-                          Gerar
-                        </Button>
+                        <div className="flex justify-end gap-1">
+                          <Button size="sm" variant="outline" disabled={order.status !== 'paid'} onClick={() => { setSelectedOrder(order); setToken(''); }}>Gerar</Button>
+                          {order.status === 'licensed' && <Button size="sm" variant="outline" onClick={() => void manageLicense(order.id, 'reset-device')}>Desvincular</Button>}
+                          {order.status === 'licensed' && <Button size="sm" variant="outline" onClick={() => void manageLicense(order.id, order.licenseEnabled === 0 ? 'reactivate' : 'suspend')}>{order.licenseEnabled === 0 ? 'Reativar' : 'Suspender'}</Button>}
+                          {order.status === 'licensed' && <Button size="sm" variant="outline" onClick={() => void manageLicense(order.id, 'reset-downloads')}>Downloads</Button>}
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -403,6 +428,22 @@ export default function AdminPage() {
             </div>
           </div>
         </section>
+        {settings && <form onSubmit={saveSettings} className="mt-5 rounded-[22px] border border-white/10 bg-[#171b20] p-5">
+          <div className="flex items-center gap-2"><Settings className="size-5 text-sky-200"/><div><h2 className="font-semibold">Comercial e lançamento</h2><p className="text-xs text-slate-500">Preço, promoção, atualização e identificação legal do fornecedor.</p></div></div>
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <Field label="Preço normal" name="price" value={settings.price} type="number" />
+            <Field label="Preço promocional" name="promoPrice" value={settings.promoPrice} type="number" />
+            <Field label="Fim da promoção" name="promoEndsAt" value={settings.promoEndsAt} type="datetime-local" />
+            <Field label="Versão publicada" name="latestVersion" value={settings.latestVersion} />
+            <Field label="Nome legal / empresarial" name="businessName" value={settings.businessName} />
+            <Field label="CPF ou CNPJ" name="taxId" value={settings.taxId} />
+            <Field label="E-mail de suporte" name="supportEmail" value={settings.supportEmail} type="email" />
+            <Field label="Endereço físico" name="businessAddress" value={settings.businessAddress} />
+          </div>
+          <label className="mt-4 block text-xs text-slate-400">Notas da atualização<textarea name="releaseNotes" defaultValue={settings.releaseNotes} className="mt-2 min-h-20 w-full rounded-xl border border-white/10 bg-white/[.04] p-3 text-sm" /></label>
+          <Button disabled={savingSettings} className="mt-4 bg-sky-100 text-slate-950 hover:bg-white">{savingSettings ? 'Salvando…' : 'Salvar configurações'}</Button>
+          {(!settings.businessName || !settings.taxId || !settings.businessAddress || !settings.supportEmail) && <p className="mt-3 text-xs text-amber-300">Lançamento jurídico incompleto: preencha identificação, documento, endereço e suporte.</p>}
+        </form>}
         {token && (
           <section className="mt-5 rounded-[22px] border border-emerald-300/20 bg-emerald-300/[.04] p-5">
             <div className="flex items-center justify-between gap-4">
@@ -434,4 +475,8 @@ export default function AdminPage() {
       </div>
     </main>
   );
+}
+
+function Field({ label, name, value, type = 'text' }: { label: string; name: string; value: string; type?: string }) {
+  return <label className="text-xs text-slate-400">{label}<Input name={name} type={type} step={type === 'number' ? '0.01' : undefined} defaultValue={value} className="mt-2 border-white/10 bg-white/[.04]" /></label>;
 }

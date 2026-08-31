@@ -26,6 +26,7 @@ export async function createAsaasCheckout(input: {
   name: string;
   email: string;
   siteUrl: string;
+  price: number;
 }) {
   if (!env.ASAAS_API_KEY) throw new Error('ASAAS_API_KEY não configurada.');
 
@@ -54,7 +55,7 @@ export async function createAsaasCheckout(input: {
           description:
             'Licença permanente individual vinculada a um computador',
           quantity: 1,
-          value: Number(env.DUCKTIMIZER_PRICE || '17.50'),
+          value: input.price,
         },
       ],
       customerData: { name: input.name, email: input.email },

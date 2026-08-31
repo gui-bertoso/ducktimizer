@@ -11,12 +11,15 @@ using System.Threading.Tasks;
 
 namespace PatoLizoOptimizer;
 
-public sealed record LicensePayload(string Customer, string DeviceId, DateTime ExpiresUtc, string Edition);
+public sealed record LicensePayload(string Customer, string DeviceId, DateTime ExpiresUtc, string Edition, string? LicenseId = null);
+public sealed record LicenseStatusResponse(bool Active, string LeaseUntil, string? Signature);
+public sealed record CachedLease(string LicenseId, string DeviceId, string LeaseUntil, string Signature);
 
 public static class LicenseService
 {
     private const string ActivationUrl = "https://fluffy-octo-palm-tree.guilhermedasilvabertoso.workers.dev/api/activate";
-    private const string PublicKey = """
+    private const string StatusUrl = "https://fluffy-octo-palm-tree.guilhermedasilvabertoso.workers.dev/api/license/status";
+    internal const string VerificationPublicKey = """
 -----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEa4QwqBHmllMJa32suaCUTxSLBusT
 niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
@@ -25,6 +28,7 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
 
     private static readonly string LicensePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Ducktimizer", "license.key");
+    private static readonly string LeasePath = Path.Combine(Path.GetDirectoryName(LicensePath)!, "license.lease");
 
     public static string DeviceId
     {
@@ -50,6 +54,46 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
         if (!File.Exists(LicensePath)) { reason = "Licença não encontrada."; return false; }
         try { return Validate(File.ReadAllText(LicensePath).Trim(), out license, out reason); }
         catch (Exception) { reason = "Não foi possível ler a licença instalada."; return false; }
+    }
+
+    public static async Task<(bool Success, string Reason)> CheckStatusAsync(LicensePayload license)
+    {
+        if (string.IsNullOrWhiteSpace(license.LicenseId)) return (true, "Licença legada válida.");
+        try
+        {
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
+            using var response = await client.PostAsJsonAsync(StatusUrl, new { licenseId = license.LicenseId, deviceId = DeviceId });
+            var status = await response.Content.ReadFromJsonAsync<LicenseStatusResponse>();
+            if (status is { Active: true } && VerifyLease(license.LicenseId, DeviceId, status.LeaseUntil, status.Signature ?? ""))
+            {
+                File.WriteAllText(LeasePath, JsonSerializer.Serialize(new CachedLease(license.LicenseId, DeviceId, status.LeaseUntil, status.Signature!)));
+                return (true, "Licença online válida.");
+            }
+            if (status is { Active: false }) return (false, "Esta licença foi suspensa ou não corresponde a este computador.");
+        }
+        catch (Exception ex) { AppLogger.Info($"Validação online indisponível: {ex.Message}"); }
+        return CachedLeaseValid(license.LicenseId) ? (true, "Validação temporária offline.") : (false, "Conecte-se à internet para renovar a validação da licença.");
+    }
+
+    private static bool CachedLeaseValid(string licenseId)
+    {
+        try
+        {
+            var lease = JsonSerializer.Deserialize<CachedLease>(File.ReadAllText(LeasePath));
+            return lease is not null && lease.LicenseId == licenseId && lease.DeviceId == DeviceId && DateTime.TryParse(lease.LeaseUntil, null, System.Globalization.DateTimeStyles.RoundtripKind, out var until) && until.ToUniversalTime() > DateTime.UtcNow && VerifyLease(lease.LicenseId, lease.DeviceId, lease.LeaseUntil, lease.Signature);
+        }
+        catch { return false; }
+    }
+
+    private static bool VerifyLease(string licenseId, string deviceId, string until, string signature)
+    {
+        try
+        {
+            var message = Encoding.UTF8.GetBytes($"{licenseId}|{deviceId}|{until}");
+            using var verifier = ECDsa.Create(); verifier.ImportFromPem(VerificationPublicKey);
+            return verifier.VerifyData(message, Decode(signature), HashAlgorithmName.SHA256);
+        }
+        catch { return false; }
     }
 
     public static async Task<(bool Success, LicensePayload? License, string Reason)> ActivateAsync(string key)
@@ -94,7 +138,7 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
             if (parts.Length != 2) throw new FormatException();
             var payloadBytes = Decode(parts[0]);
             using var verifier = ECDsa.Create();
-            verifier.ImportFromPem(PublicKey);
+            verifier.ImportFromPem(VerificationPublicKey);
             if (!verifier.VerifyData(payloadBytes, Decode(parts[1]), HashAlgorithmName.SHA256))
             { reason = "Assinatura da licença inválida."; return false; }
             license = JsonSerializer.Deserialize<LicensePayload>(payloadBytes) ?? throw new FormatException();

@@ -12,14 +12,41 @@ namespace PatoLizoOptimizer;
 public partial class MainWindow : Window
 {
     private bool _busy;
+    private UpdateManifest? _availableUpdate;
     public MainWindow()
     {
         InitializeComponent();
         UpdateState();
         Opened += async (_, _) =>
         {
-            if (await EnsureLicense()) await EnsureTerms();
+            if (await EnsureLicense())
+            {
+                await EnsureTerms();
+                _availableUpdate = await UpdateService.CheckAsync();
+                UpdateButton.IsVisible = _availableUpdate is not null;
+            }
         };
+    }
+
+    private async void Update_Click(object? sender, RoutedEventArgs e)
+    {
+        if (_busy || _availableUpdate is null) return;
+        SetBusy(true);
+        try
+        {
+            StateTitle.Text = $"Baixando Ducktimizer {_availableUpdate.Version}…";
+            var progress = new Progress<int>(percent => { ApplyProgress.Value = percent; StateDetail.Text = $"{percent}% baixado — verificando integridade"; });
+            var installer = await UpdateService.DownloadAsync(_availableUpdate, progress);
+            UpdateService.LaunchInstaller(installer);
+            Close();
+        }
+        catch (Exception ex)
+        {
+            AppLogger.Error(ex, "Falha ao atualizar");
+            SetBusy(false);
+            StateTitle.Text = "Atualização não concluída";
+            StateDetail.Text = ex.Message;
+        }
     }
 
     private void Preset_Changed(object? sender, SelectionChangedEventArgs e)
@@ -104,7 +131,7 @@ public partial class MainWindow : Window
     private void SetBusy(bool busy)
     {
         _busy = busy;
-        ActivateButton.IsEnabled = DeactivateButton.IsEnabled = !busy;
+        ActivateButton.IsEnabled = DeactivateButton.IsEnabled = UpdateButton.IsEnabled = !busy;
         ApplyProgress.IsVisible = busy;
         if (busy) ApplyProgress.Value = 0;
         if (busy)
@@ -142,7 +169,11 @@ public partial class MainWindow : Window
 
     private async Task<bool> EnsureLicense()
     {
-        if (LicenseService.IsActivated(out _, out _)) return true;
+        if (LicenseService.IsActivated(out var installed, out _) && installed is not null)
+        {
+            var licenseStatus = await LicenseService.CheckStatusAsync(installed);
+            if (licenseStatus.Success) return true;
+        }
         var activated = false;
         var dialog = new Window { Title = "Ativar Ducktimizer", Width = 560, Height = 410, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
         var device = new TextBox { Text = LicenseService.DeviceId, IsReadOnly = true };
@@ -186,7 +217,7 @@ public partial class MainWindow : Window
     private async Task EnsureTerms()
     {
         var folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ducktimizer");
-        var acceptedFile = Path.Combine(folder, "terms-v3.4.accepted");
+        var acceptedFile = Path.Combine(folder, "terms-v3.4.1.accepted");
         if (File.Exists(acceptedFile)) return;
         var accepted = false;
         var dialog = new Window { Title = "Termos de uso", Width = 620, Height = 470, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
@@ -197,15 +228,15 @@ public partial class MainWindow : Window
         accept.Click += (_, _) => { accepted = true; dialog.Close(); };
         exit.Click += (_, _) => dialog.Close();
         var heading = new TextBlock { Text = "Antes de otimizar", FontSize = 24, FontWeight = Avalonia.Media.FontWeight.Bold };
-        var termsText = "TERMOS DE USO E CIÊNCIA DE RISCO — v3.4\n\n" +
+        var termsText = "TERMOS DE USO E CIÊNCIA DE RISCO — v3.4.1\n\n" +
             "1. FINALIDADE. O Ducktimizer modifica configurações do Windows com o objetivo de reduzir recursos em segundo plano, efeitos visuais, telemetria e aplicativos pré-instalados. Não existe garantia de aumento de FPS, redução de latência ou melhoria específica.\n\n" +
             "2. ADMINISTRADOR. O programa exige privilégios de administrador desde a abertura. Ao aceitar o aviso do Windows, você autoriza alterações no Registro, políticas locais, plano de energia e pacotes de aplicativos deste computador.\n\n" +
             "3. MODOS AGRESSIVOS. Windows seco desativa suavização de fontes, sombras, transparência e efeitos para priorizar uma interface mínima. Pesquisa enxuta remove Bing, destaques e sugestões. Debloat Extremo desinstala aplicativos empacotados e remove seu provisionamento. Edge, Microsoft Store, Windows Update, Defender, Firewall e serviços críticos não são removidos.\n\n" +
             "4. BACKUP E RESTAURAÇÃO. O programa tenta criar um ponto de restauração e registra o estado anterior das configurações. A restauração de Registro e energia é automatizada. A reinstalação de aplicativos removidos não é garantida, pois depende de os arquivos ou pacotes continuarem disponíveis no Windows ou na Microsoft Store.\n\n" +
             "5. EFEITOS POSSÍVEIS. As mudanças podem alterar aparência, notificações, pesquisa, recursos de IA, sincronização, consumo de energia, compatibilidade de aplicativos e comportamento após atualizações do Windows. Algumas alterações exigem reinicialização.\n\n" +
             "6. RESPONSABILIDADE DO USUÁRIO. Use somente em computadores próprios ou autorizados, salve arquivos importantes e revise os grupos selecionados antes de confirmar. O usuário assume a responsabilidade pela escolha dos presets e pelas consequências das mudanças.\n\n" +
-            "7. PRIVACIDADE. O aplicativo não envia arquivos pessoais ou telemetria própria. Logs e backups ficam armazenados localmente.\n\n" +
-            "8. LICENÇA. A licença é individual e vinculada automaticamente ao primeiro dispositivo em que for ativada. Não é permitido compartilhar, revender, alterar ou contornar o mecanismo de ativação. Trocas relevantes de hardware podem exigir uma nova ativação fornecida pelo vendedor.\n\n" +
+            "7. PRIVACIDADE. O aplicativo não envia arquivos pessoais ou telemetria comportamental. Ele consulta o servidor para ativação, validação periódica da licença e atualização, transmitindo versão, identificador da licença e Device ID quando necessário. Logs e backups ficam armazenados localmente.\n\n" +
+            "8. LICENÇA. A licença é individual e vinculada automaticamente ao primeiro dispositivo em que for ativada. O app renova uma autorização assinada de até 7 dias para permitir uso temporário sem conexão. Não é permitido compartilhar, revender, alterar ou contornar o mecanismo de ativação. Trocas relevantes de hardware podem exigir uma nova ativação fornecida pelo vendedor.\n\n" +
             "Este texto é um modelo técnico e deve passar por revisão jurídica antes da comercialização.";
         var terms = new ScrollViewer { Margin = new Avalonia.Thickness(0,16), Content = new TextBlock { Text = termsText, TextWrapping = Avalonia.Media.TextWrapping.Wrap, Foreground = Avalonia.Media.Brush.Parse("#BAC7CD") } };
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Spacing = 10, Margin = new Avalonia.Thickness(0,16,0,0), Children = { exit, accept } };
@@ -214,6 +245,6 @@ public partial class MainWindow : Window
         await dialog.ShowDialog(this);
         if (!accepted) { Close(); return; }
         Directory.CreateDirectory(folder);
-        File.WriteAllText(acceptedFile, "accepted-v3.4");
+        File.WriteAllText(acceptedFile, "accepted-v3.4.1");
     }
 }

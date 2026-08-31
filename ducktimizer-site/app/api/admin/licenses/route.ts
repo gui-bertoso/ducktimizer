@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { getDb } from '@/db';
-import { licenses, orders } from '@/db/schema';
+import { deliveries, licenses, orders } from '@/db/schema';
 import { isAdmin, unauthorized } from '@/lib/admin-auth';
 import { createActivationKey, hashActivationKey } from '@/lib/activation-key';
 import {
@@ -129,4 +129,25 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
+}
+
+export async function PATCH(request: Request) {
+  if (!hasSameOrigin(request)) return Response.json({ message: 'Origem inválida.' }, { status: 403 });
+  if (!await isAdmin(request)) return unauthorized();
+  const body = await request.json().catch(() => null) as { orderId?: string; action?: string } | null;
+  if (!body?.orderId || !/^[0-9a-f-]{36}$/i.test(body.orderId)) return Response.json({ message: 'Pedido inválido.' }, { status: 400 });
+  const db = getDb();
+  const license = (await db.select().from(licenses).where(eq(licenses.orderId, body.orderId)).limit(1))[0];
+  if (!license) return Response.json({ message: 'Licença não encontrada.' }, { status: 404 });
+  if (body.action === 'reset-device') {
+    await db.update(licenses).set({ deviceId: 'UNBOUND', activatedToken: null, activatedAt: null }).where(eq(licenses.id, license.id));
+    await db.update(orders).set({ deviceId: 'UNBOUND', updatedAt: new Date() }).where(eq(orders.id, body.orderId));
+  } else if (body.action === 'suspend') {
+    await db.update(licenses).set({ enabled: false }).where(eq(licenses.id, license.id));
+  } else if (body.action === 'reactivate') {
+    await db.update(licenses).set({ enabled: true }).where(eq(licenses.id, license.id));
+  } else if (body.action === 'reset-downloads') {
+    await db.update(deliveries).set({ downloadCount: 0, expiresAt: new Date(Date.now() + 7 * 86_400_000) }).where(eq(deliveries.orderId, body.orderId));
+  } else return Response.json({ message: 'Ação inválida.' }, { status: 400 });
+  return Response.json({ updated: true });
 }

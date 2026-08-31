@@ -22,6 +22,7 @@ export async function POST(request: Request) {
   const db = getDb();
   const license = (await db.select().from(licenses).where(eq(licenses.activationKeyHash, keyHash)).limit(1))[0];
   if (!license) return Response.json({ message: 'Chave de ativação inválida.' }, { status: 404 });
+  if (!license.enabled) return Response.json({ message: 'Esta licença está suspensa. Entre em contato com o suporte.' }, { status: 403 });
   if (license.expiresAt < new Date()) {
     return Response.json({ message: 'Esta licença expirou.' }, { status: 410 });
   }
@@ -39,7 +40,7 @@ export async function POST(request: Request) {
     }
   }
   const days = license.expiresAt.getUTCFullYear() >= 9999 ? null : Math.max(1, Math.ceil((license.expiresAt.getTime() - Date.now()) / 86_400_000));
-  const issued = await issueLicense(license.customer, deviceId, days);
+  const issued = await issueLicense(license.customer, deviceId, days, license.id);
   await db.update(licenses).set({ activatedToken: issued.token, activatedAt: new Date() }).where(eq(licenses.id, license.id));
   await db.update(orders).set({ deviceId, updatedAt: new Date() }).where(eq(orders.id, license.orderId));
   return Response.json({ token: issued.token }, { headers: { 'cache-control': 'no-store' } });

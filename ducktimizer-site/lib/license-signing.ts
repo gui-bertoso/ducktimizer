@@ -23,6 +23,7 @@ export async function issueLicense(
   customer: string,
   deviceId: string,
   days: number | null,
+  licenseId?: string,
 ) {
   const key = await crypto.subtle.importKey(
     'pkcs8',
@@ -41,10 +42,19 @@ export async function issueLicense(
       DeviceId: deviceId.toUpperCase(),
       ExpiresUtc: expires.toISOString(),
       Edition: 'Pro',
+      LicenseId: licenseId ?? null,
     }),
   );
   const signature = new Uint8Array(
     await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, payload),
   );
   return { token: `${base64Url(payload)}.${base64Url(signature)}`, expires };
+}
+
+export async function signMessage(message: string) {
+  const key = await crypto.subtle.importKey(
+    'pkcs8', decodePem(env.LICENSE_PRIVATE_KEY_PEM),
+    { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign'],
+  );
+  return base64Url(new Uint8Array(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, key, new TextEncoder().encode(message))));
 }

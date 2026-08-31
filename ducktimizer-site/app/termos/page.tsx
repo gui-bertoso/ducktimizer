@@ -1,19 +1,28 @@
 import type { Metadata } from 'next';
 import { LegalPage } from '@/components/legal-page';
+import { getSettings } from '@/lib/settings';
 
 export const metadata: Metadata = {
   title: 'Termos de Uso — Ducktimizer',
   description: 'Termos de uso, licença e ciência de risco do Ducktimizer Pro.',
 };
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const seller = await getSettings();
   return (
     <LegalPage
       eyebrow="Documento legal"
       title="Termos de Uso"
-      updated="30 de agosto de 2026"
+      updated="31 de agosto de 2026"
       intro="Ao comprar, instalar, ativar ou usar o Ducktimizer Pro, você declara que leu e concorda com estes termos. O software altera configurações administrativas do Windows e deve ser usado somente em computadores próprios ou sob sua autorização."
       sections={[
+        {
+          title: 'Fornecedor e atendimento',
+          paragraphs: [
+            `${seller.businessName || 'Fornecedor ainda não cadastrado'} — CPF/CNPJ: ${seller.taxId || 'não informado'}. Endereço: ${seller.businessAddress || 'não informado'}. Atendimento eletrônico: ${seller.supportEmail || 'não informado'}.`,
+            'Esse canal recebe dúvidas, reclamações, pedidos de suporte e solicitações de arrependimento. O atendimento não elimina o direito de procurar órgãos de defesa do consumidor.',
+          ],
+        },
         {
           title: 'Produto e finalidade',
           paragraphs: [
@@ -43,6 +52,7 @@ export default function TermsPage() {
           title: 'Licença vinculada ao dispositivo',
           paragraphs: [
             'A compra concede uma licença pessoal, limitada, não exclusiva e intransferível para um computador. Na primeira ativação, a chave é vinculada automaticamente ao Device ID daquele computador e não poderá ser ativada em outro. Troca relevante de hardware, formatação ou substituição do equipamento pode alterar o identificador e exigir análise de reativação pelo suporte.',
+            'O aplicativo realiza validação periódica da situação da licença e mantém uma autorização assinada com validade de até 7 dias para tolerar indisponibilidade temporária de internet. Licenças suspensas por fraude, estorno confirmado ou violação contratual deixam de renovar essa autorização, preservados os direitos do consumidor e o atendimento de suporte.',
           ],
           items: [
             'É proibido compartilhar, revender ou publicar a licença.',
@@ -71,8 +81,17 @@ export default function TermsPage() {
         {
           title: 'Cancelamento e legislação',
           paragraphs: [
-            'Direitos de arrependimento, garantia legal e demais direitos do consumidor serão respeitados conforme a legislação brasileira aplicável. Em produtos digitais já ativados, cada solicitação será analisada considerando a lei, a entrega da licença e o uso realizado.',
+            `O consumidor pode exercer o direito de arrependimento em até 7 dias contados da contratação ou do recebimento do produto digital, conforme aplicável, pelo e-mail ${seller.supportEmail || 'de suporte informado no site'}. Os valores pagos serão devolvidos na forma e nos prazos legalmente exigidos. A ativação ou o download não eliminam direitos assegurados por lei.`,
+            'Estes termos não excluem nem limitam responsabilidade que não possa ser afastada pelo Código de Defesa do Consumidor. Eventuais limitações técnicas, variação de desempenho e riscos informados não autorizam produto defeituoso, publicidade enganosa ou descumprimento da oferta.',
           ],
+        },
+        {
+          title: 'Propriedade intelectual e uso legítimo',
+          paragraphs: ['O software é licenciado, não vendido. A proteção da licença não impede direitos legalmente assegurados, interoperabilidade permitida ou análise autorizada. É vedada a distribuição não autorizada, adulteração para fraude, revenda de chaves ou contorno do controle de ativação.'],
+        },
+        {
+          title: 'Lei aplicável e solução de conflitos',
+          paragraphs: ['Aplica-se a legislação brasileira. Fica preservado o foro legalmente competente do consumidor e o acesso a Procon, consumidor.gov.br e Poder Judiciário. Nenhuma cláusula destes termos impõe renúncia antecipada a direitos do consumidor.'],
         },
       ]}
     />

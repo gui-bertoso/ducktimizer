@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { CheckCircle2, Clipboard, Download, Gauge, LoaderCircle, RotateCcw } from 'lucide-react';
+import { CheckCircle2, Clipboard, Download, LoaderCircle, RotateCcw } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 

@@ -4,8 +4,8 @@ $WorkerName = 'fluffy-octo-palm-tree'
 $SiteUrl = 'https://fluffy-octo-palm-tree.guilhermedasilvabertoso.workers.dev'
 $WebhookUrl = "$SiteUrl/api/webhooks/asaas"
 $BucketName = 'ducktimizer-downloads'
-$InstallerKey = 'Ducktimizer-Setup-3.4.0-win-x64.exe'
-$DefaultInstaller = '..\outputs\installer\Ducktimizer-Setup-3.4.0-win-x64.exe'
+$InstallerKey = 'Ducktimizer-Setup-3.4.1-win-x64.exe'
+$DefaultInstaller = '..\outputs\installer\Ducktimizer-Setup-3.4.1-win-x64.exe'
 $DefaultPrivateKey = '..\outputs\Ducktimizer-Seller-Kit\ducktimizer-private.pem'
 $SecretFile = $null
 

@@ -50,10 +50,11 @@
     </Grid>
    </Border>
 
-   <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto" ColumnSpacing="9">
-    <TextBlock Text="Ducktimizer Pro  •  v3.4" Foreground="#65737C" FontSize="11" VerticalAlignment="Center"/>
-    <Button x:Name="DeactivateButton" Grid.Column="1" Classes="secondary" Content="Restaurar" Click="Deactivate_Click"/>
-    <Button x:Name="ActivateButton" Grid.Column="2" Classes="primary" Content="Ativar selecionadas  →" Click="Activate_Click"/>
+   <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="9">
+    <TextBlock Text="Ducktimizer Pro  •  v3.4.1" Foreground="#65737C" FontSize="11" VerticalAlignment="Center"/>
+    <Button x:Name="UpdateButton" Grid.Column="1" Classes="secondary" Content="Nova versão disponível" IsVisible="False" Click="Update_Click"/>
+    <Button x:Name="DeactivateButton" Grid.Column="2" Classes="secondary" Content="Restaurar" Click="Deactivate_Click"/>
+    <Button x:Name="ActivateButton" Grid.Column="3" Classes="primary" Content="Ativar selecionadas  →" Click="Activate_Click"/>
    </Grid>
   </Grid>
  </Border>

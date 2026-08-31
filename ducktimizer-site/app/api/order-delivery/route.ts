@@ -40,7 +40,7 @@ export async function GET(request: Request) {
     customer: order.name,
     activationStatus: order.deviceId === 'UNBOUND' ? 'Aguardando primeira ativação' : 'Vinculada ao dispositivo',
     paidAt: order.paidAt?.toISOString() ?? null,
-    price: '17,50',
+    price: (order.amountCents / 100).toFixed(2).replace('.', ','),
     license: license[0].licenseToken,
     downloadUrl: `/api/download?token=${encodeURIComponent(downloadToken)}`,
     downloadsUsed: delivery[0].downloadCount,

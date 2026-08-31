@@ -12,6 +12,7 @@ export const orders = sqliteTable(
     id: text('id').primaryKey(),
     name: text('name').notNull(),
     email: text('email').notNull(),
+    amountCents: integer('amount_cents').notNull().default(1750),
     deviceId: text('device_id').notNull(),
     status: text('status', {
       enum: ['pending', 'paid', 'licensed', 'cancelled'],
@@ -61,6 +62,7 @@ export const licenses = sqliteTable(
     activationKeyHash: text('activation_key_hash'),
     activatedToken: text('activated_token'),
     activatedAt: integer('activated_at', { mode: 'timestamp' }),
+    enabled: integer('enabled', { mode: 'boolean' }).notNull().default(true),
     expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   },
@@ -106,4 +108,21 @@ export const rateLimits = sqliteTable(
     uniqueIndex('idx_rate_limits_bucket_key').on(table.bucket, table.keyHash),
     index('idx_rate_limits_window').on(table.windowStart),
   ],
+);
+
+export const settings = sqliteTable('settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: integer('updated_at', { mode: 'timestamp' }).notNull(),
+});
+
+export const adminAudit = sqliteTable(
+  'admin_audit',
+  {
+    id: text('id').primaryKey(),
+    action: text('action').notNull(),
+    detail: text('detail'),
+    createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+  },
+  table => [index('idx_admin_audit_created').on(table.createdAt)],
 );

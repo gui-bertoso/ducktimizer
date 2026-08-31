@@ -73,11 +73,7 @@ export function LegalPage({
             </section>
           ))}
         </div>
-        <p className="mt-8 text-xs leading-6 text-slate-600">
-          Em caso de dúvida, use o canal de suporte informado no momento da
-          compra. Estes documentos devem ser revisados por profissional jurídico
-          antes do início da comercialização em escala.
-        </p>
+        <p className="mt-8 text-xs leading-6 text-slate-600">Em caso de dúvida, arrependimento ou solicitação sobre dados pessoais, use o canal de suporte identificado neste documento.</p>
       </article>
     </main>
   );

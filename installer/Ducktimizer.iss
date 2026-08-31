@@ -1,5 +1,5 @@
 #define MyAppName "Ducktimizer Pro"
-#define MyAppVersion "3.4.0"
+#define MyAppVersion "3.4.1"
 #define MyAppPublisher "patoLizo"
 #define MyAppExeName "Ducktimizer.exe"
 
@@ -24,7 +24,7 @@ PrivilegesRequired=admin
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 CloseApplications=yes
-RestartApplications=no
+RestartApplications=yes
 AppMutex=Local\Ducktimizer.SingleInstance
 VersionInfoVersion={#MyAppVersion}
 VersionInfoCompany={#MyAppPublisher}
