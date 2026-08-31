@@ -72,7 +72,7 @@ public partial class MainWindow : Window
         var groups = SelectedGroups();
         if (groups.Count == 0) return;
         var warning = groups.Contains("debloat")
-            ? "\n\nDEBLOAT EXTREMO: apps listados serão desinstalados para todos os usuários. A restauração automática desses apps depende dos arquivos ainda existirem no Windows."
+            ? "\n\n⚠ DEBLOAT EXTREMO: os apps selecionados serão desinstalados para todos os usuários. Esta etapa pode ser IRREVERSÍVEL; o backup não garante reinstalação dos componentes removidos."
             : "";
         if (!await Confirm("Ativar otimizações", $"Aplicar {groups.Count} grupos selecionados?\n\nO app tentará criar um ponto de restauração e salvará o estado das configurações.{warning}")) return;
         SetBusy(true);

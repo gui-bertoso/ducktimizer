@@ -38,7 +38,7 @@ export default async function TermsPage() {
         {
           title: 'Presets, modo seco e Debloat',
           paragraphs: [
-            'Presets são seleções prontas, mas o usuário deve revisar as chaves antes de aplicar. O modo Windows seco pode remover transparência, animações, suavização de fontes e outros efeitos visuais. O Debloat pode desinstalar aplicativos selecionados e remover seu provisionamento.',
+            'Presets são seleções prontas, mas o usuário deve revisar as chaves antes de aplicar. O modo Windows seco pode remover transparência, animações, suavização de fontes e outros efeitos visuais. O Debloat pode desinstalar aplicativos selecionados e remover seu provisionamento. Essa remoção pode ser irreversível: o backup registra configurações, mas não garante a reinstalação de componentes e aplicativos removidos.',
             'Edge, Microsoft Store, Windows Update, Microsoft Defender, Firewall e serviços considerados críticos não são removidos pelo padrão do produto. A reinstalação de aplicativos removidos pode depender da Microsoft Store ou de arquivos ainda presentes no sistema.',
           ],
         },
