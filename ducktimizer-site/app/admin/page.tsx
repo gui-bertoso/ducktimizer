@@ -81,6 +81,7 @@ export default function AdminPage() {
   const [settingsSaved, setSettingsSaved] = useState(false);
   const [orderQuery, setOrderQuery] = useState('');
   const [orderFilter, setOrderFilter] = useState('all');
+  const [detailOrder, setDetailOrder] = useState<Order | null>(null);
 
   const load = useCallback(async () => {
     const response = await fetch('/api/admin/overview', { cache: 'no-store' });
@@ -356,6 +357,7 @@ export default function AdminPage() {
                       <td className="px-3 py-4 text-right">
                         <div className="flex flex-wrap justify-end gap-1">
                           <Button size="sm" variant="outline" disabled={order.status !== 'paid'} onClick={() => { setSelectedOrder(order); setToken(''); }}>Gerar</Button>
+                          <Button size="sm" variant="outline" onClick={() => setDetailOrder(order)}>Detalhes</Button>
                           {order.status === 'licensed' && <Button size="sm" variant="outline" onClick={() => void manageLicense(order.id, 'reset-device')}>Desvincular</Button>}
                           {order.status === 'licensed' && <Button size="sm" variant="outline" onClick={() => void manageLicense(order.id, order.licenseEnabled === 0 ? 'reactivate' : 'suspend')}>{order.licenseEnabled === 0 ? 'Reativar' : 'Suspender'}</Button>}
                           {order.status === 'licensed' && <Button size="sm" variant="outline" onClick={() => void manageLicense(order.id, 'reset-downloads')}>Downloads</Button>}
@@ -510,6 +512,25 @@ export default function AdminPage() {
               </a>
             </div>
           </section>
+        )}
+        {detailOrder && (
+          <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4" role="presentation" onClick={() => setDetailOrder(null)}>
+            <section className="w-full max-w-lg rounded-2xl border border-white/10 bg-[#171b20] p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="order-detail-title" onClick={(event) => event.stopPropagation()}>
+              <div className="flex items-start justify-between gap-4">
+                <div><h2 id="order-detail-title" className="text-lg font-semibold">Detalhes do pedido</h2><p className="mt-1 text-xs text-slate-500">{detailOrder.name} · {detailOrder.email}</p></div>
+                <Button size="sm" variant="outline" onClick={() => setDetailOrder(null)}>Fechar</Button>
+              </div>
+              <dl className="mt-6 grid grid-cols-2 gap-4 text-sm">
+                <div><dt className="text-xs text-slate-500">Estado</dt><dd className="mt-1">{orderStatus(detailOrder).label}</dd></div>
+                <div><dt className="text-xs text-slate-500">Pedido</dt><dd className="mt-1 break-all font-mono text-xs">{detailOrder.id}</dd></div>
+                <div><dt className="text-xs text-slate-500">Device ID</dt><dd className="mt-1 break-all font-mono text-xs">{detailOrder.deviceId}</dd></div>
+                <div><dt className="text-xs text-slate-500">Downloads</dt><dd className="mt-1">{detailOrder.downloadCount ?? 0}/{detailOrder.maxDownloads ?? 5}</dd></div>
+                <div><dt className="text-xs text-slate-500">Criado em</dt><dd className="mt-1">{new Date(detailOrder.createdAt).toLocaleString('pt-BR')}</dd></div>
+                <div><dt className="text-xs text-slate-500">Ativado em</dt><dd className="mt-1">{detailOrder.activatedAt ? new Date(detailOrder.activatedAt).toLocaleString('pt-BR') : 'Ainda não'}</dd></div>
+              </dl>
+              {detailOrder.deliveryError && <p className="mt-5 rounded-xl border border-red-300/20 bg-red-300/5 p-3 text-xs text-red-300">Erro de entrega: {detailOrder.deliveryError}</p>}
+            </section>
+          </div>
         )}
         {error && (
           <output className="mt-4 block rounded-xl border border-red-300/20 bg-red-300/5 p-3 text-sm text-red-300">
