@@ -21,7 +21,7 @@
      <TextBlock Text="Poucas coisas. Muita diferença." Foreground="#6F9DC2" FontSize="11"/>
     </StackPanel>
     <ComboBox x:Name="PresetBox" Grid.Column="1" Classes="compact" Width="116" Margin="0,0,15,0" VerticalAlignment="Center" SelectedIndex="1" SelectionChanged="Preset_Changed">
-     <ComboBoxItem Content="Low"/><ComboBoxItem Content="Medium"/><ComboBoxItem Content="High"/><ComboBoxItem Content="Ultra"/><ComboBoxItem Content="Debloat"/>
+     <ComboBoxItem Content="Low"/><ComboBoxItem Content="Medium"/><ComboBoxItem Content="High"/><ComboBoxItem Content="Ultra"/><ComboBoxItem Content="Otimizado"/><ComboBoxItem Content="Debloat"/>
     </ComboBox>
     <Canvas Grid.Column="2" Width="38" Height="36" VerticalAlignment="Center">
      <Path Data="M 5,27 A 14,14 0 0 1 33,27" Stroke="#DDF5FF" StrokeThickness="3" StrokeLineCap="Round"/>

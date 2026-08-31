@@ -54,7 +54,8 @@ public partial class MainWindow : Window
     {
         if (PresetBox is null) return;
         var level = PresetBox.SelectedIndex;
-        var debloatOnly = level == 4;
+        var debloatOnly = level == 5;
+        var optimized = level == 4;
         VisualSwitch.IsChecked = !debloatOnly;
         GamingSwitch.IsChecked = !debloatOnly && level >= 1;
         PowerSwitch.IsChecked = !debloatOnly && level >= 1;
@@ -62,7 +63,7 @@ public partial class MainWindow : Window
         DrySwitch.IsChecked = !debloatOnly && level >= 3;
         SearchSwitch.IsChecked = level >= 2;
         DebloatSwitch.IsChecked = debloatOnly || level == 3;
-        BackgroundSwitch.IsChecked = debloatOnly || level == 3;
+        BackgroundSwitch.IsChecked = debloatOnly || level == 3 || optimized;
     }
 
     private async void Activate_Click(object? sender, RoutedEventArgs e)
