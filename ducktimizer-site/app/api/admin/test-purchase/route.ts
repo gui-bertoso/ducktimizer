@@ -5,12 +5,6 @@ import { createOrderClaim, hashOrderClaim, orderClaimCookie } from '@/lib/order-
 import { fulfillPaidOrder } from '@/lib/purchase-fulfillment';
 import { hasSameOrigin, rateLimited, rateLimitResponse } from '@/lib/security';
 
-function testDeviceId() {
-  const bytes = crypto.getRandomValues(new Uint8Array(12));
-  const hex = Array.from(bytes, byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
-  return hex.match(/.{4}/g)!.join('-');
-}
-
 export async function POST(request: Request) {
   if (!hasSameOrigin(request)) return Response.json({ message: 'Origem inválida.' }, { status: 403 });
   if (!await isAdmin(request)) return unauthorized();
@@ -24,7 +18,7 @@ export async function POST(request: Request) {
       id: orderId,
       name: 'Teste Ducktimizer',
       email: `teste-${orderId.slice(0, 8)}@ducktimizer.local`,
-      deviceId: testDeviceId(),
+      deviceId: 'UNBOUND',
       status: 'pending',
       claimTokenHash,
       legalAcceptedAt: now,

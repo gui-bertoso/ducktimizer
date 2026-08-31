@@ -284,8 +284,8 @@ export default function Home() {
               <div>
                 <h2 className="text-xl font-semibold">Comprar licença</h2>
                 <p className="mt-2 max-w-lg text-sm leading-6 text-slate-400">
-                  Preencha os dados usados na ativação. O pagamento abre no
-                  checkout seguro do Asaas.
+                  Preencha seus dados. O pagamento abre no checkout seguro do
+                  Asaas e o dispositivo será vinculado apenas na ativação.
                 </p>
               </div>
               <span className="font-mono text-[10px] uppercase tracking-wider text-slate-600">
@@ -316,24 +316,6 @@ export default function Home() {
                   autoComplete="email"
                   className="h-11 rounded-md border-white/15 bg-transparent"
                 />
-              </label>
-              <label
-                htmlFor="device-id"
-                className="space-y-2 text-sm sm:col-span-2"
-              >
-                <span>Device ID</span>
-                <Input
-                  id="device-id"
-                  name="deviceId"
-                  required
-                  pattern="[A-Fa-f0-9-]{24,40}"
-                  maxLength={40}
-                  placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
-                  className="h-11 rounded-md border-white/15 bg-transparent font-mono"
-                />
-                <small className="block text-xs leading-5 text-slate-600">
-                  Copie o código exibido na tela de ativação do aplicativo.
-                </small>
               </label>
               <input
                 name="website"
@@ -367,8 +349,8 @@ export default function Home() {
                   >
                     Política de Privacidade
                   </Link>
-                  . Entendo que a licença ficará vinculada ao Device ID
-                  informado.
+                  . Entendo que a licença ficará vinculada automaticamente ao
+                  primeiro computador em que eu ativar o aplicativo.
                 </span>
               </label>
             </div>

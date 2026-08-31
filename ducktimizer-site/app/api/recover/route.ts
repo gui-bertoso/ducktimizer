@@ -1,26 +1,27 @@
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { orders } from '@/db/schema';
 import { createOrderClaim, hashOrderClaim, orderClaimCookie } from '@/lib/order-claim';
 import { hasSameOrigin, rateLimited, rateLimitResponse, requestTooLarge } from '@/lib/security';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const devicePattern = /^(?:[A-F0-9]{4}-){5}[A-F0-9]{4}$/;
+const orderPattern = /^[A-F0-9]{8}$/;
 
 export async function POST(request: Request) {
   if (!hasSameOrigin(request)) return Response.json({ message: 'Origem inválida.' }, { status: 403 });
   if (requestTooLarge(request, 4_096)) return Response.json({ message: 'Solicitação muito grande.' }, { status: 413 });
   if (await rateLimited(request, 'purchase-recovery', 6, 900)) return rateLimitResponse();
-  let body: { email?: string; deviceId?: string };
-  try { body = await request.json() as { email?: string; deviceId?: string }; }
+  let body: { email?: string; orderCode?: string };
+  try { body = await request.json() as { email?: string; orderCode?: string }; }
   catch { return Response.json({ message: 'Dados inválidos.' }, { status: 400 }); }
   const email = body.email?.trim().toLowerCase() || '';
-  const deviceId = body.deviceId?.trim().toUpperCase() || '';
-  if (!emailPattern.test(email) || email.length > 120 || !devicePattern.test(deviceId)) {
-    return Response.json({ message: 'Informe o e-mail e o Device ID completos.' }, { status: 400 });
+  const orderCode = body.orderCode?.trim().toUpperCase() || '';
+  if (!emailPattern.test(email) || email.length > 120 || !orderPattern.test(orderCode)) {
+    return Response.json({ message: 'Informe o e-mail e os 8 caracteres do pedido.' }, { status: 400 });
   }
   const db = getDb();
-  const order = (await db.select().from(orders).where(and(eq(orders.email, email), eq(orders.deviceId, deviceId))).limit(1))[0];
+  const candidates = await db.select().from(orders).where(eq(orders.email, email));
+  const order = candidates.find(item => item.id.slice(0, 8).toUpperCase() === orderCode);
   if (!order || !['paid', 'licensed'].includes(order.status)) {
     return Response.json({ message: 'Compra confirmada não encontrada com esses dados.' }, { status: 404 });
   }

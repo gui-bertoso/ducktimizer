@@ -5,6 +5,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 namespace PatoLizoOptimizer;
 
@@ -12,6 +15,7 @@ public sealed record LicensePayload(string Customer, string DeviceId, DateTime E
 
 public static class LicenseService
 {
+    private const string ActivationUrl = "https://fluffy-octo-palm-tree.guilhermedasilvabertoso.workers.dev/api/activate";
     private const string PublicKey = """
 -----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEa4QwqBHmllMJa32suaCUTxSLBusT
@@ -48,12 +52,36 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
         catch (Exception) { reason = "Não foi possível ler a licença instalada."; return false; }
     }
 
-    public static bool Activate(string token, out LicensePayload? license, out string reason)
+    public static async Task<(bool Success, LicensePayload? License, string Reason)> ActivateAsync(string key)
     {
-        if (!Validate(token.Trim(), out license, out reason)) return false;
+        key = key.Trim();
+        if (Validate(key, out var existing, out _))
+        {
+            Save(key);
+            return (true, existing, "Licença ativada.");
+        }
+        if (!key.StartsWith("DUCK-", StringComparison.OrdinalIgnoreCase))
+            return (false, null, "Informe uma chave de ativação válida.");
+        try
+        {
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+            using var response = await client.PostAsJsonAsync(ActivationUrl, new { key, deviceId = DeviceId });
+            var result = await response.Content.ReadFromJsonAsync<ActivationResponse>();
+            if (!response.IsSuccessStatusCode || string.IsNullOrWhiteSpace(result?.Token))
+                return (false, null, result?.Message ?? "Não foi possível ativar. Verifique sua conexão.");
+            if (!Validate(result.Token, out var license, out var reason)) return (false, null, reason);
+            Save(result.Token);
+            return (true, license, "Licença ativada.");
+        }
+        catch (TaskCanceledException) { return (false, null, "A ativação demorou demais. Tente novamente."); }
+        catch (HttpRequestException) { return (false, null, "Sem conexão com o servidor de ativação."); }
+        catch { return (false, null, "Não foi possível concluir a ativação."); }
+    }
+
+    private static void Save(string token)
+    {
         Directory.CreateDirectory(Path.GetDirectoryName(LicensePath)!);
         File.WriteAllText(LicensePath, token.Trim());
-        return true;
     }
 
     public static bool Validate(string token, out LicensePayload? license, out string reason)
@@ -87,3 +115,5 @@ niu4cPDKM0rosIQ6zj1e4yAO65gvglTrNTCBoIGY+mG6VLcltOSGY8KM3A==
         return Convert.FromBase64String(text.PadRight(text.Length + (4 - text.Length % 4) % 4, '='));
     }
 }
+
+public sealed record ActivationResponse(string? Token, string? Message);

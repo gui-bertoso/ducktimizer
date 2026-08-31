@@ -2,15 +2,13 @@ import { eq } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { licenses, orders } from '@/db/schema';
 import { isAdmin, unauthorized } from '@/lib/admin-auth';
-import { issueLicense } from '@/lib/license-signing';
+import { createActivationKey, hashActivationKey } from '@/lib/activation-key';
 import {
   hasSameOrigin,
   rateLimited,
   rateLimitResponse,
   requestTooLarge,
 } from '@/lib/security';
-
-const devicePattern = /^(?:[A-F0-9]{4}-){5}[A-F0-9]{4}$/;
 
 export async function POST(request: Request) {
   if (!hasSameOrigin(request))
@@ -27,11 +25,9 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       orderId?: string;
       customer?: string;
-      deviceId?: string;
       days?: number | null;
     };
     let customer = body.customer?.trim();
-    let deviceId = body.deviceId?.trim().toUpperCase();
     let orderId = body.orderId?.trim();
     const db = getDb();
 
@@ -55,17 +51,14 @@ export async function POST(request: Request) {
           { status: 409 },
         );
       customer = order[0].name;
-      deviceId = order[0].deviceId;
     }
     if (
       !customer ||
       customer.length < 2 ||
-      customer.length > 80 ||
-      !deviceId ||
-      !devicePattern.test(deviceId)
+      customer.length > 80
     ) {
       return Response.json(
-        { message: 'Informe cliente e Device ID válidos.' },
+        { message: 'Informe um cliente válido.' },
         { status: 400 },
       );
     }
@@ -84,7 +77,7 @@ export async function POST(request: Request) {
         id: orderId,
         name: customer,
         email: `manual-${orderId}@ducktimizer.local`,
-        deviceId,
+        deviceId: 'UNBOUND',
         status: 'licensed',
         paidAt: now,
         createdAt: now,
@@ -103,14 +96,16 @@ export async function POST(request: Request) {
         );
     }
 
-    const issued = await issueLicense(customer, deviceId, days);
+    const activationKey = createActivationKey();
+    const expiresAt = days === null ? new Date('9999-12-31T23:59:59.999Z') : new Date(Date.now() + days * 86_400_000);
     await db.insert(licenses).values({
       id: crypto.randomUUID(),
       orderId,
-      deviceId,
+      deviceId: 'UNBOUND',
       customer,
-      licenseToken: issued.token,
-      expiresAt: issued.expires,
+      licenseToken: activationKey,
+      activationKeyHash: await hashActivationKey(activationKey),
+      expiresAt,
       createdAt: new Date(),
     });
     await db
@@ -118,7 +113,7 @@ export async function POST(request: Request) {
       .set({ status: 'licensed', updatedAt: new Date() })
       .where(eq(orders.id, orderId));
     return Response.json(
-      { token: issued.token, expiresAt: issued.expires.toISOString(), orderId },
+      { token: activationKey, expiresAt: expiresAt.toISOString(), orderId },
       { headers: { 'cache-control': 'no-store' } },
     );
   } catch (error) {
@@ -129,7 +124,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         message:
-          'Não foi possível gerar a licença. Verifique a chave privada configurada.',
+          'Não foi possível gerar a chave de ativação.',
       },
       { status: 500 },
     );

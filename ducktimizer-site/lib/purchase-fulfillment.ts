@@ -2,7 +2,7 @@ import { eq } from 'drizzle-orm';
 import { getDb } from '@/db';
 import { deliveries, licenses, orders } from '@/db/schema';
 import { createDeliveryToken, hashDeliveryToken } from '@/lib/delivery';
-import { issueLicense } from '@/lib/license-signing';
+import { createActivationKey, hashActivationKey } from '@/lib/activation-key';
 
 export async function fulfillPaidOrder(orderId: string, now = new Date()) {
   const db = getDb();
@@ -12,11 +12,12 @@ export async function fulfillPaidOrder(orderId: string, now = new Date()) {
   await db.update(orders).set({ status: 'paid', paidAt: order.paidAt ?? now, updatedAt: now }).where(eq(orders.id, order.id));
   let license = (await db.select().from(licenses).where(eq(licenses.orderId, order.id)).limit(1))[0];
   if (!license) {
-    const issued = await issueLicense(order.name, order.deviceId, null);
+    const activationKey = createActivationKey();
     await db.insert(licenses).values({
-      id: crypto.randomUUID(), orderId: order.id, deviceId: order.deviceId,
-      customer: order.name, licenseToken: issued.token,
-      expiresAt: issued.expires, createdAt: now,
+      id: crypto.randomUUID(), orderId: order.id, deviceId: 'UNBOUND',
+      customer: order.name, licenseToken: activationKey,
+      activationKeyHash: await hashActivationKey(activationKey),
+      expiresAt: new Date('9999-12-31T23:59:59.999Z'), createdAt: now,
     });
     license = (await db.select().from(licenses).where(eq(licenses.orderId, order.id)).limit(1))[0];
   }

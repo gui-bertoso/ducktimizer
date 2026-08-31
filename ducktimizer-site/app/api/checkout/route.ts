@@ -1,4 +1,4 @@
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { env } from 'cloudflare:workers';
 import { getDb } from '@/db';
 import { orders } from '@/db/schema';
@@ -11,7 +11,6 @@ import {
 } from '@/lib/security';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const devicePattern = /^(?:[A-F0-9]{4}-){5}[A-F0-9]{4}$/;
 
 export async function POST(request: Request) {
   try {
@@ -31,7 +30,6 @@ export async function POST(request: Request) {
 
     const name = body.name?.trim();
     const email = body.email?.trim().toLowerCase();
-    const deviceId = body.deviceId?.trim().toUpperCase();
     if (body.legalAccepted !== 'yes') {
       return Response.json(
         {
@@ -46,11 +44,10 @@ export async function POST(request: Request) {
       name.length < 2 ||
       name.length > 80 ||
       !emailPattern.test(email) ||
-      email.length > 120 ||
-      !devicePattern.test(deviceId)
+      email.length > 120
     ) {
       return Response.json(
-        { message: 'Revise o nome, e-mail e Device ID.' },
+        { message: 'Revise o nome e o e-mail.' },
         { status: 400 },
       );
     }
@@ -59,7 +56,7 @@ export async function POST(request: Request) {
     const existing = await db
       .select()
       .from(orders)
-      .where(and(eq(orders.email, email), eq(orders.deviceId, deviceId)))
+      .where(eq(orders.email, email))
       .limit(1);
 
     const claimToken = createOrderClaim();
@@ -91,7 +88,7 @@ export async function POST(request: Request) {
           id: orderId,
           name,
           email,
-          deviceId,
+          deviceId: 'UNBOUND',
           status: 'pending',
           legalAcceptedAt: now,
           claimTokenHash,

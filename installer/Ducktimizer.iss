@@ -1,5 +1,5 @@
 #define MyAppName "Ducktimizer Pro"
-#define MyAppVersion "3.3.0"
+#define MyAppVersion "3.4.0"
 #define MyAppPublisher "patoLizo"
 #define MyAppExeName "Ducktimizer.exe"
 
@@ -52,9 +52,8 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Abrir Ducktimizer Pro"; Flags: 
 Type: filesandordirs; Name: "{app}"
 
 [Code]
-function InitializeSetup(): Boolean;
+procedure InitializeWizard();
 begin
-  Result := True;
-  if WizardSilent then
-    MsgBox('A licença do Ducktimizer é individual e vinculada ao Device ID deste computador. Ela não poderá ser usada em outro dispositivo.', mbInformation, MB_OK);
+  if not WizardSilent then
+    MsgBox('A licença do Ducktimizer será vinculada automaticamente a este computador na primeira ativação. Depois disso, a mesma chave não poderá ativar outro dispositivo.', mbInformation, MB_OK);
 end;

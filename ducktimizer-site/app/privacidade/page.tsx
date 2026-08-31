@@ -18,7 +18,7 @@ export default function PrivacyPage() {
         {
           title: 'Dados tratados',
           paragraphs: [
-            'No checkout podemos tratar nome, e-mail, Device ID, identificadores técnicos da requisição, data, status e referência do pedido. O painel administrativo registra informações necessárias para emissão, validação e suporte da licença. O aplicativo guarda localmente licença, logs operacionais, aceite dos termos e backups das configurações.',
+            'No checkout podemos tratar nome, e-mail, identificadores técnicos da requisição, data, status e referência do pedido. O Device ID é recebido somente na primeira ativação. O painel administrativo registra informações necessárias para emissão, validação e suporte da licença. O aplicativo guarda localmente licença, logs operacionais, aceite dos termos e backups das configurações.',
           ],
           items: [
             'Não armazenamos número completo de cartão ou código de segurança.',

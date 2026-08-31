@@ -42,7 +42,7 @@ export default function TermsPage() {
         {
           title: 'Licença vinculada ao dispositivo',
           paragraphs: [
-            'A compra concede uma licença pessoal, limitada, não exclusiva e intransferível para um computador. A ativação é vinculada ao Device ID informado na compra. A chave não funcionará em outro computador. Troca relevante de hardware, formatação ou substituição do equipamento pode alterar o identificador e exigir análise de reativação pelo suporte.',
+            'A compra concede uma licença pessoal, limitada, não exclusiva e intransferível para um computador. Na primeira ativação, a chave é vinculada automaticamente ao Device ID daquele computador e não poderá ser ativada em outro. Troca relevante de hardware, formatação ou substituição do equipamento pode alterar o identificador e exigir análise de reativação pelo suporte.',
           ],
           items: [
             'É proibido compartilhar, revender ou publicar a licença.',
@@ -53,7 +53,7 @@ export default function TermsPage() {
         {
           title: 'Entrega digital',
           paragraphs: [
-            'Após a confirmação do pagamento, o site libera o instalador, a licença permanente e a confirmação da compra no mesmo navegador usado para iniciar o checkout. O link do instalador é individual, expira em 7 dias e permite até 5 downloads. Se fechar a página, o comprador pode informar novamente o mesmo e-mail e Device ID para recuperar a compra. A confirmação de entrega digital não substitui documento fiscal quando ele for legalmente exigível.',
+            'Após a confirmação do pagamento, o site libera o instalador, a chave de ativação permanente e a confirmação da compra no mesmo navegador usado para iniciar o checkout. O link do instalador é individual, expira em 7 dias e permite até 5 downloads. Se fechar a página, o comprador pode informar novamente o mesmo e-mail e o código do pedido para recuperar a compra. A confirmação de entrega digital não substitui documento fiscal quando ele for legalmente exigível.',
           ],
         },
         {

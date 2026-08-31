@@ -9,7 +9,7 @@ type Delivery = {
   status: 'pending' | 'ready' | 'cancelled';
   order?: string;
   customer?: string;
-  deviceId?: string;
+  activationStatus?: string;
   paidAt?: string | null;
   price?: string;
   license?: string;
@@ -54,7 +54,7 @@ export function PurchaseDelivery() {
   }, [load]);
 
   if (failed) return <Shell icon={<RotateCcw className="size-9 text-amber-200" />} title="Vamos recuperar sua compra">
-    <p className="mt-3 text-sm leading-6 text-slate-400">Volte à compra e informe o mesmo e-mail e Device ID. O site reconhecerá o pedido pago e abrirá esta entrega novamente.</p>
+    <p className="mt-3 text-sm leading-6 text-slate-400">Informe o e-mail da compra e o código do pedido. O site reconhecerá o pagamento e abrirá esta entrega novamente.</p>
     <Link className="mt-6 inline-flex h-10 w-full items-center justify-center rounded-lg bg-sky-100 px-4 text-sm font-medium text-slate-950 hover:bg-white" href="/recuperar">Recuperar compra</Link>
   </Shell>;
 
@@ -71,11 +71,11 @@ export function PurchaseDelivery() {
   const paidAt = delivery.paidAt ? new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(delivery.paidAt)) : 'Confirmado';
   return <main className="min-h-screen bg-background px-5 py-10 text-foreground">
     <section className="mx-auto max-w-2xl rounded-[28px] border border-white/10 bg-[#171b20] p-6 shadow-2xl sm:p-8">
-      <div className="flex items-start gap-4"><CheckCircle2 className="mt-1 size-9 shrink-0 text-emerald-300" /><div><p className="text-xs font-semibold tracking-[.16em] text-emerald-300">PAGAMENTO CONFIRMADO</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">Seu Ducktimizer está pronto.</h1><p className="mt-2 text-sm text-slate-400">Salve a licença e baixe o instalador abaixo.</p></div></div>
+      <div className="flex items-start gap-4"><CheckCircle2 className="mt-1 size-9 shrink-0 text-emerald-300" /><div><p className="text-xs font-semibold tracking-[.16em] text-emerald-300">PAGAMENTO CONFIRMADO</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">Seu Ducktimizer está pronto.</h1><p className="mt-2 text-sm text-slate-400">Guarde a chave e baixe o instalador. O vínculo com este PC acontece somente na primeira ativação.</p></div></div>
       <div className="mt-7 grid gap-3 rounded-2xl border border-white/10 bg-black/15 p-4 text-sm sm:grid-cols-2">
-        <Info label="Pedido" value={delivery.order!} mono /><Info label="Valor" value={`R$ ${delivery.price}`} /><Info label="Confirmado" value={paidAt} /><Info label="Device ID" value={delivery.deviceId!} mono />
+        <Info label="Pedido" value={delivery.order!} mono /><Info label="Valor" value={`R$ ${delivery.price}`} /><Info label="Confirmado" value={paidAt} /><Info label="Ativação" value={delivery.activationStatus!} />
       </div>
-      <div className="mt-6"><div className="flex items-center justify-between"><h2 className="font-semibold">Licença permanente</h2><Button size="sm" variant="outline" onClick={async () => { await navigator.clipboard.writeText(delivery.license!); setCopied(true); }}><Clipboard />{copied ? 'Copiada' : 'Copiar'}</Button></div><textarea aria-label="Licença Ducktimizer" readOnly value={delivery.license} className="mt-3 h-32 w-full resize-none rounded-xl border border-white/10 bg-black/25 p-3 font-mono text-xs leading-5 text-sky-100 outline-none" /></div>
+      <div className="mt-6"><div className="flex items-center justify-between"><h2 className="font-semibold">Chave de ativação permanente</h2><Button size="sm" variant="outline" onClick={async () => { await navigator.clipboard.writeText(delivery.license!); setCopied(true); }}><Clipboard />{copied ? 'Copiada' : 'Copiar'}</Button></div><textarea aria-label="Chave de ativação Ducktimizer" readOnly value={delivery.license} className="mt-3 h-20 w-full resize-none rounded-xl border border-white/10 bg-black/25 p-3 font-mono text-sm leading-5 text-sky-100 outline-none" /><p className="mt-2 text-xs text-slate-500">Na primeira ativação, esta chave ficará vinculada automaticamente ao Device ID do computador.</p></div>
       <a className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-sky-100 px-4 text-sm font-semibold text-slate-950 hover:bg-white" href={delivery.downloadUrl}><Download className="size-4" />Baixar instalador</a>
       <p className="mt-3 text-center text-xs text-slate-600">Downloads usados: {delivery.downloadsUsed}/{delivery.downloadsAllowed}. Guarde sua licença em local seguro.</p>
     </section>

@@ -58,12 +58,16 @@ export const licenses = sqliteTable(
     deviceId: text('device_id').notNull(),
     customer: text('customer').notNull(),
     licenseToken: text('license_token').notNull(),
+    activationKeyHash: text('activation_key_hash'),
+    activatedToken: text('activated_token'),
+    activatedAt: integer('activated_at', { mode: 'timestamp' }),
     expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull(),
     createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
   },
   (table) => [
     uniqueIndex('idx_licenses_order').on(table.orderId),
     uniqueIndex('idx_licenses_token').on(table.licenseToken),
+    uniqueIndex('idx_licenses_activation_key').on(table.activationKeyHash),
   ],
 );
 

@@ -4,7 +4,7 @@ Leia antes de instalar.
 
 1. Esta instalação coloca o Ducktimizer Pro em Arquivos de Programas e cria um desinstalador do Windows. Use o desinstalador em Configurações > Aplicativos para remover o produto corretamente.
 
-2. A licença é individual, intransferível e vinculada ao Device ID do computador informado na compra. A chave não funcionará em outro dispositivo.
+2. A licença é individual e intransferível. Na primeira ativação, a chave será vinculada automaticamente ao Device ID deste computador e não funcionará em outro dispositivo.
 
 3. Formatação, troca relevante de hardware ou substituição do computador pode alterar o Device ID. Uma eventual reativação depende de análise pelo suporte e não é automática.
 

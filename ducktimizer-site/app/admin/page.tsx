@@ -126,7 +126,6 @@ export default function AdminPage() {
       body: JSON.stringify({
         orderId: selectedOrder?.id,
         customer: form.get('customer'),
-        deviceId: form.get('deviceId'),
         days: lifetime ? null : Number(form.get('days')),
       }),
     });
@@ -254,7 +253,7 @@ export default function AdminPage() {
                   <tr>
                     <th className="px-5 py-3">Cliente</th>
                     <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Device ID</th>
+                    <th className="px-4 py-3">Ativação</th>
                     <th className="px-4 py-3">Entrega</th>
                     <th className="px-5 py-3">
                       <span className="sr-only">Ações</span>
@@ -274,7 +273,7 @@ export default function AdminPage() {
                         </span>
                       </td>
                       <td className="px-4 py-4 font-mono text-xs text-slate-400">
-                        {order.deviceId}
+                        {order.deviceId === 'UNBOUND' ? 'Não ativada' : order.deviceId}
                       </td>
                       <td className="px-4 py-4 text-xs">
                         {order.deliveredAt ? (
@@ -341,22 +340,7 @@ export default function AdminPage() {
                 key={`customer-${selectedOrder?.id ?? 'manual'}`}
                 className="mt-2 border-white/10 bg-white/[.04]"
               />
-              <label
-                htmlFor="license-device"
-                className="mt-4 block text-xs text-slate-400"
-              >
-                Device ID
-              </label>
-              <Input
-                id="license-device"
-                name="deviceId"
-                required={!selectedOrder}
-                disabled={Boolean(selectedOrder)}
-                defaultValue={selectedOrder?.deviceId ?? ''}
-                key={`device-${selectedOrder?.id ?? 'manual'}`}
-                placeholder="XXXX-XXXX-XXXX-XXXX-XXXX-XXXX"
-                className="mt-2 border-white/10 bg-white/[.04] font-mono"
-              />
+              <p className="mt-4 rounded-xl border border-sky-200/10 bg-sky-200/[.04] p-3 text-xs leading-5 text-slate-400">O tester recebe a chave sem vínculo. O Device ID será gravado automaticamente na primeira ativação.</p>
               <label
                 htmlFor="license-days"
                 className="mt-4 block text-xs text-slate-400"
@@ -395,7 +379,7 @@ export default function AdminPage() {
                   disabled={issuing}
                   className="flex-1 bg-sky-100 text-slate-950 hover:bg-white"
                 >
-                  {issuing ? 'Assinando…' : 'Gerar licença'}
+                  {issuing ? 'Gerando…' : 'Gerar chave'}
                 </Button>
               </div>
             </form>
@@ -424,7 +408,7 @@ export default function AdminPage() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <h2 className="font-semibold text-emerald-200">
-                  Licença gerada
+                  Chave de ativação gerada
                 </h2>
                 <p className="mt-1 text-xs text-slate-500">
                   Copie e envie somente ao cliente correto.
@@ -435,7 +419,7 @@ export default function AdminPage() {
               </Button>
             </div>
             <textarea
-              aria-label="Token da licença gerada"
+              aria-label="Chave de ativação gerada"
               readOnly
               value={token}
               className="mt-4 h-28 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 font-mono text-xs text-slate-300 outline-none"

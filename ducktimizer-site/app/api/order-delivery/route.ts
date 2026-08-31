@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     status: 'ready',
     order: order.id.slice(0, 8).toUpperCase(),
     customer: order.name,
-    deviceId: order.deviceId,
+    activationStatus: order.deviceId === 'UNBOUND' ? 'Aguardando primeira ativação' : 'Vinculada ao dispositivo',
     paidAt: order.paidAt?.toISOString() ?? null,
     price: '17,50',
     license: license[0].licenseToken,
