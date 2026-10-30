@@ -1,15 +1,18 @@
 using System;
 using System.IO;
 
-namespace PatoLizoOptimizer;
+namespace Ducktimizer;
 
 public static class AppLogger
 {
     private static readonly object Gate = new();
-    private static readonly string Folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ducktimizer", "logs");
+    private static readonly string Folder = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Ducktimizer", "logs");
 
     public static void Info(string message) => Write("INFO", message);
-    public static void Error(Exception exception, string context) => Write("ERROR", $"{context}: {exception}");
+
+    public static void Error(Exception exception, string context) => Write(
+        "ERROR", $"{context}: {exception}");
 
     private static void Write(string level, string message)
     {
@@ -22,6 +25,8 @@ public static class AppLogger
                     $"{DateTimeOffset.Now:O} [{level}] {message}{Environment.NewLine}");
             }
         }
-        catch { }
+        catch
+        {
+        }
     }
 }

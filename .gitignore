@@ -1,45 +1,18 @@
-# Build outputs
+# Build and local test output
 **/bin/
 **/obj/
 outputs/
 work/
 
-# Local state and IDE files
+# Local editor state
 .vs/
 .vscode/
 .idea/
 *.user
 *.suo
 *.log
+
+# Private material
 *.pem
 *.pfx
 *.snk
-
-# Legacy prototype (kept locally, not part of the Avalonia product)
-windows-optimizer/
-
-# Ducktimizer storefront
-ducktimizer-site/node_modules/
-ducktimizer-site/.next/
-ducktimizer-site/.vinext/
-ducktimizer-site/dist/
-ducktimizer-site/.wrangler/
-ducktimizer-site/.dev.vars
-
-# Local tooling
-.codex
-.ai/
-.claude/
-.cursor/
-.cline/
-.roo/
-.clinerules
-.cursorrules
-.windsurfrules
-AGENTS.md
-CLAUDE.md
-GEMINI.md
-
-__pycache__/
-*.py[cod]
-*.egg-info/

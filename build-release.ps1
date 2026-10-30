@@ -1,39 +1,41 @@
 #Requires -Version 7.0
 [CmdletBinding()]
-param([switch]$SkipInstaller)
+param(
+    [ValidateSet('win-x64', 'win-arm64')]
+    [string]$Runtime = 'win-x64'
+)
 
 $ErrorActionPreference = 'Stop'
-$projectRoot = $PSScriptRoot
-$projectFile = Join-Path $projectRoot 'PatoLizoOptimizer.Avalonia\PatoLizoOptimizer.csproj'
-$publishDir = Join-Path $projectRoot 'outputs\publish'
-$installerScript = Join-Path $projectRoot 'installer\Ducktimizer.iss'
+$project = Join-Path $PSScriptRoot 'Ducktimizer.csproj'
+$output = Join-Path $PSScriptRoot "outputs/portable/$Runtime"
+$releases = Join-Path $PSScriptRoot 'outputs/releases'
+$stage = Join-Path $releases "package-$Runtime"
+$version = ([xml](Get-Content -LiteralPath $project -Raw)).Project.PropertyGroup.Version
 
-if (-not (Get-Command dotnet -ErrorAction SilentlyContinue)) {
-    throw '.NET 10 SDK not found. Install the .NET 10 SDK and try again.'
+# These simulated checks do not apply Windows changes.
+dotnet run --project $project --configuration Release -- --self-test
+if ($LASTEXITCODE -ne 0) {
+    throw 'Self-tests failed. No executable was published.'
 }
 
-dotnet publish $projectFile -c Release -r win-x64 --self-contained true `
+dotnet publish $project -c Release -r $Runtime --self-contained true `
     -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true `
-    -p:DebugType=None -p:DebugSymbols=false -o $publishDir
-if ($LASTEXITCODE -ne 0) { throw 'Failed to publish the application.' }
-
-& (Join-Path $publishDir 'Ducktimizer.exe') --self-test
-if ($LASTEXITCODE -ne 0) { throw 'Ducktimizer self-test failed.' }
-
-if ($SkipInstaller) {
-    Write-Host "Executable ready in $publishDir" -ForegroundColor Green
-    return
+    -p:DebugType=None -p:DebugSymbols=false -o $output
+if ($LASTEXITCODE -ne 0) {
+    throw 'Portable build failed.'
 }
 
-$isccCandidates = @(
-    (Get-Command iscc.exe -ErrorAction SilentlyContinue).Source,
-    (Join-Path ${env:ProgramFiles(x86)} 'Inno Setup 6\ISCC.exe'),
-    (Join-Path $env:ProgramFiles 'Inno Setup 6\ISCC.exe')
-) | Where-Object { $_ -and (Test-Path -LiteralPath $_) } | Select-Object -Unique
+if (Test-Path -LiteralPath $stage) {
+    Remove-Item -LiteralPath $stage -Recurse -Force
+}
+New-Item -ItemType Directory -Path $stage -Force | Out-Null
+Copy-Item -LiteralPath (Join-Path $output 'Ducktimizer.exe') -Destination $stage
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'LICENSE'), (Join-Path $PSScriptRoot 'TERMS.txt') -Destination $stage
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'licenses') -Destination $stage -Recurse
 
-$iscc = $isccCandidates | Select-Object -First 1
-if (-not $iscc) { throw 'Inno Setup 6 was not found. Install it or use -SkipInstaller.' }
-
-& $iscc $installerScript
-if ($LASTEXITCODE -ne 0) { throw 'Failed to generate the installer.' }
-Write-Host "Installer ready in $(Join-Path $projectRoot 'outputs\installer')" -ForegroundColor Green
+$archive = Join-Path $releases "Ducktimizer-$version-$Runtime-portable.zip"
+Compress-Archive -Path (Join-Path $stage '*') -DestinationPath $archive -Force
+$hash = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash.ToLowerInvariant()
+"$hash  $([IO.Path]::GetFileName($archive))" | Set-Content -LiteralPath "$archive.sha256" -Encoding utf8NoBOM
+Write-Host "Portable release: $archive"
+Write-Host "SHA-256: $hash"

@@ -1,0 +1,154 @@
+# Ducktimizer — plano de melhorias
+
+Atualizado em 30/10/2026. Planejamento; nenhuma otimização foi aplicada ao host.
+
+## Objetivo e distribuição
+
+Um único projeto C# chamado Ducktimizer, executável portátil para preparar uma máquina Windows dedicada a jogos. Remover projeto de setup e referências antigas a PatoLizoOptimizer. Sem instalação, serviço próprio, inicialização automática, conta ou atualizador. Sem presets e sem botão de restauração. A execução repetida deve reconhecer ações já aplicadas.
+
+70–90 serviços em execução é um alvo experimental, não uma promessa ou motivo para desligar componentes necessários. Desativação não é inerentemente irreversível; remoções podem exigir reinstalação. A VM de testes terá uma cópia limpa recuperável mesmo que o produto não tenha restauração.
+
+## Catálogo a investigar
+
+- Inicialização: launchers, mensageiros e utilitários dispensáveis.
+- Apps em segundo plano, notificações e sincronizações não necessárias ao uso escolhido.
+- Impressão e fax, com perda explícita das funções dependentes.
+- Serviços opcionais e tarefas agendadas de componentes dispensáveis.
+- Telemetria e diagnóstico configuráveis, respeitando edição e versão.
+- Game Bar, gravação contínua, captura e overlays sem uso.
+- Delivery Optimization: desligar compartilhamento entre computadores, preservando downloads de atualização.
+- Apps pré-instalados dispensáveis: Copilot, Clipchamp, notícias, clima e outros identificados.
+- Widgets, sugestões, destaques, conteúdo promocional e experiências de consumidor, conforme suporte da edição.
+- Remover provisionamento dos apps escolhidos quando suportado, além das instalações existentes. Não prometer impedir toda reinstalação por atualizações futuras.
+- Edge: revisar edge-debloat como referência; manter navegador oficial atualizado, sem trocar por binário modificado. Desativar pré-carregamento (startup boost) e execução de fundo quando apropriado.
+- Efeitos: reduzir animações e transparência, preservando legibilidade.
+- Pesquisa: reduzir sugestões e alcance da indexação; não presumir que desligá-la inteira seja melhor.
+- Limpeza de temporários descartáveis, preservando arquivos pessoais.
+- Apps OEM: suporte, ofertas, utilitários duplicados e launchers residentes. Preservar controles necessários ao hardware.
+- Recursos opcionais presentes: escrita à mão, idiomas adicionais e outros que não sejam necessários ao usuário, com ganhos de espaço separados de ganhos de execução.
+- Integração entre dispositivos: avaliar OneDrive, Vincular ao Celular e serviços associados. Não apagar dados sincronizados.
+
+Os itens acima são candidatos. Ações concretas só entram depois de identificar dependências, suporte e impacto.
+
+## Preservar e decidir
+
+Preservar drivers, áudio, rede, controles, segurança, Windows Update, WebView2, runtimes e codecs necessários, além de instalação e execução dos jogos e launchers suportados.
+
+Decisões pendentes: Game Pass/Microsoft Store; Wi-Fi/Bluetooth; recursos de acessibilidade e sincronização necessários. Não remover componentes Xbox indiscriminadamente antes dessa decisão.
+
+## Experiência
+
+Analisar → revisar mudanças → aplicar → verificar → resultado.
+
+Interface em inglês, redimensionável, sem slogan, velocímetro decorativo, grade de presets ou selo REVERSIBLE. Lista legível com detalhes expansíveis, estado detectado, função perdida e motivo de cada ação. Foco de teclado visível. Separar remoção de app, serviço, tarefa e configuração.
+
+Solicitar elevação quando necessária. Registrar resultado por ação: sucesso, falha, já aplicado ou não suportado. Mostrar necessidade de reinicialização. Registro local de diagnóstico não significa garantia de reversão.
+
+## Estrutura
+
+Um projeto de aplicação direto na raiz, sem src/Ducktimizer, com Views, ViewModels, Analysis, Catalog, Execution, Platform e Models conforme a necessidade real. Testes separados. Sem projeto de instalador. Evitar camadas sem função. Cada ação tem identificador, finalidade, requisitos, impacto, aplicação e verificação.
+
+## Validação
+
+Testes isolados e execução real em VM Windows antes de qualquer teste físico. Comparar serviços, RAM em repouso, CPU, atividade de disco e inicialização em condições equivalentes. Repetir execução e testar falhas e reinicialização.
+
+A VM valida comportamento e compatibilidade básica. FPS, GPU, controles físicos e anti-cheats exigem validação em hardware apropriado. Enterprise não representa automaticamente Home/Pro.
+
+Sem limpador artificial de RAM, pontuação inventada de saúde, promessa de FPS ou redução de processos como único critério de sucesso.
+
+
+## progresso local — 30/10
+
+- projeto único Ducktimizer.csproj na raiz; setup separado removido.
+- interface e análise separadas do catálogo e da execução.
+- catálogo inicial: 13 ações (6 configurações, 2 serviços e 5 apps).
+- execução verifica o estado, pula itens já configurados e para em falhas.
+- registro é gravado antes de cada mutação; não há restauração no produto.
+- exportação de baseline antes de aplicar; sem dados de FPS fabricados.
+- build e testes isolados no linux passaram; validação real no windows e benchmark do jogo ainda pendentes.
+- os demais candidatos do catálogo continuam pendentes de investigação.
+- nenhum commit ou push nesta rodada.
+
+## segunda rodada local — 30/10
+
+- catálogo ampliado para 19 ações: widgets, promoções em edições suportadas, diagnóstico e tarefas CEIP específicas.
+- DiagTrack bloqueado quando Defender for Endpoint estiver ativo ou registrado.
+- análise com amostras de CPU e disco; ausência de contador não vira zero falso.
+- aba de resultados por ação e exportação do relatório completo.
+- falha de rechecagem agora interrompe a execução, em vez de ser tratada como item ignorado.
+- exportação de baseline confere se a análise ainda é a mesma antes de liberar aplicação.
+- testes locais cobrem relatório reaberto, rechecagem falha e estado alterado desde a revisão.
+- nenhuma otimização aplicada ao host ou à VM; benchmark do jogo continua pendente.
+
+
+## expansão local — sem testes, a pedido
+
+- catálogo-fonte ampliado para 47 ações fixas, mais inicializações conhecidas detectadas.
+- inventário de serviços/dependências, tarefas, inicializações, pacotes, recursos opcionais, capabilities, programas, discos e memória de processos.
+- sem executar desinstaladores de terceiros, Win32_Product ou comandos de inicialização encontrados.
+- remoções opcionais de apps e recursos, serviços extras e políticas adicionais do Edge.
+- indexação, rastreamento de links, compartilhamento de mídia, Outlook, players e inicialização do OneDrive desmarcados por padrão.
+- revisão permite manter itens individuais; mudar seleção exige novo reconhecimento.
+- estado de reinicialização pendente bloqueia novas mudanças; recursos com alteração pendente pausam a execução.
+- transporte PowerShell por stdin para evitar o limite de tamanho da linha de comando.
+- documentação atualizada; executável e capturas anteriores não representam esta expansão.
+- nenhuma compilação, execução, teste ou otimização realizada nesta rodada; nenhum commit ou push.
+
+
+## organização e limpeza local — 30/10
+
+- tabela única Catalog/optimizations.json com as 47 ações e regras de inicialização.
+- catálogo carregado e validado pelo app; JSON embutido no executável portátil.
+- handlers WindowsOperations.ps1 consomem o tipo e os alvos da tabela.
+- catálogo antigo em C# removido, sem definições de ações duplicadas.
+- indentação de quatro espaços, blocos expandidos e editorconfig.
+- removidos bin, obj, publicações locais antigas e imagens sem uso; ícone do executável preservado.
+- backup do código anterior fora do repositório.
+- só edição e revisão estática: sem compilação, teste, execução, commit ou push.
+
+
+## implementação após pesquisa winpilot/exm — 30/10
+
+- catálogo-fonte com 67 ações fixas, sem copiar o pacote de tweaks dos utilitários.
+- políticas de personalização, sugestões, boas-vindas e dicas com limites de edição; preferências do explorer e onboarding separadas.
+- cinco animações individuais via SystemParametersInfoW, com leitura nativa antes/depois; texto e foco preservados.
+- seis restrições opcionais de segundo plano por família instalada, preservando outras regras e bloqueando conflitos.
+- inicializações AMD/NVIDIA conhecidas opcionais e desmarcadas; sem remoção de driver.
+- seleção opcional do plano de alto desempenho existente, só com energia externa confirmada e economia de bateria desligada.
+- inventário de GPU/driver, plano/fonte de energia e associação entre processos de maior memória e serviços.
+- plano permanece selecionado ao tirar da tomada; isso está explicado na revisão e não há agente residente para reverter.
+- baseline, journal e verificação existentes cobrem os novos tipos; app ainda não compilado nem testado nesta rodada.
+- sem execução, alterações no windows/VM, commit ou push.
+
+
+## catálogo ampliado e perguntas de uso — 30/10
+
+- 122 ações fixas no JSON, acima das 2.200 linhas solicitadas, com descrições, consequências, fontes e proteções por finalidade.
+- mais políticas do Edge e da pesquisa, privacidade, serviços opcionais, apps, recursos e capabilities exatas.
+- componentes legados ou ausentes são ignorados; não contam como ganho real.
+- perguntas com múltipla seleção antes da análise: jogos, arte, música, streaming, trabalho, desenvolvimento, impressão, acesso remoto, LAN e uso geral.
+- preserveFor no JSON define o que manter; a tela mostra o motivo e o executor recusa ações protegidas.
+- respostas entram no baseline/relatório; mudar respostas invalida análise e reconhecimento.
+- cinco capabilities removíveis ganham handler próprio; reinicialização reportada pelo DISM pausa a execução.
+- cenários de proteção por uso e reinicialização adicionados aos testes simulados, sem executá-los.
+- sem compilação, execução, testes, alterações no windows/VM, commit ou push.
+
+
+## termos e riscos — 30/10
+
+- TERMS.txt em inglês, com riscos concretos, limites de recuperação e ressalva de direitos legais obrigatórios.
+- licença MIT preservada, sem proibição nova de uso, cópia, modificação ou distribuição.
+- aviso embutido na revisão, antes do reconhecimento para aplicar.
+- relatórios da interface registram versão, hash e horário do reconhecimento, sem inventar identidade ou aceite nos testes internos.
+- texto é minuta sem revisão jurídica; não promete impedir processos.
+- alterações desta rodada sem build/testes/execução; sem commit/push.
+
+
+## preparação da release 5.0.0-preview.1 — 30/10
+
+- testes simulados passaram; interface renderizada no linux em 720x660 e 560x540.
+- scripts PowerShell analisados sintaticamente, sem executar as operações.
+- build portátil Windows x64 e arquivo ZIP com licença, termos e avisos de dependências.
+- auditoria NuGet do projeto não apontou dependências vulneráveis nas fontes consultadas.
+- execução das otimizações no windows e benchmark de jogos continuam pendentes.
+- usuário autorizou antecipar commit/push e publicar release de prévia.

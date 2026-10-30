@@ -1,0 +1,38 @@
+Ducktimizer — terms and risk notice
+Version: 2026-10-30.1
+
+License and scope
+
+Ducktimizer is free and open-source software distributed under the MIT License in LICENSE. This notice explains operational risks and the acknowledgement requested by the application. It does not replace the MIT License or impose additional restrictions on using, copying, modifying, publishing or distributing the software. Third-party components retain their own licenses.
+
+Development status and expected results
+
+This version is a development build. Windows execution, compatibility and performance improvements have not been fully validated. There is no promise of higher FPS, lower latency, a particular service/process count, reduced memory use or compatibility with every device, game, application, anti-cheat, Windows edition or future update. Some changes are privacy or appearance preferences and may provide no performance benefit. Performance may become worse.
+
+Changes and potential consequences
+
+Ducktimizer can change Windows settings and policies, stop and disable services, disable scheduled tasks, change startup registrations, restrict background apps, change visual effects, select a power scheme and remove applications or optional Windows components. Some changes affect every user of the computer.
+
+Depending on the selected actions, printing, scanning, notifications, synchronization, remote support, local network discovery, media workflows, older software and other features may become unavailable. Removing an application may delete app-local data. Power-plan changes may increase heat, fan noise and energy use. A selected plan can remain active after disconnecting external power. Interrupted or failed operations may leave partial changes. Windows or application updates can override or reintroduce settings and components.
+
+Preparation and authorization
+
+Use the tool only on a device you own or are authorized to administer. Choose every intended use of the computer and review each selected change and consequence. Usage-based protections are limited compatibility rules, not a complete dependency analysis or a guarantee against damage.
+
+Before applying changes, save your work and make independent backups of important files, application data and system configuration. Ensure that you have a suitable recovery method and any recovery credentials you may need. Prefer evaluating this development version in a disposable test environment before using it on a computer you depend on. If you do not understand or accept a selected change, leave it unselected or stop before applying.
+
+Recovery and support
+
+Ducktimizer has no automatic undo or restoration function. Its baselines, logs and run reports are diagnostic records, not backups or proof that recovery is possible. Repair can require reinstalling apps or Windows components, restoring your own backup or reinstalling Windows. Community support and future updates are not guaranteed, except where applicable law requires otherwise.
+
+Local records
+
+The application writes baselines, logs and run reports locally. These can include system and application names, configuration, process/service information, selected uses and error details. When you acknowledge this notice and apply changes through the interface, the report records this notice's version and SHA-256 digest, the acknowledgement time and the reviewed actions. This records the application's acknowledgement event; it is not identity verification or proof that the notice was read or legally accepted. Review records before sharing them.
+
+Warranty and liability
+
+The warranty disclaimer and limitation of liability in the MIT License apply only to the extent permitted by applicable law. No statement in this notice excludes liability that cannot legally be excluded, limits non-waivable consumer or other statutory rights, excuses fraud or unlawful conduct, or guarantees that a claim cannot be brought. If any part is unenforceable, mandatory law prevails. No indemnity, mandatory arbitration or waiver of legal remedies is requested by this notice.
+
+Acknowledgement before applying
+
+By checking the acknowledgement and choosing Apply changes, you state that you have reviewed the selected actions and this notice, understand the development status and potential consequences, have authority to administer this device, and choose to proceed. You may decline by leaving the acknowledgement unchecked or closing the application before applying. Your MIT License permissions do not depend on this acknowledgement.

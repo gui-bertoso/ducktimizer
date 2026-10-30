@@ -1,0 +1,167 @@
+<Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:vm="using:Ducktimizer.ViewModels" x:Class="Ducktimizer.Views.MainWindow" x:DataType="vm:WorkspaceViewModel"
+    Title="Ducktimizer" Width="720" Height="660" MinWidth="560" MinHeight="540"
+    Background="#191919" FontFamily="Inter" WindowStartupLocation="CenterScreen">
+    <Window.Styles>
+        <Style Selector="TextBlock">
+            <Setter Property="Foreground" Value="#EEEEEC"/>
+        </Style>
+        <Style Selector="TextBlock.muted">
+            <Setter Property="Foreground" Value="#A5A5A0"/>
+        </Style>
+        <Style Selector="TextBlock.heading">
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+        <Style Selector="Button">
+            <Setter Property="CornerRadius" Value="5"/>
+            <Setter Property="Padding" Value="18,11"/>
+        </Style>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#DAC580"/>
+            <Setter Property="Foreground" Value="#202019"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="MinWidth" Value="170"/>
+        </Style>
+        <Style Selector="Button.link">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0,8"/>
+            <Setter Property="Foreground" Value="#B9B9B2"/>
+        </Style>
+        <Style Selector="Expander">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+        <Style Selector="CheckBox">
+            <Setter Property="Foreground" Value="#C6C6C0"/>
+        </Style>
+    </Window.Styles>
+    <Grid Margin="32,24" RowDefinitions="Auto,*,Auto,Auto" RowSpacing="18">
+        <Grid ColumnDefinitions="*,Auto">
+            <StackPanel Orientation="Horizontal" Spacing="9" VerticalAlignment="Center">
+                <Border Width="3" Height="17" Background="#DAC580" CornerRadius="1"/>
+                <TextBlock Text="Ducktimizer" FontSize="16" FontWeight="SemiBold"/>
+            </StackPanel>
+            <TextBlock Grid.Column="1" Text="{Binding StepLabel}" FontSize="10" LetterSpacing="1.5" Classes="muted" VerticalAlignment="Center"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <ScrollViewer IsVisible="{Binding IsStart}" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Spacing="16" MaxWidth="570" HorizontalAlignment="Left" Margin="0,16,0,0">
+                    <TextBlock Classes="heading" Text="How will you use this PC?" TextWrapping="Wrap"/>
+                    <TextBlock Text="Choose every use that applies. Related features will be kept when reviewing changes." Classes="muted" FontSize="14" TextWrapping="Wrap"/>
+                    <ItemsControl ItemsSource="{Binding Uses}" Margin="0,6,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:UsageOption">
+                                <CheckBox IsChecked="{Binding Selected}" Margin="0,3,12,3">
+                                    <TextBlock Text="{Binding Label}" FontSize="12" TextWrapping="Wrap"/>
+                                </CheckBox>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock Text="{Binding UsageSelectionHint}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                    <StackPanel IsVisible="{Binding IsPreview}" Spacing="2">
+                        <TextBlock Text="Windows 11 required · Linux preview" Classes="muted" FontSize="11"/>
+                        <Button Content="Preview the changes →" Classes="link" Click="Preview_Click" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+            <Grid IsVisible="{Binding IsReview}" RowDefinitions="Auto,Auto,*,Auto,Auto" RowSpacing="12">
+                <StackPanel Spacing="7">
+                    <TextBlock Text="{Binding ReviewTitle}" Classes="heading" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding UsageSummary}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
+                    <TextBlock Text="{Binding ReviewSubtitle}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                </StackPanel>
+                <Expander Grid.Row="1" Header="System details" IsVisible="{Binding CanReview}">
+                    <ScrollViewer MaxHeight="180" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Spacing="10">
+                            <TextBlock Text="{Binding Machine}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding InventorySummary}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding GraphicsSummary}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding PowerSummary}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding ResourceSummary}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
+                            <TextBlock Text="{Binding InventoryWarnings}" Foreground="#D4AE91" FontSize="11" TextWrapping="Wrap"/>
+                            <Button Content="Save baseline and inventory" Classes="link" Click="Export_Click" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Expander>
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Actions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ActionRow">
+                                <Border BorderBrush="#30302E" BorderThickness="0,0,0,1" Padding="0,3">
+                                    <Expander>
+                                        <Expander.Header>
+                                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12" HorizontalAlignment="Stretch">
+                                                <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="Medium" TextWrapping="Wrap"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding State}" Classes="muted" FontSize="10" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Expander.Header>
+                                        <StackPanel Spacing="9" Margin="0,0,10,10">
+                                            <TextBlock Text="{Binding Description}" Classes="muted" FontSize="12" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Impact}" FontSize="12" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Detail}" Classes="muted" FontSize="11" TextWrapping="Wrap"/>
+                                            <CheckBox Content="Include this change" IsVisible="{Binding CanChoose}" IsChecked="{Binding Included}" FontSize="12"/>
+                                        </StackPanel>
+                                    </Expander>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <Expander Grid.Row="3" Header="Terms and risk notice">
+                    <ScrollViewer MaxHeight="160" HorizontalScrollBarVisibility="Disabled">
+                        <TextBlock Text="{Binding TermsText}" FontSize="12" Classes="muted" TextWrapping="Wrap"/>
+                    </ScrollViewer>
+                </Expander>
+                <CheckBox Grid.Row="4" IsChecked="{Binding Reviewed}" IsEnabled="{Binding CanReview}" Margin="0,6,0,0">
+                    <TextBlock Text="I reviewed the changes and the terms above. Features or app data may be lost. No undo." FontSize="11" TextWrapping="Wrap"/>
+                </CheckBox>
+            </Grid>
+            <StackPanel IsVisible="{Binding Busy}" VerticalAlignment="Center" Spacing="18">
+                <TextBlock Text="{Binding WorkingTitle}" Classes="heading"/>
+                <ProgressBar IsIndeterminate="True" Height="3" Foreground="#DAC580" Background="#30302E"/>
+                <TextBlock Text="{Binding Status}" Classes="muted" FontSize="13" TextWrapping="Wrap"/>
+                <Button Content="Stop after this step" Classes="link" IsVisible="{Binding CanStop}" Click="Stop_Click" HorizontalAlignment="Left"/>
+            </StackPanel>
+            <Grid IsVisible="{Binding IsResults}" RowDefinitions="Auto,Auto,*,Auto" RowSpacing="14">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="{Binding ResultsTitle}" Classes="heading"/>
+                    <TextBlock Text="{Binding ResultsSubtitle}" Classes="muted" FontSize="14"/>
+                </StackPanel>
+                <TextBlock Grid.Row="1" Text="{Binding RestartMessage}" Foreground="#DAC580" FontSize="13" TextWrapping="Wrap"/>
+                <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Results}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:RunResultRow">
+                                <Expander>
+                                    <Expander.Header>
+                                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                            <TextBlock Text="{Binding Title}" FontSize="13" TextWrapping="Wrap"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Status}" FontSize="11" Classes="muted"/>
+                                        </Grid>
+                                    </Expander.Header>
+                                    <TextBlock Text="{Binding Detail}" TextWrapping="Wrap" FontSize="12" Classes="muted" Margin="0,0,8,10"/>
+                                </Expander>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <Button Grid.Row="3" Content="Save report" Classes="link" IsEnabled="{Binding CanExportResults}" Click="ExportResults_Click" HorizontalAlignment="Left"/>
+            </Grid>
+        </Grid>
+        <TextBlock Grid.Row="2" IsVisible="{Binding HasError}" Text="{Binding ErrorMessage}" Foreground="#E0A49A" FontSize="12" TextWrapping="Wrap" MaxHeight="65"/>
+        <Border Grid.Row="3" BorderBrush="#30302E" BorderThickness="0,1,0,0" Padding="0,18,0,0">
+            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding !Busy}">
+                <Button Content="← Back" Classes="link" IsVisible="{Binding CanGoBack}" Click="Back_Click" HorizontalAlignment="Left"/>
+                <Button Grid.Column="1" Content="{Binding PrimaryLabel}" Classes="primary" IsEnabled="{Binding CanPrimary}" Click="Primary_Click"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
