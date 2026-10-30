@@ -1,6 +1,6 @@
 # Ducktimizer
 
-[Download the Windows x64 preview](https://github.com/gui-bertoso/ducktimizer/releases/tag/v5.0.0-preview.1). Read the release limitations before applying changes.
+[Download the Windows x64 preview](https://github.com/gui-bertoso/ducktimizer/releases/tag/v5.0.0-preview.2). Read the release limitations before applying changes.
 
 A portable Windows preparation tool for a gaming-focused PC, written in C# and Avalonia. Analyze the machine, review the exact changes, export a baseline, apply once and inspect the results.
 

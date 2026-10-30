@@ -1,5 +1,6 @@
 <Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:vm="using:Ducktimizer.ViewModels" x:Class="Ducktimizer.Views.MainWindow" x:DataType="vm:WorkspaceViewModel"
+    Icon="avares://Ducktimizer/Assets/logo.ico"
     Title="Ducktimizer" Width="720" Height="660" MinWidth="560" MinHeight="540"
     Background="#191919" FontFamily="Inter" WindowStartupLocation="CenterScreen">
     <Window.Styles>

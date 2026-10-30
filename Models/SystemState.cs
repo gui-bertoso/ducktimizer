@@ -57,7 +57,7 @@ public sealed record ApplyResult(bool RestartRequired = false);
 public sealed record ActionResult(string Id, string Status, string Detail, DateTimeOffset Time);
 public sealed class RunReport
 {
-    public string Version { get; init; } = "5.0.0-preview.1";
+    public string Version { get; init; } = "5.0.0-preview.2";
 
     public DateTimeOffset StartedAt { get; init; } = DateTimeOffset.UtcNow;
 

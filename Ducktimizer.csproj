@@ -6,7 +6,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
         <AssemblyName>Ducktimizer</AssemblyName>
-        <Version>5.0.0-preview.1</Version>
+        <Version>5.0.0-preview.2</Version>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Ducktimizer</RootNamespace>
         <Product>Ducktimizer</Product>
@@ -19,6 +19,7 @@
         <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.1" />
     </ItemGroup>
     <ItemGroup>
+        <AvaloniaResource Include="Assets/logo.ico" />
         <EmbeddedResource Include="Catalog/optimizations.json" LogicalName="optimizations.json" />
         <EmbeddedResource Include="TERMS.txt" LogicalName="TERMS.txt" />
         <EmbeddedResource Include="LICENSE" LogicalName="LICENSE" />
