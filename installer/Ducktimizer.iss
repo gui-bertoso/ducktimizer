@@ -29,26 +29,25 @@ RestartApplications=yes
 AppMutex=Local\Ducktimizer.SingleInstance
 VersionInfoVersion={#MyAppVersion}
 VersionInfoCompany={#MyAppPublisher}
-VersionInfoDescription=Instalador do Ducktimizer
+VersionInfoDescription=Ducktimizer installer
 VersionInfoProductName={#MyAppName}
 
 [Languages]
-Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
 Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\outputs\publish\Ducktimizer.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\PatoLizoOptimizer.Avalonia\DEPENDENCY-LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{autoprograms}\Ducktimizer"; Filename: "{app}\{#MyAppExeName}"
 Name: "{autodesktop}\Ducktimizer"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Tasks]
-Name: "desktopicon"; Description: "Criar atalho na área de trabalho"; GroupDescription: "Atalhos:"; Flags: checkedonce
+Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Shortcuts:"; Flags: checkedonce
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Abrir Ducktimizer"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "Launch Ducktimizer"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"

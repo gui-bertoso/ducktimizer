@@ -1,12 +1,12 @@
-DUCKTIMIZER — INSTALAÇÃO LOCAL
+DUCKTIMIZER — LOCAL INSTALLATION
 
-Software gratuito e de código aberto, sob licença MIT. Não exige conta,
-licença de ativação, compra ou vínculo com este computador.
+Free, open-source software under the MIT license. No account, activation key,
+purchase or device binding is required.
 
-O aplicativo exige privilégios de administrador para alterar o Windows.
-Revise cada grupo antes de aplicar. O modo Debloat remove aplicativos;
-a reinstalação deles não é garantida pelo backup das configurações.
+Administrator privileges are required to change Windows settings. Review each
+group before applying it. Debloat removes applications; configuration backups
+do not guarantee that removed applications can be reinstalled.
 
-Logs e backups ficam armazenados localmente. O aplicativo não envia
-telemetria e não consulta serviços de ativação ou atualização.
-Atualizações são instaladas manualmente pelo usuário.
+Logs and backups stay on this computer. The application sends no telemetry
+and does not contact activation or update services. Updates are installed
+manually by the user.

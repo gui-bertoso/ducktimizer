@@ -42,9 +42,9 @@ public partial class MainWindow : Window
         var groups = SelectedGroups();
         if (groups.Count == 0) return;
         var warning = groups.Contains("debloat")
-            ? "\n\n⚠ DEBLOAT EXTREMO: os apps selecionados serão desinstalados para todos os usuários. Esta etapa pode ser IRREVERSÍVEL; o backup não garante reinstalação dos componentes removidos."
+            ? "\n\n⚠ EXTREME DEBLOAT: selected apps will be uninstalled for all users. This step may be IRREVERSIBLE; the backup does not guarantee that removed components can be reinstalled."
             : "";
-        if (!await Confirm("Ativar otimizações", $"Aplicar {groups.Count} grupos selecionados?\n\nO app tentará criar um ponto de restauração e salvará o estado das configurações.{warning}")) return;
+        if (!await Confirm("Enable optimizations", $"Apply {groups.Count} selected groups?\n\nThe app will attempt to create a restore point and save the current settings.{warning}")) return;
         SetBusy(true);
         try { if (await RunOperation("--apply", string.Join(',', groups))) UpdateState(); }
         finally { SetBusy(false); }
@@ -54,7 +54,7 @@ public partial class MainWindow : Window
     {
         if (_busy) return;
         if (!OptimizerEngine.HasActiveBackups()) return;
-        if (!await Confirm("Desativar otimizações", "Restaurar todas as execuções do Ducktimizer e voltar ao estado anterior?")) return;
+        if (!await Confirm("Restore optimizations", "Restore all Ducktimizer runs and return to the previous state?")) return;
         SetBusy(true);
         try
         {
@@ -89,12 +89,12 @@ public partial class MainWindow : Window
         {
             ApplyProgress.Value = value.Percent;
             StateTitle.Text = value.Message;
-            StateDetail.Text = $"{value.Percent}% concluído — não feche o aplicativo";
+            StateDetail.Text = $"{value.Percent}% complete — do not close the application";
         });
         var ok = await Task.Run(() => OptimizerEngine.RunElevated(args, progress) == 0);
         if (!ok && !string.IsNullOrWhiteSpace(OptimizerEngine.LastError))
         {
-            StateTitle.Text = "Não foi possível concluir";
+            StateTitle.Text = "Could not complete";
             StateDetail.Text = OptimizerEngine.LastError;
         }
         return ok;
@@ -108,8 +108,8 @@ public partial class MainWindow : Window
         if (busy) ApplyProgress.Value = 0;
         if (busy)
         {
-            StateTitle.Text = "Aplicando alterações…";
-            StateDetail.Text = "Não feche o Ducktimizer durante esta etapa";
+            StateTitle.Text = "Applying changes…";
+            StateDetail.Text = "Do not close Ducktimizer during this step";
         }
         else UpdateState();
     }
@@ -118,16 +118,16 @@ public partial class MainWindow : Window
     {
         var active = OptimizerEngine.HasActiveBackups();
         DeactivateButton.IsEnabled = active && !_busy;
-        StateTitle.Text = active ? "Otimizações ativas" : "Sistema no estado base";
-        StateDetail.Text = active ? "Use Desativar para restaurar todas as execuções" : "Selecione os grupos e aplique quando quiser";
+        StateTitle.Text = active ? "Optimizations active" : "System at baseline";
+        StateDetail.Text = active ? "Use Restore to undo all runs" : "Select groups and apply them whenever you are ready";
     }
 
     private async Task<bool> Confirm(string title, string message)
     {
         var result = false;
         var dialog = new Window { Title = title, Width = 430, Height = 230, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
-        var yes = new Button { Content = "Confirmar", Classes = { "primary" }, MinWidth = 110 };
-        var no = new Button { Content = "Cancelar", MinWidth = 100 };
+        var yes = new Button { Content = "Confirm", Classes = { "primary" }, MinWidth = 110 };
+        var no = new Button { Content = "Cancel", MinWidth = 100 };
         yes.Click += (_, _) => { result = true; dialog.Close(); };
         no.Click += (_, _) => dialog.Close();
         dialog.Content = new StackPanel { Margin = new Avalonia.Thickness(24), Spacing = 18, Children = {
@@ -145,23 +145,23 @@ public partial class MainWindow : Window
         var acceptedFile = Path.Combine(folder, "offline-v4-risk-notice.accepted");
         if (File.Exists(acceptedFile)) return;
         var accepted = false;
-        var dialog = new Window { Title = "Antes de otimizar", Width = 620, Height = 470, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
-        var check = new CheckBox { Content = "Li e entendi o aviso de risco." };
-        var accept = new Button { Content = "Entendi, continuar", Classes = { "primary" }, IsEnabled = false };
-        var exit = new Button { Content = "Sair" };
+        var dialog = new Window { Title = "Before optimizing", Width = 620, Height = 470, CanResize = false, WindowStartupLocation = WindowStartupLocation.CenterOwner, Background = Avalonia.Media.Brush.Parse("#202429") };
+        var check = new CheckBox { Content = "I have read and understood the risk notice." };
+        var accept = new Button { Content = "Understood, continue", Classes = { "primary" }, IsEnabled = false };
+        var exit = new Button { Content = "Exit" };
         check.IsCheckedChanged += (_, _) => accept.IsEnabled = check.IsChecked == true;
         accept.Click += (_, _) => { accepted = true; dialog.Close(); };
         exit.Click += (_, _) => dialog.Close();
-        var heading = new TextBlock { Text = "Antes de otimizar", FontSize = 24, FontWeight = Avalonia.Media.FontWeight.Bold };
+        var heading = new TextBlock { Text = "Before optimizing", FontSize = 24, FontWeight = Avalonia.Media.FontWeight.Bold };
         var termsText = "DUCKTIMIZER — AVISO DE RISCO — v4.0.0\n\n" +
-            "1. FINALIDADE. O Ducktimizer modifica configurações do Windows com o objetivo de reduzir recursos em segundo plano, efeitos visuais, telemetria e aplicativos pré-instalados. Não existe garantia de aumento de FPS, redução de latência ou melhoria específica.\n\n" +
-            "2. ADMINISTRADOR. O programa exige privilégios de administrador desde a abertura. Ao aceitar o aviso do Windows, você autoriza alterações no Registro, políticas locais, plano de energia e pacotes de aplicativos deste computador.\n\n" +
-            "3. MODOS AGRESSIVOS. Windows seco desativa suavização de fontes, sombras, transparência e efeitos para priorizar uma interface mínima. Pesquisa enxuta remove Bing, destaques e sugestões. Debloat Extremo desinstala aplicativos empacotados e remove seu provisionamento. Edge, Microsoft Store, Windows Update, Defender, Firewall e serviços críticos não são removidos.\n\n" +
-            "4. BACKUP E RESTAURAÇÃO. O programa tenta criar um ponto de restauração e registra o estado anterior das configurações. A restauração de Registro e energia é automatizada. A reinstalação de aplicativos removidos não é garantida, pois depende de os arquivos ou pacotes continuarem disponíveis no Windows ou na Microsoft Store.\n\n" +
-            "5. EFEITOS POSSÍVEIS. As mudanças podem alterar aparência, notificações, pesquisa, recursos de IA, sincronização, consumo de energia, compatibilidade de aplicativos e comportamento após atualizações do Windows. Algumas alterações exigem reinicialização.\n\n" +
-            "6. RESPONSABILIDADE DO USUÁRIO. Use somente em computadores próprios ou autorizados, salve arquivos importantes e revise os grupos selecionados antes de confirmar. O usuário assume a responsabilidade pela escolha dos presets e pelas consequências das mudanças.\n\n" +
-            "7. PRIVACIDADE. O aplicativo funciona localmente, sem conta, ativação, identificador de dispositivo, telemetria ou consulta automática a servidores. Logs e backups ficam neste computador. Atualizações são instaladas manualmente pelo usuário.\n\n" +
-            "8. CÓDIGO ABERTO. O código do Ducktimizer está disponível sob a licença MIT. Dependências e materiais de terceiros mantêm suas respectivas licenças. Consulte LICENSE e DEPENDENCY-LICENSE.";
+            "1. PURPOSE. Ducktimizer changes Windows settings to reduce background activity, visual effects, telemetry and preinstalled applications. No specific FPS, latency or performance improvement is guaranteed.\n\n" +
+            "2. ADMINISTRATOR ACCESS. The program requires administrator privileges at startup. Accepting the Windows prompt authorizes changes to the Registry, local policies, power plan and application packages on this computer.\n\n" +
+            "3. AGGRESSIVE MODES. Minimal Windows disables font smoothing, shadows, transparency and effects for a minimal interface. Streamlined Search removes Bing, highlights and suggestions. Extreme Debloat uninstalls packaged applications and removes provisioning. Edge, Microsoft Store, Windows Update, Defender, Firewall and critical services are not removed.\n\n" +
+            "4. BACKUP AND RESTORATION. The program attempts to create a restore point and records previous settings. Registry and power restoration is automated. Reinstallation of removed applications is not guaranteed, because it depends on packages remaining available in Windows or Microsoft Store.\n\n" +
+            "5. POSSIBLE EFFECTS. Changes can affect appearance, notifications, search, AI features, synchronization, power consumption, application compatibility and behavior after Windows updates. Some changes require a restart.\n\n" +
+            "6. USER RESPONSIBILITY. Only use computers you own or are authorized to manage. Save important files and review selected groups before confirming. You are responsible for selecting presets and the consequences of their changes.\n\n" +
+            "7. PRIVACY. The application runs locally without accounts, activation, device identifiers, telemetry or automatic server requests. Logs and backups remain on this computer. Updates are installed manually.\n\n" +
+            "8. OPEN SOURCE. Ducktimizer code is available under the MIT License. Third-party dependencies and materials retain their own licenses. See LICENSE.";
         var terms = new ScrollViewer { Margin = new Avalonia.Thickness(0,16), Content = new TextBlock { Text = termsText, TextWrapping = Avalonia.Media.TextWrapping.Wrap, Foreground = Avalonia.Media.Brush.Parse("#BAC7CD") } };
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Spacing = 10, Margin = new Avalonia.Thickness(0,16,0,0), Children = { exit, accept } };
         Grid.SetRow(terms, 1); Grid.SetRow(check, 2); Grid.SetRow(buttons, 3);

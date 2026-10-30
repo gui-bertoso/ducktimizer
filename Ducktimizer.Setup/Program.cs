@@ -12,11 +12,9 @@ try
     if (args.Contains("--uninstall", StringComparer.OrdinalIgnoreCase)) { Uninstall(); return; }
     if (args.Contains("--create-shortcuts", StringComparer.OrdinalIgnoreCase)) { CreateShortcuts(); return; }
     Directory.CreateDirectory(installDir);
-    using var payload = Assembly.GetExecutingAssembly().GetManifestResourceStream("Ducktimizer.Payload.exe") ?? throw new InvalidDataException("Payload ausente.");
+    using var payload = Assembly.GetExecutingAssembly().GetManifestResourceStream("Ducktimizer.Payload.exe") ?? throw new InvalidDataException("Missing installer payload.");
     using (var output = new FileStream(appPath, FileMode.Create, FileAccess.Write, FileShare.None)) payload.CopyTo(output);
     File.Copy(Environment.ProcessPath!, setupPath, true);
-    var notice = Assembly.GetExecutingAssembly().GetManifestResourceStream("DEPENDENCY-LICENSE");
-    if (notice is not null) using (var output = File.Create(Path.Combine(installDir, "DEPENDENCY-LICENSE"))) notice.CopyTo(output);
     using var license = Assembly.GetExecutingAssembly().GetManifestResourceStream("LICENSE");
     if (license is not null) using (var output = File.Create(Path.Combine(installDir, "LICENSE"))) license.CopyTo(output);
     using var key = Registry.CurrentUser.CreateSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Ducktimizer");
@@ -24,12 +22,12 @@ try
     CreateShortcuts();
     Process.Start(new ProcessStartInfo(appPath) { UseShellExecute = true });
 }
-catch (Exception ex) { MessageBox(IntPtr.Zero, ex.Message, appName + " — erro", 0x10); Environment.ExitCode = 1; }
+catch (Exception ex) { MessageBox(IntPtr.Zero, ex.Message, appName + " — error", 0x10); Environment.ExitCode = 1; }
 
 void Uninstall()
 {
-    try { File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Ducktimizer.lnk")); File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Ducktimizer.lnk")); Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Ducktimizer", false); File.Delete(appPath); File.Delete(Path.Combine(installDir, "DEPENDENCY-LICENSE")); File.Delete(Path.Combine(installDir, "LICENSE")); File.Delete(setupPath); Directory.Delete(installDir, false); MessageBox(IntPtr.Zero, "Ducktimizer removido. Os backups locais foram preservados.", appName, 0x40); }
-    catch (Exception ex) { MessageBox(IntPtr.Zero, ex.Message, appName + " — erro", 0x10); Environment.ExitCode = 1; }
+    try { File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "Ducktimizer.lnk")); File.Delete(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs), "Ducktimizer.lnk")); Registry.CurrentUser.DeleteSubKeyTree(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\Ducktimizer", false); File.Delete(appPath); File.Delete(Path.Combine(installDir, "LICENSE")); File.Delete(setupPath); Directory.Delete(installDir, false); MessageBox(IntPtr.Zero, "Ducktimizer removed. Local backups were preserved.", appName, 0x40); }
+    catch (Exception ex) { MessageBox(IntPtr.Zero, ex.Message, appName + " — error", 0x10); Environment.ExitCode = 1; }
 }
 
 void CreateShortcuts()

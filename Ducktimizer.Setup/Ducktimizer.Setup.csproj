@@ -10,7 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\outputs\publish\Ducktimizer.exe" LogicalName="Ducktimizer.Payload.exe" />
-    <EmbeddedResource Include="..\PatoLizoOptimizer.Avalonia\DEPENDENCY-LICENSE" LogicalName="DEPENDENCY-LICENSE" />
     <EmbeddedResource Include="..\LICENSE" LogicalName="LICENSE" />
   </ItemGroup>
 </Project>

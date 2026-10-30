@@ -23,7 +23,6 @@
   </ItemGroup>
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />
-    <EmbeddedResource Include="DEPENDENCY-LICENSE" />
     <EmbeddedResource Include="..\LICENSE" LogicalName="LICENSE" />
   </ItemGroup>
 </Project>

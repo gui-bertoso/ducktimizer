@@ -43,33 +43,33 @@ public static class OptimizerEngine
             LastError = null;
             if (args.Length == 0) return 2;
             if (!IsAdministrator())
-                throw new UnauthorizedAccessException("O processo não recebeu permissão de administrador. Feche o app, abra novamente e aceite o aviso do UAC.");
-            AppLogger.Info($"Operação solicitada: {args[0]}");
+                throw new UnauthorizedAccessException("The process did not receive administrator permission. Close the app, reopen it and accept the UAC prompt.");
+            AppLogger.Info($"Operation requested: {args[0]}");
             if (args[0] == "--apply") Apply(args.Length > 1 ? args[1].Split(',', StringSplitOptions.RemoveEmptyEntries) : [], progress);
             else if (args[0] == "--undo-all") UndoAll(progress);
             else return 2;
-            MessageBoxW(IntPtr.Zero, "Operação concluída. Reinicie o Windows para consolidar todas as mudanças.", "Ducktimizer", 0x40);
-            AppLogger.Info("Operação concluída com sucesso");
+            MessageBoxW(IntPtr.Zero, "Operation complete. Restart Windows to finalize all changes.", "Ducktimizer", 0x40);
+            AppLogger.Info("Operation completed successfully");
             return 0;
         }
         catch (OperationCanceledException) { return 3; }
         catch (Exception ex)
         {
             LastError = FriendlyError(ex);
-            AppLogger.Error(ex, "Falha na operação administrativa");
-            MessageBoxW(IntPtr.Zero, LastError, "Ducktimizer — erro", 0x10);
+            AppLogger.Error(ex, "Administrative operation failed");
+            MessageBoxW(IntPtr.Zero, LastError, "Ducktimizer — error", 0x10);
             return 1;
         }
     }
 
     private static string FriendlyError(Exception ex) => ex switch
     {
-        UnauthorizedAccessException => "O Windows negou uma alteração. Confirme que o UAC foi aceito e que nenhuma política de segurança bloqueia o Ducktimizer.",
-        TimeoutException => "Uma etapa demorou mais que o limite de segurança e foi interrompida. Reinicie o computador e tente novamente com menos grupos.",
-        IOException => "Não foi possível salvar ou ler o backup local. Verifique espaço em disco e permissões da pasta do Ducktimizer.",
-        JsonException => "Um backup local está corrompido. Consulte o log antes de aplicar novas alterações.",
-        OperationCanceledException => "Operação cancelada. Nenhuma nova etapa foi iniciada.",
-        _ => $"A operação não pôde ser concluída. Detalhe: {ex.Message}\n\nO backup das etapas iniciadas foi preservado; use Restaurar se necessário."
+        UnauthorizedAccessException => "Windows denied a change. Make sure UAC was accepted and no security policy is blocking Ducktimizer.",
+        TimeoutException => "A step exceeded the safety timeout and was stopped. Restart the computer and try again with fewer groups.",
+        IOException => "Could not save or read the local backup. Check disk space and Ducktimizer folder permissions.",
+        JsonException => "A local backup is corrupted. Check the log before applying further changes.",
+        OperationCanceledException => "Operation canceled. No new steps were started.",
+        _ => $"The operation could not be completed. Details: {ex.Message}\n\nBackups for started steps were preserved; use Restore if needed."
     };
 
     private static bool IsAdministrator()
@@ -80,18 +80,18 @@ public static class OptimizerEngine
 
     public static void Apply(string[] groups, IProgress<OperationProgress>? progress = null)
     {
-        progress?.Report(new(2, "Preparando backup local…"));
+        progress?.Report(new(2, "Preparing local backup…"));
         MigrateLegacyBackups();
         Directory.CreateDirectory(Backups);
         var backup = new RunBackup { Groups = groups };
-        progress?.Report(new(6, "Criando ponto de restauração…"));
+        progress?.Report(new(6, "Creating restore point…"));
         if (TryRestorePoint(out var reason)) backup.RestorePoint = "created";
         else
         {
             backup.RestorePoint = "unavailable: " + reason;
             var answer = MessageBoxW(IntPtr.Zero,
-                "O ponto de restauração do Windows não pôde ser criado. Nenhuma alteração foi feita.\n\nContinuar somente com o backup granular reversível do app?",
-                "Restauração indisponível", YesNoWarning);
+                "A Windows restore point could not be created. No changes have been made.\n\nContinue with only the application's reversible granular backup?",
+                "Restoration unavailable", YesNoWarning);
             if (answer != 6) throw new OperationCanceledException();
         }
 
@@ -102,31 +102,31 @@ public static class OptimizerEngine
             for (var index = 0; index < changes.Count; index++)
             {
                 var change = changes[index];
-                progress?.Report(new(10 + (int)(60d * index / Math.Max(1, changes.Count)), $"Aplicando configuração {index + 1} de {changes.Count}…"));
+                progress?.Report(new(10 + (int)(60d * index / Math.Max(1, changes.Count)), $"Applying setting {index + 1} of {changes.Count}…"));
                 backup.Registry.Add(Read(change));
                 Write(change);
             }
             if (groups.Contains("power"))
             {
-                progress?.Report(new(74, "Ativando plano de alto desempenho…"));
+                progress?.Report(new(74, "Activating the high-performance power plan…"));
                 backup.PowerScheme = ActivePowerScheme();
                 Run("powercfg.exe", "/setactive SCHEME_MIN", true);
             }
             if (groups.Contains("debloat"))
             {
-                progress?.Report(new(82, "Removendo aplicativos selecionados…"));
+                progress?.Report(new(82, "Removing selected applications…"));
                 backup.RemovedApps = RemoveBloatware();
             }
-            progress?.Report(new(96, "Gravando estado de restauração…"));
+            progress?.Report(new(96, "Recording restore state…"));
             backup.Complete = true;
         }
         finally { File.WriteAllText(path, JsonSerializer.Serialize(backup, new JsonSerializerOptions { WriteIndented = true })); }
-        progress?.Report(new(100, "Otimizações aplicadas."));
+        progress?.Report(new(100, "Optimizations applied."));
     }
 
     public static void UndoAll(IProgress<OperationProgress>? progress = null)
     {
-        progress?.Report(new(3, "Localizando backups…"));
+        progress?.Report(new(3, "Locating backups…"));
         MigrateLegacyBackups();
         if (!Directory.Exists(Backups)) return;
         var paths = Directory.GetFiles(Backups, "backup-*.json").Where(p => !p.Contains(".restored.")).OrderByDescending(p => p).ToList();
@@ -134,13 +134,13 @@ public static class OptimizerEngine
         {
             var path = paths[pathIndex];
             progress?.Report(new(8 + (int)(84d * pathIndex / Math.Max(1, paths.Count)), $"Restaurando backup {pathIndex + 1} de {paths.Count}…"));
-            var backup = JsonSerializer.Deserialize<RunBackup>(File.ReadAllText(path)) ?? throw new InvalidDataException("Backup inválido.");
+            var backup = JsonSerializer.Deserialize<RunBackup>(File.ReadAllText(path)) ?? throw new InvalidDataException("Invalid backup.");
             if (backup.PowerScheme is not null) Run("powercfg.exe", $"/setactive {backup.PowerScheme}", true);
             foreach (var item in backup.Registry.AsEnumerable().Reverse()) Restore(item);
             if (backup.RemovedApps?.Count > 0) RestoreApps(backup.RemovedApps);
             File.Move(path, Path.ChangeExtension(path, ".restored.json"), true);
         }
-        progress?.Report(new(100, "Sistema restaurado."));
+        progress?.Report(new(100, "System restored."));
     }
 
     public static bool HasActiveBackups()
@@ -337,7 +337,7 @@ public static class OptimizerEngine
         }
         catch (UnauthorizedAccessException ex)
         {
-            throw new UnauthorizedAccessException($"Acesso negado ao Registro: {c.Hive}\\{c.Path} → {c.Name}. Verifique o UAC ou políticas de segurança do PC.", ex);
+            throw new UnauthorizedAccessException($"Registry access denied: {c.Hive}\\{c.Path} → {c.Name}. Check UAC or computer security policies.", ex);
         }
     }
     private static void Restore(RegBackup b)
@@ -351,14 +351,14 @@ public static class OptimizerEngine
         }
         catch (UnauthorizedAccessException ex)
         {
-            throw new UnauthorizedAccessException($"Acesso negado ao restaurar: {b.Hive}\\{b.Path} → {b.Name}.", ex);
+            throw new UnauthorizedAccessException($"Access denied while restoring: {b.Hive}\\{b.Path} → {b.Name}.", ex);
         }
     }
     private static string ActivePowerScheme()
     {
         var text = Run("powercfg.exe", "/getactivescheme", true);
         var match = System.Text.RegularExpressions.Regex.Match(text, @"[0-9a-fA-F-]{36}");
-        if (!match.Success) throw new InvalidOperationException("Não foi possível ler o plano de energia.");
+        if (!match.Success) throw new InvalidOperationException("Could not read the power plan.");
         return match.Value;
     }
 
@@ -417,12 +417,12 @@ public static class OptimizerEngine
         if (!process.WaitForExit(120_000))
         {
             try { process.Kill(true); } catch { }
-            throw new TimeoutException($"A operação {Path.GetFileName(file)} excedeu 2 minutos.");
+            throw new TimeoutException($"Operation {Path.GetFileName(file)} exceeded 2 minutes.");
         }
         Task.WaitAll(outputTask, errorTask);
         var output = outputTask.Result; var error = errorTask.Result;
-        if (check && process.ExitCode != 0) throw new InvalidOperationException(string.IsNullOrWhiteSpace(error) ? $"Falha ao executar {file}." : error.Trim());
-        if (!string.IsNullOrWhiteSpace(error)) AppLogger.Info($"{Path.GetFileName(file)} retornou aviso: {error.Trim()}");
+        if (check && process.ExitCode != 0) throw new InvalidOperationException(string.IsNullOrWhiteSpace(error) ? $"Failed to run {file}." : error.Trim());
+        if (!string.IsNullOrWhiteSpace(error)) AppLogger.Info($"{Path.GetFileName(file)} returned a warning: {error.Trim()}");
         return output;
     }
 }

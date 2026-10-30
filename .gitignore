@@ -25,3 +25,21 @@ ducktimizer-site/.vinext/
 ducktimizer-site/dist/
 ducktimizer-site/.wrangler/
 ducktimizer-site/.dev.vars
+
+# Local tooling
+.codex
+.ai/
+.claude/
+.cursor/
+.cline/
+.roo/
+.clinerules
+.cursorrules
+.windsurfrules
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+
+__pycache__/
+*.py[cod]
+*.egg-info/
