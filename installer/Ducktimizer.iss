@@ -1,5 +1,5 @@
-#define MyAppName "Ducktimizer Pro"
-#define MyAppVersion "3.4.2"
+#define MyAppName "Ducktimizer"
+#define MyAppVersion "4.0.0"
 #define MyAppPublisher "patoLizo"
 #define MyAppExeName "Ducktimizer.exe"
 
@@ -12,7 +12,8 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\Ducktimizer
 DefaultGroupName=Ducktimizer
 DisableProgramGroupPage=yes
-LicenseFile=INSTALL_NOTICE.txt
+LicenseFile=..\LICENSE
+InfoBeforeFile=INSTALL_NOTICE.txt
 OutputDir=..\outputs\installer
 OutputBaseFilename=Ducktimizer-Setup-{#MyAppVersion}-win-x64
 SetupIconFile=..\PatoLizoOptimizer.Avalonia\Assets\logo.ico
@@ -28,32 +29,26 @@ RestartApplications=yes
 AppMutex=Local\Ducktimizer.SingleInstance
 VersionInfoVersion={#MyAppVersion}
 VersionInfoCompany={#MyAppPublisher}
-VersionInfoDescription=Instalador do Ducktimizer Pro
+VersionInfoDescription=Instalador do Ducktimizer
 VersionInfoProductName={#MyAppName}
 
 [Languages]
 Name: "brazilianportuguese"; MessagesFile: "compiler:Languages\BrazilianPortuguese.isl"
 
 [Files]
+Source: "..\LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\outputs\publish\Ducktimizer.exe"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\PatoLizoOptimizer.Avalonia\DEPENDENCY-LICENSE"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\Ducktimizer Pro"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\Ducktimizer Pro"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\Ducktimizer"; Filename: "{app}\{#MyAppExeName}"
+Name: "{autodesktop}\Ducktimizer"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Tasks]
 Name: "desktopicon"; Description: "Criar atalho na área de trabalho"; GroupDescription: "Atalhos:"; Flags: checkedonce
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Abrir Ducktimizer Pro"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "Abrir Ducktimizer"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
-
-[Code]
-procedure InitializeWizard();
-begin
-  if not WizardSilent then
-    MsgBox('A licença do Ducktimizer será vinculada automaticamente a este computador na primeira ativação. Depois disso, a mesma chave não poderá ativar outro dispositivo.', mbInformation, MB_OK);
-end;

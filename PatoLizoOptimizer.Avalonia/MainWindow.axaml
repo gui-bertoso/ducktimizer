@@ -1,5 +1,5 @@
 <Window xmlns="https://github.com/avaloniaui" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
- x:Class="PatoLizoOptimizer.MainWindow" Title="Ducktimizer Pro" Icon="/Assets/logo.ico"
+ x:Class="PatoLizoOptimizer.MainWindow" Title="Ducktimizer" Icon="/Assets/logo.ico"
  Width="790" Height="595" MinWidth="790" MinHeight="595" MaxWidth="790" MaxHeight="595"
  CanResize="False" Background="#0F1418" FontFamily="Segoe UI">
  <Window.Styles>
@@ -17,7 +17,7 @@
   <Grid RowDefinitions="58,*,70,48" RowSpacing="10">
    <Grid ColumnDefinitions="*,Auto,46">
     <StackPanel VerticalAlignment="Center" Spacing="1">
-     <TextBlock Text="Ducktimizer Pro" FontSize="18" FontWeight="Bold"/>
+     <TextBlock Text="Ducktimizer" FontSize="18" FontWeight="Bold"/>
      <TextBlock Text="Poucas coisas. Muita diferença." Foreground="#6F9DC2" FontSize="11"/>
     </StackPanel>
     <ComboBox x:Name="PresetBox" Grid.Column="1" Classes="compact" Width="116" Margin="0,0,15,0" VerticalAlignment="Center" SelectedIndex="1" SelectionChanged="Preset_Changed">
@@ -51,8 +51,7 @@
    </Border>
 
    <Grid Grid.Row="3" ColumnDefinitions="*,Auto,Auto,Auto" ColumnSpacing="9">
-    <TextBlock Text="Ducktimizer Pro  •  v3.4.2" Foreground="#65737C" FontSize="11" VerticalAlignment="Center"/>
-    <Button x:Name="UpdateButton" Grid.Column="1" Classes="secondary" Content="Nova versão disponível" IsVisible="False" Click="Update_Click"/>
+    <TextBlock Text="Ducktimizer  •  v4.0.0" Foreground="#65737C" FontSize="11" VerticalAlignment="Center"/>
     <Button x:Name="DeactivateButton" Grid.Column="2" Classes="secondary" Content="Restaurar" Click="Deactivate_Click"/>
     <Button x:Name="ActivateButton" Grid.Column="3" Classes="primary" Content="Ativar selecionadas  →" Click="Activate_Click"/>
    </Grid>

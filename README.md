@@ -1,56 +1,59 @@
 # Ducktimizer
 
-Otimizador compacto para Windows 10 e 11, criado por patoLizo em C# com Avalonia.
+Otimizador local para Windows 10 e 11, feito por patoLizo com C# e Avalonia.
+Gratuito e de código aberto sob a licença MIT. Não exige conta, pagamento,
+ativação, identificador de dispositivo ou conexão com um serviço do autor.
 
 ## Recursos
 
-- Presets Low, Medium, High, Ultra e Debloat, com oito grupos revisáveis.
-- Ajustes visuais, modo gamer e plano de alto desempenho.
-- Redução de telemetria, anúncios e sugestões do Windows.
-- Bloqueio de Copilot, Recall, Click-to-Do, Widgets e Bing na pesquisa.
-- Remoção de aplicativos pré-instalados pelo modo Debloat Extremo.
-- Backup local das configurações e comando para desativar otimizações.
-- Solicitação de administrador imediatamente na abertura.
-- Licença Pro assinada e vinculada ao dispositivo do cliente.
-- Modo Windows seco para remover suavização de fontes, sombras e efeitos.
-- Pesquisa enxuta sem Bing, destaques e sugestões online.
-- Mais de 100 ajustes de Registro com backup do valor anterior.
-- Modo gamer com movimento 1:1 do mouse e atalhos de acessibilidade desativados.
-- Sistema leve sem P2P de atualizações, atraso artificial de inicialização ou descoberta automática de pastas.
+- presets e oito grupos revisáveis de ajustes visuais, jogos, energia e privacidade;
+- configurações de pesquisa, processos em segundo plano e remoção de aplicativos;
+- backup granular antes das alterações e tentativa de criar ponto de restauração;
+- restauração das configurações salvas e logs locais.
+
+**Revise cada grupo antes de aplicar.** Remover aplicativos pode ser irreversível:
+o backup de Registro e energia não garante reinstalação dos pacotes removidos.
+Não há garantia de aumento de FPS. Não execute em computadores sem autorização.
 
 ## Desenvolvimento
 
-Requer o SDK do .NET 10 no Windows.
+Requer Windows e SDK do .NET 10:
 
 ```powershell
 dotnet restore .\PatoLizoOptimizer.Avalonia\PatoLizoOptimizer.csproj
 dotnet run --project .\PatoLizoOptimizer.Avalonia\PatoLizoOptimizer.csproj
 ```
 
-Para gerar um executável único de 64 bits:
+O aplicativo solicita privilégios administrativos para alterar configurações.
+O autoteste verifica o catálogo de ajustes e a serialização do backup, sem aplicar mudanças:
 
 ```powershell
-dotnet publish .\PatoLizoOptimizer.Avalonia\PatoLizoOptimizer.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true
+dotnet run --project .\PatoLizoOptimizer.Avalonia\PatoLizoOptimizer.csproj -- --self-test
 ```
 
-Para gerar o executável e o instalador comercial (requer .NET 10 SDK e Inno Setup 6):
+## Distribuição
 
 ```powershell
-.\build-release.ps1
+.\build-release.ps1 -SkipInstaller  # executável independente em outputs/publish
+.\build-release.ps1                 # instalador; requer Inno Setup 6
 ```
 
-O instalador é criado em `outputs\installer`, instala em Arquivos de Programas, cria o desinstalador do Windows e exibe o aviso de que a licença fica vinculada ao Device ID.
+Instale atualizações manualmente a partir do código ou das releases do repositório.
+Não há atualizador automático, backend comercial ou envio de telemetria.
+Os antigos serviços de venda e ativação não fazem parte desta versão.
 
-## Aviso
+## Dados locais
 
-O software altera configurações administrativas do Windows. Leia os termos apresentados pelo aplicativo antes do uso. Não há garantia de aumento específico de desempenho.
+Logs e backups permanecem na pasta Ducktimizer dos dados locais do usuário.
+A remoção do aplicativo preserva os backups. A versão aberta não lê nem exige
+arquivos de ativação de versões anteriores.
 
-## Licenciamento comercial
+## Licença e créditos
 
-O aplicativo valida licenças offline assinadas digitalmente e vinculadas ao Device ID. O gerador está em `tools/Ducktimizer.LicenseGenerator`, mas exige a chave privada do vendedor, que nunca deve ser incluída no repositório ou enviada ao cliente.
+O código do projeto usa a [licença MIT](LICENSE).
+Os créditos e licenças das fontes de pesquisa estão em
+[PatoLizoOptimizer.Avalonia/DEPENDENCY-LICENSE](PatoLizoOptimizer.Avalonia/DEPENDENCY-LICENSE).
 
-O código das versões comerciais é proprietário. Consulte `LICENSE`. Os componentes de terceiros continuam sob suas licenças originais.
+## License
 
-## Créditos
-
-Alguns conceitos e mapeamentos de configurações foram adaptados do projeto [Win11Debloat](https://github.com/Raphire/Win11Debloat), disponibilizado sob licença MIT. Consulte `DEPENDENCY-LICENSE`.
+The author's code uses the [MIT License](LICENSE). Third-party materials retain their original licenses.

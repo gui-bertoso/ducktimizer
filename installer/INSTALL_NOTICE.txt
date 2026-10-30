@@ -1,15 +1,12 @@
-DUCKTIMIZER PRO — AVISO DE INSTALAÇÃO E LICENÇA
+DUCKTIMIZER — INSTALAÇÃO LOCAL
 
-Leia antes de instalar.
+Software gratuito e de código aberto, sob licença MIT. Não exige conta,
+licença de ativação, compra ou vínculo com este computador.
 
-1. Esta instalação coloca o Ducktimizer Pro em Arquivos de Programas e cria um desinstalador do Windows. Use o desinstalador em Configurações > Aplicativos para remover o produto corretamente.
+O aplicativo exige privilégios de administrador para alterar o Windows.
+Revise cada grupo antes de aplicar. O modo Debloat remove aplicativos;
+a reinstalação deles não é garantida pelo backup das configurações.
 
-2. A licença é individual e intransferível. Na primeira ativação, a chave será vinculada automaticamente ao Device ID deste computador e não funcionará em outro dispositivo.
-
-3. Formatação, troca relevante de hardware ou substituição do computador pode alterar o Device ID. Uma eventual reativação depende de análise pelo suporte e não é automática.
-
-4. O aplicativo solicita privilégios de administrador e altera configurações do Windows. O usuário deve ler os Termos de Uso exibidos no aplicativo antes de continuar.
-
-5. Não compartilhe a licença, o instalador recebido ou cópias ativadas do programa. Não tente contornar o mecanismo de ativação.
-
-Ao prosseguir com a instalação, você confirma que compreendeu o vínculo da licença ao dispositivo e concorda com os Termos de Uso disponíveis no site do Ducktimizer.
+Logs e backups ficam armazenados localmente. O aplicativo não envia
+telemetria e não consulta serviços de ativação ou atualização.
+Atualizações são instaladas manualmente pelo usuário.

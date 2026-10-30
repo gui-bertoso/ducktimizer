@@ -1,29 +1,21 @@
-DUCKTIMIZER PRO — LICENÇA COMERCIAL DE SOFTWARE
+MIT License
 
-Copyright (c) 2026 patoLizo. Todos os direitos reservados.
+Copyright (c) 2026 Guilherme da Silva Bertoso (patoLizo)
 
-Este software é licenciado, não vendido. Cada licença autoriza uma única pessoa
-a utilizar uma cópia do Ducktimizer Pro no dispositivo ao qual a licença foi
-vinculada, durante o prazo indicado na ativação.
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-É proibido, sem autorização prévia e escrita do titular:
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-1. compartilhar, revender, sublicenciar, alugar ou distribuir o software ou sua
-   chave de ativação;
-2. remover, contornar ou alterar mecanismos de ativação e proteção;
-3. publicar o código-fonte, binários, chaves privadas ou materiais internos;
-4. realizar engenharia reversa, descompilar ou criar versões derivadas, exceto
-   quando a legislação aplicável não permitir essa restrição.
-
-A licença pode deixar de funcionar após troca relevante de hardware. Migrações
-e novas ativações ficam sujeitas à política comercial do vendedor.
-
-O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE GANHO
-ESPECÍFICO DE DESEMPENHO. NA EXTENSÃO PERMITIDA POR LEI, O TITULAR NÃO SERÁ
-RESPONSÁVEL POR DANOS INDIRETOS, PERDA DE DADOS, LUCROS OU INDISPONIBILIDADE.
-
-Componentes e conceitos de terceiros permanecem sujeitos às respectivas
-licenças descritas em PatoLizoOptimizer.Avalonia/DEPENDENCY-LICENSE.
-
-Este texto é um modelo técnico e deve ser revisado por profissional jurídico
-antes da comercialização.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

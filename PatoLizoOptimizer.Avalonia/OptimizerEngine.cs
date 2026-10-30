@@ -44,8 +44,6 @@ public static class OptimizerEngine
             if (args.Length == 0) return 2;
             if (!IsAdministrator())
                 throw new UnauthorizedAccessException("O processo não recebeu permissão de administrador. Feche o app, abra novamente e aceite o aviso do UAC.");
-            if (args[0] == "--apply" && !LicenseService.IsActivated(out _, out var licenseReason))
-                throw new UnauthorizedAccessException($"Ativação necessária: {licenseReason}");
             AppLogger.Info($"Operação solicitada: {args[0]}");
             if (args[0] == "--apply") Apply(args.Length > 1 ? args[1].Split(',', StringSplitOptions.RemoveEmptyEntries) : [], progress);
             else if (args[0] == "--undo-all") UndoAll(progress);
